@@ -1,0 +1,18 @@
+# Agent local config (may contain credentials)
+.claude/settings.local.json
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies & builds
+node_modules/
+dist/
+target/
+
+# Python caches (Spec Kit scripts)
+__pycache__/
+
+# OS
+.DS_Store
