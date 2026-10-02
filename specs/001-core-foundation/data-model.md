@@ -101,7 +101,7 @@ Session totals are computed by summation over records of a conversation, not sto
 | `tools` | ToolDeclaration[] | each has JSON-Schema input and `requiredPermissions` |
 | `permissions` | Permission[] | declared upfront; anything else denied (FR-023) |
 | `domainRules` | DomainRule[] | each must carry accept + refuse cases |
-| `promptFragments` | `{ role, instruction }` map | localizable ids; cannot occupy the security/scope layers |
+| `promptFragments` | map id → `{ layer: "capability", text }` | localizable ids; `layer` can only be `capability`, so fragments cannot occupy the security/scope layers |
 | `i18nNamespaces` | map locale → catalog | merged into the UI catalog at registration |
 
 Validation at registration (Zod): unique ids, non-empty rule cases, no tool referencing an
@@ -112,6 +112,11 @@ undeclared permission, fragments restricted to the `capability` layer.
 `id`, `version` (semver), `description`, `acceptCases[]`, `refuseCases[]`, `clarifyCases[]?`,
 `refusalTemplateKey` (i18n key). Changing a rule requires a version bump (checked in CI by diffing
 content hash vs. version).
+
+Refusal language (Principle VII, FR-027): the refusal is always in the **mediation language**.
+If that language has a shipped catalog (`en`, `es`), the guard renders the template deterministically.
+Otherwise the guard uses the refusal the model wrote in the mediation language (see research R8),
+and falls back to the UI-language template only if that body is empty.
 
 ## TonePreset  (data)
 

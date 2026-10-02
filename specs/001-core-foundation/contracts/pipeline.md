@@ -34,6 +34,24 @@ type TurnEvent =
 4. **OutputGuard** → verdict parse; restricted-AST rendering; tool-call permission + taint check.
 5. **Metrics** → persist `UsageRecord` from provider-reported usage; evaluate 80 % context notice.
 
+## Credential validation entry point
+
+Key validation (FR-012) needs a minimal real generation (research R5), so it must not give any
+other module a provider handle. The pipeline module owns it:
+
+```ts
+interface CredentialValidator {
+  validate(secret: SecretHandle, signal?: AbortSignal): Promise<ValidationResult>;
+}
+```
+
+- Implemented in `packages/core/src/pipeline/credential-validation.ts`, which wraps
+  `ProviderPort.validateCredential`. `KeyManager` depends on `CredentialValidator`, never on
+  `ProviderPort`.
+- The request is a fixed, trusted prompt with no user content, no capability, and no tools, so
+  the input guard, context assembly, and output guard have nothing to act on. It still lives
+  inside the pipeline module, so it stays the only code that can reach the provider.
+
 ## Output rendering contract (`SafeBlock`)
 
 Allowed: paragraph, heading, list, emphasis, inline code, code block (as text), blockquote, table,
@@ -43,7 +61,8 @@ in model output is emitted as literal text. Remote resources are never auto-load
 
 ## Invariants (each has a test)
 
-1. No code path to `ProviderPort` exists outside `Pipeline` (architecture test + lint rule).
+1. No code path to `ProviderPort` exists outside the pipeline module, i.e. `Pipeline` and
+   `CredentialValidator` (architecture test + lint rule).
 2. Stage order cannot be changed by capabilities (stages are not exposed or injectable).
 3. The assembled `ModelRequest` never contains the API key (structural assertion over every
    adversarial case).

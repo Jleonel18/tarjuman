@@ -11,8 +11,13 @@ interface Capability {
   tools: ToolDeclaration[];
   permissions: Permission[];                    // everything a tool may do, declared up front
   domainRules: DomainRule[];                    // each with accept + refuse cases
-  promptFragments: Record<string, LocalizedText>;   // capability layer only
+  promptFragments: Record<string, PromptFragment>;  // capability layer only
   i18n: Record<Locale, Record<string, string>>;     // namespaced `capability.<id>.*`
+}
+
+interface PromptFragment {
+  layer: "capability";                          // the only layer a capability may target; any other value is rejected
+  text: LocalizedText;
 }
 
 interface ToolDeclaration {
@@ -36,8 +41,9 @@ allowlist). It does **not** expose the provider, the secret, stage objects, or r
 ## Registry behavior
 
 - `registry.register(capability)` validates with Zod; rejects duplicate ids, rules without
-  accept/refuse cases, tools naming undeclared permissions, fragments targeting layers above
-  `capability`, and mismatched `contractVersion`.
+  accept/refuse cases, tools naming undeclared permissions, fragments whose `layer` is anything
+  other than `"capability"` (the layers above it are security and domain scope), and mismatched
+  `contractVersion`.
 - Registration requires **no code change in `core`** (verified by SC-008 test).
 - `PermissionBroker` checks every tool invocation against declared permissions; denial yields a
   typed error and a metrics event (US8-2).

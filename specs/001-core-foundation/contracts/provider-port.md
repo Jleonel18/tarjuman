@@ -1,8 +1,9 @@
 # Contract: ProviderPort
 
 The only way the core reaches an AI model. Implemented by `provider-anthropic`; the core and all
-capabilities depend only on this interface (FR-002, Principle XI). Only the `Pipeline` holds an
-instance; capabilities never receive one.
+capabilities depend only on this interface (FR-002, Principle XI). Only the pipeline module (`Pipeline`
+and `CredentialValidator`, see contracts/pipeline.md) holds an instance; capabilities and
+`KeyManager` never receive one.
 
 ```ts
 interface ProviderPort {

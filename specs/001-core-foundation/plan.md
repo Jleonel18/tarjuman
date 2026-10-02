@@ -54,16 +54,20 @@ launch
 |---|-----------|--------|---------------------------|
 | I | Comprehensible Input First | PASS | Only capability is language Q&A; profile captures level + interests to adapt output; no courses/streaks/gamification anywhere. |
 | II | Stable Core, Modular Capabilities | PASS | `core` package cannot import capabilities (dependency-cruiser); dummy capability test proves SC-008. |
-| III | Mandatory Pipeline | PASS | Single `Pipeline` owns the only provider handle; stage order fixed in code; capabilities receive data-only registration. |
+| III | Mandatory Pipeline | PASS | The pipeline module (`Pipeline` plus `CredentialValidator`) owns the only provider handle; stage order fixed in code; capabilities receive data-only registration. Key validation uses a fixed trusted prompt with no user content and goes through `CredentialValidator`, so `KeyManager` never holds the provider. |
 | IV | Instruction Hierarchy | PASS | Layered assembler in fixed precedence; tone is a separate layer; tone matrix test. |
 | V | Security by Structure | PASS | Trust-labeled blocks, restricted-AST rendering, CSP, no third-party scripts, permission broker, taint-gated tools, key isolated from context. Threat analysis below. |
 | VI | User Sovereignty | PASS | Local-first IndexedDB, no accounts, `clearAll()` verified empty (SC-007), no telemetry. |
-| VII | Declarative Guardrails | PASS | Versioned schema-validated rules, mandatory accept/refuse cases, localized courteous refusals. |
+| VII | Declarative Guardrails | PASS | Versioned schema-validated rules, mandatory accept/refuse cases, courteous refusals always in the mediation language: catalog template for `en`/`es`, model-written refusal in the mediation language otherwise (research R8). |
 | VIII | Global by Design | PASS | i18next catalogs, pseudo-RTL locale, logical CSS, three separate language settings in the data model. |
 | IX | Transparency | PASS | Stats from provider-reported usage; estimate labeled; pricing table dated. No paid-resource curation in this feature. |
 | X | Copyright & ToS | PASS (N/A) | No content fetching or reproduction in this feature. |
 | XI | Provider Independence | PASS | SDK confined to `provider-anthropic`; model quirks (effort, thinking) are adapter data; provider port defines fallbacks. |
 | XII | Tests as Contract | PASS | Acceptance criteria in spec; adversarial + guardrail suites gate merges; bypass-to-test CI check. |
+
+**Gate timing**: the per-PR guardrail gate replays recorded fixtures, and CI fails when the fixtures
+no longer match the current rules and prompt layers (forcing a re-record). SC-003 itself is measured
+against the live model in the nightly/pre-release job, not per PR.
 
 **Post-design re-check**: PASS. Design added no new core dependencies on capabilities or on the
 provider SDK. One accepted risk is documented in the Threat Analysis (same-origin script

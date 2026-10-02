@@ -131,6 +131,14 @@ provider APIs drift.
   the OutputGuard; on `REFUSE` the guard replaces the body with the localized refusal template).
   This avoids a second paid call per turn while keeping the refusal text deterministic and
   localized (FR-027).
+  - **Refusal language**: Principle VII requires refusals in the mediation language, but only
+    `en` and `es` catalogs ship. When the mediation language has a catalog, the template is used.
+    When it does not, the scope layer instructs the model to follow a `REFUSE` first line with a
+    short courteous refusal in the mediation language stating Tarjuman's purpose and offering an
+    in-domain alternative. The OutputGuard renders it through the same restricted AST, and keeps
+    the `refused` status. If that body is empty, it falls back to the UI-language template.
+  - **Credential validation** (R5) goes through a `CredentialValidator` owned by the pipeline
+    module, so no other module holds the provider (contracts/pipeline.md).
 - **Alternatives considered**: Separate classifier call per turn — doubles cost on the user's key;
   rejected for v1, can be added as a pipeline stage later without core API change.
 
