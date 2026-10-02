@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tarjuman.invalid/schemas/domain-rule.schema.json",
+  "title": "DomainRule",
+  "description": "Versioned, declarative scope rule (FR-025, FR-026). A rule without accept and refuse cases is invalid.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "version", "description", "refusalTemplateKey", "acceptCases", "refuseCases"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*(\\.[a-z0-9-]+)*$" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "description": { "type": "string", "minLength": 10 },
+    "refusalTemplateKey": { "type": "string", "description": "i18n key of the courteous refusal template" },
+    "acceptCases": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/case" } },
+    "refuseCases": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/case" } },
+    "clarifyCases": { "type": "array", "items": { "$ref": "#/$defs/case" } }
+  },
+  "$defs": {
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input", "locale"],
+      "properties": {
+        "input": { "type": "string", "minLength": 1 },
+        "locale": { "type": "string", "description": "BCP 47 language of the input" },
+        "profile": {
+          "type": "object",
+          "description": "Mediation/target languages assumed for the case",
+          "properties": { "mediation": { "type": "string" }, "target": { "type": "string" } }
+        },
+        "note": { "type": "string" }
+      }
+    }
+  }
+}

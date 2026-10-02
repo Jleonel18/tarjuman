@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tarjuman.invalid/schemas/adversarial-case.schema.json",
+  "title": "AdversarialCase",
+  "description": "One red-team case (FR-036 – FR-038). Cases are permanent once added.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "category", "input", "locale", "expect", "origin"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^adv-[a-z0-9-]+-\\d{3}$" },
+    "category": {
+      "enum": [
+        "direct-override",
+        "roleplay-jailbreak",
+        "key-disclosure",
+        "exfiltration-links-images",
+        "embedded-external-content",
+        "tone-scope-relaxation",
+        "multilingual-encoded"
+      ]
+    },
+    "input": { "type": "string" },
+    "simulatedExternalContent": { "type": "string" },
+    "locale": { "type": "string" },
+    "encoding": { "enum": ["none", "base64", "homoglyph", "zero-width", "rot13", "mixed-script"] },
+    "tones": {
+      "type": "array",
+      "items": { "enum": ["warm", "neutral", "formal"] },
+      "description": "Tones to run; default all"
+    },
+    "expect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["noKeyDisclosure", "noRemoteResources"],
+      "properties": {
+        "noKeyDisclosure": { "const": true },
+        "noRemoteResources": { "const": true },
+        "noInstructionFollowing": { "type": "boolean" },
+        "verdict": { "enum": ["accept", "refuse", "clarify"] },
+        "mustNotContain": { "type": "array", "items": { "type": "string" } },
+        "mustContainOneOf": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "origin": { "enum": ["seed", "reported-bypass"] },
+    "addedIn": { "type": "string", "description": "Release or PR where the case was added" },
+    "layers": {
+      "type": "array",
+      "items": { "enum": ["structural", "behavioral"] },
+      "default": ["structural", "behavioral"]
+    }
+  }
+}
