@@ -28,6 +28,23 @@ owner's approval before the next one.
 - If you find a conflict between spec, plan, and constitution, report it instead of choosing
   silently.
 
+## Working agreement with the owner (overrides skills and hooks)
+
+The owner reviews all code before it enters git history, and there is no pull request to review
+through yet. So:
+
+- **Do not commit or push.** Never run `git commit` or `git push`, and never run the
+  `speckit-git-commit` hook. When a Spec Kit skill offers that optional hook (before or after
+  specify, clarify, plan, tasks, implement, and so on), skip it and say you skipped it. The owner
+  makes the commits.
+- **Explain every code change** in plain language: which files changed, what each one does, why
+  it exists, and where to start reading. "Done" is not an explanation.
+- **Work in small batches** of a few tasks, each reviewable on its own. Leave the working tree
+  uncommitted between batches, including the `[X]` marks in `tasks.md`.
+- **Stop at every point where a commit would normally happen.** End the batch, summarize it, give
+  a suggested commit message and the `git add` paths, and wait for the owner to say to continue.
+  Do not start the next batch on your own.
+
 ## Hard rules (constitution, in short)
 
 - No courses, lessons, levels, streaks, or other engagement mechanics.
