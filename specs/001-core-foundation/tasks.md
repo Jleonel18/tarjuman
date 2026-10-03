@@ -29,23 +29,23 @@ pnpm monorepo, per plan.md. `packages/core` is framework-free: no DOM, React, No
 
 **Purpose**: Monorepo, tooling, and the mechanical boundary checks that enforce Principles II and XI.
 
-- [ ] T001 Create root workspace files `package.json` (private, `packageManager` pnpm, engines node 22), `pnpm-workspace.yaml` (globs `packages/*`, `packages/capabilities/*`, `apps/*`), `.nvmrc` (`22`), `.npmrc` (`save-exact=true`), and extend `.gitignore` (node_modules, dist, playwright-report, test-results, `.env*`)
-- [ ] T002 Create `tsconfig.base.json` (TypeScript 5.x, `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `moduleResolution: bundler`) and root `tsconfig.json` with project references to every package listed in plan.md
-- [ ] T003 [P] Scaffold `packages/core` (`package.json` named `@tarjuman/core` with dependencies `zod` and `markdown-it` only; `tsconfig.json` with `lib: ["ES2023"]` and `types: []` so DOM/Node globals do not type-check; empty `src/index.ts`)
-- [ ] T004 [P] Scaffold `packages/provider-anthropic` (`@tarjuman/provider-anthropic`; dependency `@anthropic-ai/sdk`, workspace dependency on `@tarjuman/core`; `src/index.ts`)
-- [ ] T005 [P] Scaffold `packages/storage-web` (`@tarjuman/storage-web`; dependency `idb`; devDependency `fake-indexeddb`; `src/index.ts`)
-- [ ] T006 [P] Scaffold `packages/capabilities/language-qa` (`@tarjuman/capability-language-qa`; depends on `@tarjuman/core` types only; `src/index.ts`)
-- [ ] T007 [P] Scaffold `packages/ui` (`@tarjuman/ui`; dependencies `react@19`, `react-dom@19`, `i18next`, `react-i18next`, `i18next-icu`; `src/index.ts`)
-- [ ] T008 [P] Scaffold `packages/testing` (`@tarjuman/testing`; `src/index.ts`; `fixtures/` directory)
-- [ ] T009 [P] Scaffold `apps/web` (Vite + React 19 + TypeScript; dependency `zustand`; `index.html`, `src/main.tsx`, `vite.config.ts`)
-- [ ] T010 [P] Create `eslint.config.js` (flat config): ban `dangerouslySetInnerHTML` and `innerHTML` assignment via `no-restricted-syntax`, enable `eslint-plugin-i18next/no-literal-string` for `packages/ui/**` and `apps/web/**`, and `import/no-restricted-paths` mirroring the boundaries in T015
-- [ ] T011 [P] Create `.prettierrc` and `.editorconfig`
-- [ ] T012 [P] Create `stylelint.config.cjs` enabling `stylelint-use-logical` with `always` so physical properties (`margin-left`, `padding-right`, `left`, `text-align: left`, etc.) fail the build
-- [ ] T013 [P] Create `vitest.workspace.ts` covering `packages/*`, `packages/capabilities/*`, `tests/adversarial`, `tests/guardrails`, `tests/architecture`
-- [ ] T014 [P] Create `playwright.config.ts` (web server = `apps/web` dev build wired to the mock provider; projects chromium, firefox, webkit; test dir `tests/e2e`)
-- [ ] T015 Create `.dependency-cruiser.cjs` with these forbidden rules: (1) `packages/core` imports no capability, `provider-anthropic`, `storage-web`, `ui`, or `apps`; (2) `packages/core` imports no `react`, `@anthropic-ai/sdk`, or Node/DOM built-ins; (3) only `packages/provider-anthropic` imports `@anthropic-ai/sdk`; (4) only `packages/core/src/pipeline/**` (including `credential-validation.ts`) and `apps/web/src/composition-root.ts` may reference a `ProviderPort` instance, and `packages/core/src/credentials/**` must not; (5) capabilities import nothing from `packages/core/src/pipeline/**`
-- [ ] T016 Add root `package.json` scripts exactly as in quickstart.md: `typecheck`, `test`, `lint:arch`, `lint:i18n`, `test:e2e`, `test:redteam`, `test:live:guardrails`, `test:live:redteam`; add `lint:css` (stylelint) and `lint` (eslint) and include both in the per-PR gate
-- [ ] T017 Create `.github/workflows/ci.yml` running on every pull request: install with frozen lockfile, `pnpm audit --prod`, `typecheck`, `lint`, `lint:css`, `lint:arch`, `lint:i18n`, `test`, `test:redteam`, `test:e2e` (mark these jobs required so adversarial and guardrail failures block merge, FR-037)
+- [X] T001 Create root workspace files `package.json` (private, `packageManager` pnpm, engines node 22), `pnpm-workspace.yaml` (globs `packages/*`, `packages/capabilities/*`, `apps/*`), `.nvmrc` (`22`), `.npmrc` (`save-exact=true`), and extend `.gitignore` (node_modules, dist, playwright-report, test-results, `.env*`)
+- [X] T002 Create `tsconfig.base.json` (TypeScript 5.x, `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `moduleResolution: bundler`) and root `tsconfig.json` with project references to every package listed in plan.md
+- [X] T003 [P] Scaffold `packages/core` (`package.json` named `@tarjuman/core` with dependencies `zod` and `markdown-it` only; `tsconfig.json` with `lib: ["ES2023"]` and `types: []` so DOM/Node globals do not type-check; empty `src/index.ts`)
+- [X] T004 [P] Scaffold `packages/provider-anthropic` (`@tarjuman/provider-anthropic`; dependency `@anthropic-ai/sdk`, workspace dependency on `@tarjuman/core`; `src/index.ts`)
+- [X] T005 [P] Scaffold `packages/storage-web` (`@tarjuman/storage-web`; dependency `idb`; devDependency `fake-indexeddb`; `src/index.ts`)
+- [X] T006 [P] Scaffold `packages/capabilities/language-qa` (`@tarjuman/capability-language-qa`; depends on `@tarjuman/core` types only; `src/index.ts`)
+- [X] T007 [P] Scaffold `packages/ui` (`@tarjuman/ui`; dependencies `react@19`, `react-dom@19`, `i18next`, `react-i18next`, `i18next-icu`; `src/index.ts`)
+- [X] T008 [P] Scaffold `packages/testing` (`@tarjuman/testing`; `src/index.ts`; `fixtures/` directory)
+- [X] T009 [P] Scaffold `apps/web` (Vite + React 19 + TypeScript; dependency `zustand`; `index.html`, `src/main.tsx`, `vite.config.ts`)
+- [X] T010 [P] Create `eslint.config.js` (flat config): ban `dangerouslySetInnerHTML` and `innerHTML` assignment via `no-restricted-syntax`, enable `eslint-plugin-i18next/no-literal-string` for `packages/ui/**` and `apps/web/**`, and `import/no-restricted-paths` mirroring the boundaries in T015
+- [X] T011 [P] Create `.prettierrc` and `.editorconfig`
+- [X] T012 [P] Create `stylelint.config.cjs` enabling `stylelint-use-logical` with `always` so physical properties (`margin-left`, `padding-right`, `left`, `text-align: left`, etc.) fail the build
+- [X] T013 [P] Create `vitest.workspace.ts` covering `packages/*`, `packages/capabilities/*`, `tests/adversarial`, `tests/guardrails`, `tests/architecture`
+- [X] T014 [P] Create `playwright.config.ts` (web server = `apps/web` dev build wired to the mock provider; projects chromium, firefox, webkit; test dir `tests/e2e`)
+- [X] T015 Create `.dependency-cruiser.cjs` with these forbidden rules: (1) `packages/core` imports no capability, `provider-anthropic`, `storage-web`, `ui`, or `apps`; (2) `packages/core` imports no `react`, `@anthropic-ai/sdk`, or Node/DOM built-ins; (3) only `packages/provider-anthropic` imports `@anthropic-ai/sdk`; (4) only `packages/core/src/pipeline/**` (including `credential-validation.ts`) and `apps/web/src/composition-root.ts` may reference a `ProviderPort` instance, and `packages/core/src/credentials/**` must not; (5) capabilities import nothing from `packages/core/src/pipeline/**`
+- [X] T016 Add root `package.json` scripts exactly as in quickstart.md: `typecheck`, `test`, `lint:arch`, `lint:i18n`, `test:e2e`, `test:redteam`, `test:live:guardrails`, `test:live:redteam`; add `lint:css` (stylelint) and `lint` (eslint) and include both in the per-PR gate
+- [X] T017 Create `.github/workflows/ci.yml` running on every pull request: install with frozen lockfile, `pnpm audit --prod`, `typecheck`, `lint`, `lint:css`, `lint:arch`, `lint:i18n`, `test`, `test:redteam`, `test:e2e` (mark these jobs required so adversarial and guardrail failures block merge, FR-037)
 
 ---
 

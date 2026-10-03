@@ -1,0 +1,11 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/core" },
+    { "path": "packages/provider-anthropic" },
+    { "path": "packages/storage-web" },
+    { "path": "packages/capabilities/language-qa" },
+    { "path": "packages/ui" },
+    { "path": "packages/testing" }
+  ]
+}
