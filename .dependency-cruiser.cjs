@@ -67,9 +67,9 @@ module.exports = {
       severity: "error",
       from: {
         pathNot:
-          "^(packages/(provider-anthropic|storage-web|testing)/|packages/core/src/ports/secret-handle\\.ts$|packages/core/src/ports/secret-unseal\\.ts$|packages/[^/]+/tests/|tests/)",
+          "^(packages/(provider-anthropic|storage-web|testing)/|packages/core/src/ports/secret-handle\\.ts$|packages/core/src/ports/secret-unseal\\.ts$|packages/core/src/adapter\\.ts$|packages/[^/]+/tests/|tests/)",
       },
-      to: { path: "^packages/core/src/ports/secret-(store|unseal)\\.ts$" },
+      to: { path: "^packages/core/src/(ports/secret-(store|unseal)|adapter)\\.ts$" },
     },
     {
       name: "no-circular",

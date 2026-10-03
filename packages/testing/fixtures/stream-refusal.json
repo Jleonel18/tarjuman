@@ -1,0 +1,7 @@
+{
+  "provenance": "synthetic (from documentation)",
+  "steps": [
+    { "type": "usage", "inputTokens": 80, "outputTokens": 1 },
+    { "type": "stop", "reason": "refusal" }
+  ]
+}
