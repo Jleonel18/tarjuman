@@ -18,3 +18,26 @@ export { capabilitySchema, domainRuleSchema, permissionSchema } from "./capabili
 export { CapabilityRegistry, CapabilityRegistrationError } from "./capabilities/registry";
 
 export * from "./i18n/locales";
+
+export { validateProfile, MAX_INTERESTS, MAX_INTEREST_LENGTH } from "./profile/validation";
+export type { ProfileInput, ProfileIssue, ProfileValidation, ProfileValidationOptions } from "./profile/validation";
+export { LEVEL_INFO } from "./profile/levels";
+export type { LevelInfo } from "./profile/levels";
+
+export { ConversationService } from "./conversation/service";
+export type {
+  ConversationServiceDeps,
+  CreateConversationInput,
+  OpenConversation,
+  FinalStatus,
+  FinishDetails,
+} from "./conversation/service";
+
+export { ContextAssembler } from "./pipeline/context-assembler";
+export type { AssembleInput, AssembledContext } from "./pipeline/context-assembler";
+export { renderSafeBlocks, OutputGuard } from "./pipeline/output-guard";
+export { ProviderCredentialValidator } from "./pipeline/credential-validation";
+export type { CredentialValidator } from "./pipeline/credential-validation";
+// Explicitly exported, so this class takes the place of the `Pipeline` interface in `types.ts`.
+export { Pipeline } from "./pipeline/pipeline";
+export type { PipelineDeps } from "./pipeline/pipeline";

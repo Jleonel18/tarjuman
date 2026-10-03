@@ -1,5 +1,7 @@
 import type { Collection, StoragePort, StorageQuery, StoredRecord } from "../../src/ports/storage";
 
+const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
+
 /** In-memory StoragePort for core tests. The core cannot import the IndexedDB adapter. */
 export class MemoryStorage implements StoragePort {
   readonly data = new Map<Collection, Map<string, StoredRecord>>();
@@ -15,11 +17,11 @@ export class MemoryStorage implements StoragePort {
 
   async get<T>(collection: Collection, id: string): Promise<T | undefined> {
     const value = this.#table(collection).get(id);
-    return value === undefined ? undefined : (structuredClone(value) as T);
+    return value === undefined ? undefined : (clone(value) as T);
   }
 
   async put<T extends StoredRecord>(collection: Collection, value: T): Promise<void> {
-    this.#table(collection).set(value.id, structuredClone(value));
+    this.#table(collection).set(value.id, clone(value));
   }
 
   async delete(collection: Collection, id: string): Promise<void> {
@@ -27,9 +29,9 @@ export class MemoryStorage implements StoragePort {
   }
 
   async query<T>(collection: Collection, q?: StorageQuery): Promise<T[]> {
-    const all = [...this.#table(collection).values()] as Record<string, unknown>[];
+    const all = [...this.#table(collection).values()] as unknown as Record<string, unknown>[];
     const rows = q ? all.filter((row) => row[q.index] === q.equals) : all;
-    return structuredClone(rows) as T[];
+    return clone(rows) as T[];
   }
 
   async clearAll(): Promise<void> {

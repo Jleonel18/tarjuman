@@ -58,7 +58,7 @@ function message(author: "user" | "assistant", text: string, status: Message["st
     id: `m-${text}`,
     conversationId: "c1",
     author,
-    segments: [{ trust: author === "user" ? "user" : "trusted", text }],
+    segments: [{ trust: author === "user" ? "user" : "untrusted", text }],
     status,
     verdict: null,
     ruleIds: [],
