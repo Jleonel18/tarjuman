@@ -8,7 +8,7 @@
     "node": "^22.0.0 || ^24.0.0"
   },
   "scripts": {
-    "typecheck": "tsc -b",
+    "typecheck": "tsc -b && tsc -p apps/web --noEmit",
     "lint": "eslint .",
     "lint:css": "stylelint \"packages/**/*.css\" \"apps/**/*.css\" --allow-empty-input",
     "lint:arch": "depcruise packages apps tests --config .dependency-cruiser.cjs",
@@ -26,7 +26,6 @@
     "dependency-cruiser": "^18.5.0",
     "eslint": "^10.11.0",
     "eslint-plugin-i18next": "^6.1.5",
-    "eslint-plugin-import": "^2.32.0",
     "prettier": "^3.9.9",
     "stylelint": "^17.16.0",
     "stylelint-config-standard": "^40.0.0",

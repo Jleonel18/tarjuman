@@ -1,0 +1,60 @@
+/*
+ * Base layout. Logical properties only (Principle VIII): `inline` is the reading direction and
+ * `block` the perpendicular one, so the layout mirrors for right-to-left locales without any
+ * separate stylesheet. Physical properties (margin-left, padding-right, left, text-align: left)
+ * fail `pnpm lint:css`.
+ */
+:root {
+  color-scheme: light dark;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --radius: 0.5rem;
+  --max-inline-size: 48rem;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-block-size: 100vh;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100vh;
+}
+
+.app-shell__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block: var(--space-2);
+  padding-inline: var(--space-3);
+  border-block-end: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+}
+
+.app-shell__title {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.app-shell__main {
+  flex: 1;
+  inline-size: 100%;
+  max-inline-size: var(--max-inline-size);
+  margin-inline: auto;
+  padding-block: var(--space-4);
+  padding-inline: var(--space-3);
+  /* Start-aligned in both directions: left in LTR, right in RTL. */
+  text-align: start;
+}

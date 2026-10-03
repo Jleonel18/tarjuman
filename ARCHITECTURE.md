@@ -6,8 +6,13 @@ marks what is built today. The authoritative sources are the
 [constitution](.specify/memory/constitution.md) (principles) and the feature specs (requirements);
 if this file disagrees with them, they win.
 
-**Implementation status:** monorepo, tooling, CI, and boundary rules exist (Phase 1). Every
-package under `packages/` is an empty stub. Sections below describe what each will contain.
+**Implementation status:** Phases 1 and 2 of 11 are done. Built and tested today: the monorepo
+and boundary rules; in `core`, the ports, domain types, `SecretHandle`, and the capability
+registry; `storage-web` (IndexedDB storage and encrypted key storage); the mock provider and the
+provider contract suite in `testing`; the i18n setup, base styles, and app shell in `ui`; and the
+web app's composition root with its Content-Security-Policy. **Not built yet:** the pipeline
+stages, the Anthropic adapter, the `language-qa` capability, guardrails, stats, and every screen.
+Sections below describe the target design.
 
 ## 1. Shape of the system
 
@@ -52,6 +57,11 @@ These rules are **enforced mechanically**, not by convention:
 - Capabilities cannot import pipeline internals.
 - Only adapters may unseal a secret (`SecretHandle`).
 - Circular dependencies are errors.
+
+Reading a raw secret is split into its own module (`@tarjuman/core/adapter`), so the rule can
+forbid every importer except adapters while the rest of the core still passes `SecretHandle`
+values around. A type-level assertion in `ports/provider.ts` also fails the build if any field of
+`ModelRequest` could carry one.
 
 Enforcement lives in [.dependency-cruiser.cjs](.dependency-cruiser.cjs) (authoritative) and
 [eslint.config.js](eslint.config.js) (fast feedback in the editor). Run `pnpm lint:arch`.

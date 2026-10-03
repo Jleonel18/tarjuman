@@ -32,11 +32,13 @@ Everything is specified and planned; implementation has just started.
 | Specification (`001-core-foundation`) | Done |
 | Plan, data model, contracts | Done |
 | Task list (153 tasks, 11 phases) | Done |
-| Implementation | **Phase 1 of 11 done** (monorepo, tooling, CI, architecture rules) |
+| Implementation | **Phase 2 of 11 done** (foundation: ports, storage, mock provider, i18n, app shell). No user-facing feature yet |
 
-What exists today: the monorepo skeleton, lint/type/architecture checks, and a CI workflow. What
-does **not** exist yet: the chat, the security pipeline, key storage, the stats panel, i18n
-catalogs. `pnpm --filter @tarjuman/web dev` serves an empty page.
+What exists today: the monorepo, lint/type/architecture checks and a CI workflow, the typed
+contracts, encrypted local storage, a mock provider for testing without a key, English and Spanish
+catalogs, and an app shell with a strict Content-Security-Policy. What does **not** exist yet: the
+chat, onboarding, the security pipeline, the Anthropic adapter, the guardrails, and the stats
+panel. `pnpm --filter @tarjuman/web dev` serves a placeholder page.
 
 Progress is tracked by the checkboxes in
 [specs/001-core-foundation/tasks.md](specs/001-core-foundation/tasks.md).

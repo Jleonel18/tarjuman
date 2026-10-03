@@ -1,0 +1,19 @@
+{
+  "common.appName": "Tarjuman",
+  "common.loading": "Cargando…",
+  "common.save": "Guardar",
+  "common.cancel": "Cancelar",
+  "common.close": "Cerrar",
+  "common.back": "Atrás",
+  "common.next": "Siguiente",
+  "common.confirm": "Confirmar",
+  "common.delete": "Eliminar",
+  "common.retry": "Intentar de nuevo",
+  "common.stop": "Detener",
+  "common.settings": "Ajustes",
+  "common.language.ui": "Idioma de la interfaz",
+  "common.language.mediation": "Idioma de las explicaciones",
+  "common.language.target": "Idioma que estoy aprendiendo",
+  "common.itemCount": "{count, plural, =0 {Sin elementos} one {# elemento} other {# elementos}}",
+  "common.greeting": "Hola, {name}"
+}

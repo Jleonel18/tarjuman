@@ -40,7 +40,7 @@ module.exports = {
       comment:
         "A concrete provider is instantiated only in the composition root; everything else sees the ProviderPort type.",
       severity: "error",
-      from: { pathNot: "^(apps/web/src/composition-root\\.ts|packages/provider-anthropic/|tests/)" },
+      from: { pathNot: "^(apps/web/src/composition-root\\.ts|apps/[^/]+/tests/|packages/provider-anthropic/|tests/)" },
       to: { path: "^packages/provider-anthropic/", dependencyTypesNot: NOT_TYPE_ONLY },
     },
     {

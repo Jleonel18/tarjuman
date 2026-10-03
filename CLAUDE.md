@@ -98,7 +98,18 @@ Run `pnpm typecheck && pnpm lint && pnpm lint:arch && pnpm test` before declarin
 
 ## Current state
 
-Phase 1 of 11 is done (workspace, tooling, CI, boundary rules). Every package is an empty stub.
-Phase 2 begins with task T018, a provider spike. The owner has no Anthropic key and will not buy
-one, so do the spike from documentation plus keyless probes (CORS was already verified with a fake
-key) and mark anything not confirmed by a live call as unverified. Do not ask for a key.
+Phases 1 and 2 of 11 are done (T001-T041): tooling, ports and types, encrypted storage, the mock
+provider and contract suite, i18n, and the app shell with its CSP. Phase 3 (User Story 1, the MVP
+chat) is next. The provider spike (T018) was done without a key because the owner has no Anthropic
+key and will not buy one; its results are in `research.md` -> Spike Results, and what it could not
+confirm is listed there as unverified. Do not ask for a key. Test fixtures that imitate the
+provider's wire format are synthetic until a live capture exists, and must say so.
+
+Gotchas learned so far:
+
+- `idb` uses the global `indexedDB`; tests use `fake-indexeddb/auto` and assign
+  `globalThis.indexedDB = new IDBFactory()` per test.
+- `@tarjuman/core/adapter` is the only way to read a raw secret, and only adapters may import it.
+- E2E runs against the production build (`vite build` + `vite preview`) so the real CSP is tested.
+- `i18next` catalogs are flat and dotted (`common.save`); key and namespace separators are off.
+- Do not import across package roots in tests (`tsc -b` would emit stray `.js` files).
