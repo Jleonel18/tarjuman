@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": { "lib": ["ES2023", "DOM"], "types": [], "outDir": "dist", "rootDir": "." },
-  "include": ["src", "tests"],
-  "references": [{ "path": "../core" }]
+  "compilerOptions": { "lib": ["ES2023", "DOM"], "types": [], "resolveJsonModule": true, "outDir": "dist", "rootDir": "." },
+  "include": ["src", "tests", "tests/fixtures/*.json"],
+  "references": [{ "path": "../core" }, { "path": "../testing" }]
 }

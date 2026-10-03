@@ -276,6 +276,10 @@ importers:
       '@tarjuman/core':
         specifier: workspace:*
         version: link:../core
+    devDependencies:
+      '@tarjuman/testing':
+        specifier: workspace:*
+        version: link:../testing
 
   packages/storage-web:
     dependencies:

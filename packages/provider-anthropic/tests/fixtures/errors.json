@@ -1,0 +1,12 @@
+{
+  "authentication": { "status": 401, "body": { "type": "error", "error": { "type": "authentication_error", "message": "API key is invalid." } } },
+  "revoked": { "status": 401, "body": { "type": "error", "error": { "type": "authentication_error", "message": "API key has been revoked." } } },
+  "billing": { "status": 402, "body": { "type": "error", "error": { "type": "billing_error", "message": "Your credit balance is too low." } } },
+  "permission": { "status": 403, "body": { "type": "error", "error": { "type": "permission_error", "message": "Your API key does not have permission to use the specified resource." } } },
+  "invalid_request": { "status": 400, "body": { "type": "error", "error": { "type": "invalid_request_error", "message": "max_tokens: field required" } } },
+  "too_large": { "status": 413, "body": { "type": "error", "error": { "type": "request_too_large", "message": "Request exceeds the maximum allowed number of bytes." } } },
+  "rate_limit": { "status": 429, "headers": { "retry-after": "30" }, "body": { "type": "error", "error": { "type": "rate_limit_error", "message": "Number of request tokens has exceeded your rate limit." } } },
+  "rate_limit_spend_cap": { "status": 429, "body": { "type": "error", "error": { "type": "rate_limit_error", "message": "You have reached your specified spend limit." } } },
+  "api_error": { "status": 500, "body": { "type": "error", "error": { "type": "api_error", "message": "An unexpected error has occurred internal to Anthropic's systems." } } },
+  "overloaded": { "status": 529, "body": { "type": "error", "error": { "type": "overloaded_error", "message": "Anthropic's API is temporarily overloaded." } } }
+}

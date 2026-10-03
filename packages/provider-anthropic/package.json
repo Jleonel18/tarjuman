@@ -11,5 +11,8 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
     "@tarjuman/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@tarjuman/testing": "workspace:*"
   }
 }
