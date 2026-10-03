@@ -62,12 +62,14 @@ module.exports = {
     },
     {
       name: "unseal-secret-only-in-adapters",
-      comment: "Only adapters (and the secret-handle module itself) may import the unseal side of SecretHandle.",
+      comment:
+        "Reading a raw secret (secret-unseal / secret-store) is for adapters only. secret-handle.ts may use the store to seal and destroy. Tests may unseal to assert on it.",
       severity: "error",
       from: {
-        pathNot: "^(packages/(provider-anthropic|storage-web|testing)/|packages/core/src/ports/|tests/)",
+        pathNot:
+          "^(packages/(provider-anthropic|storage-web|testing)/|packages/core/src/ports/secret-handle\\.ts$|packages/core/src/ports/secret-unseal\\.ts$|packages/[^/]+/tests/|tests/)",
       },
-      to: { path: "^packages/core/src/ports/secret-handle\\.ts$", dependencyTypesNot: NOT_TYPE_ONLY },
+      to: { path: "^packages/core/src/ports/secret-(store|unseal)\\.ts$" },
     },
     {
       name: "no-circular",

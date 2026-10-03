@@ -243,3 +243,113 @@ Covered in `plan.md` → *Threat Analysis*.
   guarded by a CI test that fails if any non-provider network origin appears in the bundle's
   `connect-src` or in Playwright network logs.
 - **Rationale**: Smallest compliant implementation.
+
+## Spike Results (T018)
+
+Run on **2026-10-02** without a provider key (the owner has none and will not buy one). Evidence
+levels, strongest first:
+
+- **LIVE (keyless)**: observed against `api.anthropic.com` with a fake key.
+- **SDK**: read from the installed `@anthropic-ai/sdk` 0.131.0 source.
+- **DOCS**: read from `platform.claude.com` documentation on 2026-10-02.
+- **UNVERIFIED**: needs a valid key; later tasks must treat it as an assumption and keep the code
+  tolerant.
+
+### R1. Browser access (CORS)
+
+| Finding | Evidence |
+|---------|----------|
+| `OPTIONS /v1/messages` from an arbitrary `Origin` returns `200` with `access-control-allow-origin: *` and `access-control-allow-headers` echoing `content-type, x-api-key, anthropic-version, anthropic-dangerous-direct-browser-access`; `access-control-allow-methods` includes `POST` | LIVE |
+| `POST` with a fake key returns `401` and body `{"type":"error","error":{"type":"authentication_error","message":"API key is invalid."},"request_id":null}`, and the error response **also** carries `access-control-allow-origin: *`, so the browser can read it | LIVE |
+| With `dangerouslyAllowBrowser: true` the SDK sends `anthropic-dangerous-direct-browser-access: true`; without it the SDK throws in a browser-like environment | SDK |
+| SDK `maxRetries` defaults to **2**; the adapter must set `0` (cost safety, FR edge case) | SDK, DOCS |
+
+Decision R1 stands. `connect-src` for the CSP (T039) is `https://api.anthropic.com`.
+
+### R2. Models, context windows, prices (as of 2026-10-02)
+
+| Model | API id | Context | Max output | Input $/MTok | Output $/MTok | Cache read $/MTok | Default effort |
+|-------|--------|---------|------------|--------------|---------------|-------------------|----------------|
+| Claude Sonnet 5.5 | `claude-sonnet-5-5` | 1M | 128K | 2 | 10 | 0.20 | `high` |
+| Claude Opus 5.5 | `claude-opus-5-5` | 1M | 128K | 4 | 20 | 0.20 | `medium` |
+| Claude Haiku 4.5 | `claude-haiku-4-5-20251001` (alias `claude-haiku-4-5`) | 200K | 64K | 1 | 5 | 0.10 | not supported |
+
+Source: DOCS (models overview and pricing pages). Cache write (5 min): Sonnet 5.5 $2.50, Opus 5.5
+$5, Haiku 4.5 $1.25 per MTok. `pricing.asOf` = `2026-10-02`. The pricing page notes the current
+tokenizer yields about 30 % more tokens than older ones, so token counts are not comparable
+across generations.
+
+Request constraints confirmed by DOCS (error pages):
+
+- Sonnet 5.5 and Opus 5.5: `thinking: {"type":"disabled"}` returns 400; omit `thinking` and the
+  request runs adaptive. Forced `tool_choice` (`any`/`tool`) returns 400. Assistant prefill
+  returns 400.
+- Haiku 4.5: no effort support; extended thinking only. **The adapter must send no `thinking`
+  and no `effort` for Haiku.**
+- Safest request shape for all three models: **omit `thinking` entirely**.
+
+Free credits: the pricing FAQ states new users receive "a small amount of free credits to test
+the API". Amount and availability are **UNVERIFIED** and not relied upon.
+
+### R3. Effort
+
+- Request shape: `output_config: { effort: "low" | "medium" | "high" | "xhigh" | "max" }`, inside
+  `output_config`, GA, no beta header. (DOCS; SDK type at `messages.d.ts` agrees.)
+- Supported: Sonnet 5.5, Opus 5.5. Not supported: Haiku 4.5 (not in the supported list).
+- Setting the model's default level is identical to omitting it. Opus 5.5's default is `medium`,
+  Sonnet 5.5's is `high`.
+- v1 exposes `low | medium | high` only (R3 unchanged). Because Opus 5.5 defaults to `medium`
+  and Sonnet 5.5 to `high`, the adapter **always sends the configured effort explicitly** so the
+  user's setting means the same thing on every model.
+- Changing top-level effort between requests restarts the prompt cache; irrelevant here (no
+  caching in this feature) but noted for later.
+
+### R4. Streaming usage
+
+Source: DOCS (streaming page, JSON examples).
+
+- `message_start` carries `message.usage` with `input_tokens` (and, when present,
+  `cache_creation_input_tokens`, `cache_read_input_tokens`) and a small provisional
+  `output_tokens`.
+- `message_delta` carries top-level `usage`; its values are **cumulative**. The final
+  `message_delta` has the final `output_tokens`. In some responses (server tools) it also repeats
+  `input_tokens` and the cache fields.
+- Total input tokens for a request = `input_tokens + cache_creation_input_tokens +
+  cache_read_input_tokens` (SDK doc comment).
+- **Rule for the adapter**: keep the latest value seen for each field (overwrite, never sum);
+  take input and cache fields from `message_delta` when present, else from `message_start`;
+  emit one `usage` event at the end of the stream. Null cache fields map to `0`.
+- Mid-stream failure: an SSE `event: error` with `{"type":"error","error":{"type":"overloaded_error",...}}`
+  can arrive after a `200`. The adapter maps it to a `StreamEvent` error, not a thrown exception.
+
+### R5. Credential validation
+
+- Error mapping (DOCS errors page):
+
+| HTTP | `error.type` | `ProviderErrorCode` |
+|------|--------------|---------------------|
+| 401 | `authentication_error` | `invalid_credential` (covers malformed, revoked, expired) |
+| 402 | `billing_error` | `quota_exhausted` |
+| 403 | `permission_error` | `permission_denied` |
+| 429 | `rate_limit_error` | `rate_limited`; a spend-cap 429 has **no** `retry-after` and persists, so `retryAfterSeconds` is optional and the UI must not promise a retry window |
+| 400 | `invalid_request_error` | `bad_request`; **also returned when a spend limit is reached** (message-dependent), so a 400 during validation is shown as "request rejected" with the provider message category, not as a key problem |
+| 413 | `request_too_large` | `bad_request` |
+| 500, 504 | `api_error`, `timeout_error` | `unknown` / `network` |
+| 529 | `overloaded_error` | `overloaded` |
+
+- `GET /v1/models` as a free pre-check: **UNVERIFIED** (needs a valid key). T054 must implement
+  the generation-based validation first and treat the pre-check as an optional optimization
+  behind a flag that defaults to off.
+- The fake-key probe proves the failure path: an invalid key yields a readable `401` over CORS,
+  which is the main path onboarding must handle.
+
+### Still unverified (needs a valid key)
+
+- Exact `usage` values and event order on a live stream (fixtures are hand-built from the docs).
+- Whether the `GET /v1/models` pre-check works for browser origins.
+- Real-world 402 vs 400 behavior for an exhausted balance.
+- Live behavior of `output_config.effort` on Sonnet 5.5 / Opus 5.5.
+
+Recorded fixtures for T046/T047 must therefore be labelled **synthetic (from documentation)**
+until a live capture replaces them. A free dev-provider adapter (see the owner's roadmap) does
+not close these gaps because it is not Claude.
