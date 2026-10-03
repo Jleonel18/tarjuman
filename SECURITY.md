@@ -48,7 +48,8 @@ Contact the maintainer privately through the email on the maintainer's GitHub pr
 contact will replace this once the project has a public release.
 
 Prompt-injection or guardrail bypasses that do **not** expose secrets can be reported through
-normal issues; each one becomes a permanent test case (see [CONTRIBUTING.md](CONTRIBUTING.md)).
+normal issues; each one becomes a permanent test case (schema in
+[specs/001-core-foundation/contracts/adversarial-case.schema.json](specs/001-core-foundation/contracts/adversarial-case.schema.json)).
 
 ## Developer hygiene
 

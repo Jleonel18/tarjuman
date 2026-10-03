@@ -101,7 +101,6 @@ they enter their own key in the app.
 ## Documentation
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) — how the pieces fit and which rules keep them apart
-- [CONTRIBUTING.md](CONTRIBUTING.md) — workflow, checks, and conventions
 - [SECURITY.md](SECURITY.md) — security model and how to report a problem
 - [CLAUDE.md](CLAUDE.md) — instructions for AI coding agents working in this repo
 - [.specify/memory/constitution.md](.specify/memory/constitution.md) — the non-negotiable principles

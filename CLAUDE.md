@@ -1,7 +1,6 @@
 # CLAUDE.md
 
-Guidance for AI coding agents working in this repository. Humans: see [README.md](README.md) and
-[CONTRIBUTING.md](CONTRIBUTING.md).
+Guidance for AI coding agents working in this repository. Humans: see [README.md](README.md).
 
 ## What this project is
 
@@ -100,4 +99,6 @@ Run `pnpm typecheck && pnpm lint && pnpm lint:arch && pnpm test` before declarin
 ## Current state
 
 Phase 1 of 11 is done (workspace, tooling, CI, boundary rules). Every package is an empty stub.
-Phase 2 begins with task T018, a provider spike that needs a throwaway key in `.env`.
+Phase 2 begins with task T018, a provider spike. The owner has no Anthropic key and will not buy
+one, so do the spike from documentation plus keyless probes (CORS was already verified with a fake
+key) and mark anything not confirmed by a live call as unverified. Do not ask for a key.
