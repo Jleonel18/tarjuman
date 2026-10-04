@@ -45,6 +45,22 @@ through yet. So:
   a suggested commit message and the `git add` paths, and wait for the owner to say to continue.
   Do not start the next batch on your own.
 
+### Branches: when to recommend a new one or a merge to `main`
+
+The owner creates branches and does the merges, like commits. The agent never creates, merges,
+or deletes branches. It **recommends**, in the batch summary, at these points:
+
+- **New branch:** before starting a new phase or user story (for example Phase 3 → Phase 4), or
+  any work that is not part of the current branch's goal (a refactor, a docs rewrite, a spec
+  change). Suggest a name `<NNN>-<short-goal>` (`001-us1-chat-mvp`) so Spec Kit skills still
+  recognize it. Also recommend one if the current branch is `main` and the next batch changes code.
+- **Merge to `main`:** at a phase checkpoint, when the user story's independent test passes and
+  `pnpm typecheck && pnpm lint && pnpm lint:arch && pnpm test` is green with a clean working
+  tree. Say what is in the branch, give the checks that passed, and offer the commands
+  (`git checkout main`, `git merge --ff-only <branch>`, then the owner decides on the push and on
+  deleting the branch). Do not recommend merging mid-phase or with red checks.
+- Say it once per checkpoint, at the end of the batch, then wait. Do not repeat it every batch.
+
 ## Hard rules (constitution, in short)
 
 - No courses, lessons, levels, streaks, or other engagement mechanics.
