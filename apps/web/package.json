@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tarjuman/capability-language-qa": "workspace:*",
     "@tarjuman/core": "workspace:*",
     "@tarjuman/provider-anthropic": "workspace:*",
     "@tarjuman/storage-web": "workspace:*",

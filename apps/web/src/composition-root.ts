@@ -1,3 +1,4 @@
+import languageQa from "@tarjuman/capability-language-qa";
 import { CapabilityRegistry } from "@tarjuman/core";
 import { IndexedDbStorage, WebCredentialStore, defaultSessionSecrets } from "@tarjuman/storage-web";
 import { createI18n, getShippedCatalog, registerCatalog, type I18n } from "@tarjuman/ui";
@@ -6,7 +7,7 @@ import { createI18n, getShippedCatalog, registerCatalog, type I18n } from "@tarj
  * The composition root: the one place that decides which concrete adapters the app uses. Nothing
  * else constructs storage or a provider, which is what the dependency-cruiser rules enforce.
  *
- * The provider and the pipeline are wired here in T067 (US1). `language-qa` is registered in T058.
+ * The provider and the pipeline are wired here in T067 (US1).
  */
 export interface AppServices {
   storage: IndexedDbStorage;
@@ -21,6 +22,7 @@ export async function createAppServices(): Promise<AppServices> {
   const storage = new IndexedDbStorage({ sessionSecrets: defaultSessionSecrets });
   const credentials = new WebCredentialStore({ records: storage, sessionSecrets: defaultSessionSecrets });
   const registry = new CapabilityRegistry();
+  registry.register(languageQa);
 
   const i18n = await createI18n(
     import.meta.env.DEV

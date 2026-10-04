@@ -211,6 +211,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@tarjuman/capability-language-qa':
+        specifier: workspace:*
+        version: link:../../packages/capabilities/language-qa
       '@tarjuman/core':
         specifier: workspace:*
         version: link:../../packages/core

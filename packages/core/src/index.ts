@@ -41,3 +41,6 @@ export type { CredentialValidator } from "./pipeline/credential-validation";
 // Explicitly exported, so this class takes the place of the `Pipeline` interface in `types.ts`.
 export { Pipeline } from "./pipeline/pipeline";
 export type { PipelineDeps } from "./pipeline/pipeline";
+
+export { KeyManager } from "./credentials/key-manager";
+export type { EnterKeyOutcome, KeyManagerDeps, KeyState } from "./credentials/key-manager";
