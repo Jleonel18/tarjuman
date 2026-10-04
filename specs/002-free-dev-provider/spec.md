@@ -38,7 +38,8 @@ in the chat and see a streamed answer, a token count, and a cost shown as "free 
    development build and send a message, **Then** the answer streams into the chat through the
    normal pipeline and usage is recorded.
 2. **Given** the local model is not running, **When** I try to start a conversation, **Then** I see
-   a clear message that the local model cannot be reached and how to start it, not a generic error.
+   the normal network error in the app and a diagnostic in the developer console that says the
+   local runtime cannot be reached and points to the setup guide.
 3. **Given** the local model rejects a request (model not installed, request too large), **When**
    the failure occurs, **Then** the user sees an error mapped to the same error categories used for
    Anthropic, and nothing is retried automatically.
@@ -93,7 +94,8 @@ development mode receives an answer.
 1. **Given** the guide, **When** I follow it from scratch, **Then** I reach a working conversation
    without additional research.
 2. **Given** the runtime is running but does not allow the app's origin, **When** I send a message,
-   **Then** the app tells me this is probably an origin-permission problem and points to the guide.
+   **Then** the developer console diagnostic names "not running or origin not allowed" as the cause,
+   and the guide explains how to tell the two apart and fix each.
 
 ---
 
@@ -109,7 +111,8 @@ development mode receives an answer.
   explains how to install it.
 - The local runtime streams malformed or truncated output: the stream ends with an error event, and
   partial text already shown is kept but marked incomplete.
-- No API key exists for the local provider: the app must not demand, store, or display one for it.
+- No API key exists for the local provider: the developer enters the documented placeholder, which
+  is never sent to the runtime.
 - Generation is slow on modest hardware: the user can cancel, and cancellation stops the request.
 
 ## Requirements *(mandatory)*
@@ -131,9 +134,11 @@ development mode receives an answer.
   runtime reports them, support cancellation, and report a stop reason.
 - **FR-006**: Costs for the local provider MUST be shown as free or not applicable, never as an
   estimated Anthropic price. Where the model's limits are unknown, the app MUST say so.
-- **FR-007**: The local provider MUST NOT require, request, store, or display an API key. If the
-  provider abstraction requires a credential object, a non-secret placeholder MUST be used, and no
-  user secret MAY be involved.
+- **FR-007**: The local provider MUST NOT require a real API key, and MUST NOT send any credential
+  to the runtime. Because the existing onboarding asks for a key before the first conversation, the
+  developer enters a documented, non-secret placeholder in that screen; the local provider ignores
+  it. (Amended during planning: the original "MUST NOT request or display" would require changing
+  the onboarding flow and the core key manager for a dev-only tool. See plan.md, Spec Amendments.)
 - **FR-008**: The user's Anthropic key MUST NOT be sent to the local runtime, and nothing about the
   local provider MAY weaken the key-handling rules of `001-core-foundation`.
 - **FR-009**: The fixture recorder (T079) and live guardrail runner (T080) MUST be able to run
@@ -147,9 +152,14 @@ development mode receives an answer.
   live Claude run exists, and that gap MUST stay documented.
 - **FR-012**: The project MUST include a written setup guide covering: installing the local runtime,
   downloading a recommended model, allowing the app's origin, and checking that it works.
-- **FR-013**: When the local runtime cannot be reached, the user MUST see a specific message that
-  distinguishes "not running", "model not installed", and "origin not allowed" where those can be
-  told apart, and a generic network message otherwise.
+- **FR-013**: When the local runtime cannot be reached or rejects a request, the user MUST see the
+  existing error message for the matching error category. In addition, the developer MUST get a
+  specific diagnostic that distinguishes "not running or origin not allowed", "model not installed",
+  and other failures: in the developer console of development builds, and in the output of the
+  recording and live-run tools. The setup guide MUST map each diagnostic to its fix. (Amended
+  during planning: a per-provider UI message would need a new error category in the provider
+  abstraction, which FR-001 forbids. In a browser, "not running" and "origin not allowed" are the
+  same failure and cannot be told apart.)
 - **FR-014**: The local provider's model list MUST be explicit and maintained in the app (not
   discovered from remote sources), and MUST state each model's context window and output limit or
   mark them unknown.
@@ -196,8 +206,9 @@ development mode receives an answer.
   for the Anthropic adapter.
 - **SC-005**: A production build exposes zero ways to select or reach the local provider, verified by
   an automated check.
-- **SC-006**: In 100% of the unreachable-runtime scenarios covered (not running, model missing,
-  origin not allowed), the user sees an actionable message instead of a generic error.
+- **SC-006**: In 100% of the unreachable-runtime scenarios covered (not running or origin not
+  allowed, model missing), the developer gets a specific diagnostic that the setup guide maps to a
+  fix.
 - **SC-007**: Phase 4 of `001-core-foundation` can be completed, including T079 and T080, without
   buying or requesting an Anthropic key.
 
