@@ -76,5 +76,6 @@
   "chat.empty": "Pregunta lo que quieras sobre el idioma que aprendes.",
   "chat.key_hint": "Clave: {hint}",
   "chat.interrupted": "Esta respuesta se interrumpió y puede estar incompleta.",
-  "chat.open_key_settings": "Abrir ajustes de la clave"
+  "chat.open_key_settings": "Abrir ajustes de la clave",
+  "app.boot_failed": "Tarjuman no pudo iniciar. Recarga la página. Si sigue pasando, revisa que tu navegador permita a este sitio guardar datos."
 }

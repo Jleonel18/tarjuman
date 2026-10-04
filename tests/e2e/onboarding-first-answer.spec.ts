@@ -21,7 +21,7 @@ async function completeOnboarding(page: Page): Promise<void> {
 }
 
 async function enterKey(page: Page, key: string, mode: "Remember on this device" | "This session only"): Promise<void> {
-  await page.getByLabel("API key").fill(key);
+  await page.getByLabel("API key", { exact: true }).fill(key);
   await page.getByRole("radio", { name: mode }).check();
   await page.getByRole("button", { name: "Save key" }).click();
 }
@@ -61,7 +61,7 @@ test.describe("onboarding and first answer", () => {
     await expect(page.getByRole("alert")).toContainText("isn't valid");
     // Nothing was stored: still on key entry after a reload, and no masked hint is shown.
     await page.reload();
-    await expect(page.getByLabel("API key")).toBeVisible();
+    await expect(page.getByLabel("API key", { exact: true })).toBeVisible();
     await expect(page.getByText("sk-ant-…")).toHaveCount(0);
   });
 
@@ -96,7 +96,7 @@ test.describe("onboarding and first answer", () => {
     await expect(page.getByRole("textbox", { name: "Message" })).toBeVisible();
 
     await page.reload();
-    await expect(page.getByLabel("API key")).toBeVisible();
+    await expect(page.getByLabel("API key", { exact: true })).toBeVisible();
     await expect(page.getByLabel("Explanation language")).toHaveCount(0);
   });
 
@@ -108,7 +108,7 @@ test.describe("onboarding and first answer", () => {
     await completeOnboarding(page);
     await expect(page.getByRole("status")).toContainText("can't save data in this browser");
     await expect(page.getByRole("radio", { name: "Remember on this device" })).toBeDisabled();
-    await page.getByLabel("API key").fill(VALID_KEY);
+    await page.getByLabel("API key", { exact: true }).fill(VALID_KEY);
     await page.getByRole("radio", { name: "This session only" }).check();
     await page.getByRole("button", { name: "Save key" }).click();
     await expect(page.getByRole("textbox", { name: "Message" })).toBeVisible();

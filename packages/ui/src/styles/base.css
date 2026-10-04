@@ -233,3 +233,16 @@ body {
 .composer__label {
   grid-column: 1 / -1;
 }
+
+/* Chat screen: conversation list beside the chat on wide screens, stacked on narrow ones. */
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(12rem, 16rem) 1fr;
+  gap: var(--space-4);
+}
+
+@media (max-width: 40rem) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+}
