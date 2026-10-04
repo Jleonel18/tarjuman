@@ -67,5 +67,14 @@
   "conversations.untitled": "Conversación sin título",
   "conversations.delete": "Eliminar conversación: {title}",
   "conversations.delete_confirm": "¿Eliminar \"{title}\" y todos sus mensajes? No se puede deshacer.",
-  "conversations.delete_yes": "Sí, eliminar"
+  "conversations.delete_yes": "Sí, eliminar",
+  "chat.label": "Chat",
+  "chat.you": "Tú",
+  "chat.assistant": "Tarjuman",
+  "chat.composer.label": "Mensaje",
+  "chat.send": "Enviar",
+  "chat.empty": "Pregunta lo que quieras sobre el idioma que aprendes.",
+  "chat.key_hint": "Clave: {hint}",
+  "chat.interrupted": "Esta respuesta se interrumpió y puede estar incompleta.",
+  "chat.open_key_settings": "Abrir ajustes de la clave"
 }

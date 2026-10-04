@@ -163,3 +163,73 @@ body {
   align-items: flex-start;
   text-align: start;
 }
+
+/* Chat. */
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.chat__log {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.bubble {
+  max-inline-size: 85%;
+  padding-block: var(--space-2);
+  padding-inline: var(--space-3);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  overflow-wrap: anywhere;
+}
+
+.bubble--user {
+  align-self: flex-end;
+  background: color-mix(in srgb, currentColor 16%, transparent);
+}
+
+.bubble--assistant {
+  align-self: flex-start;
+}
+
+.bubble--refused {
+  border-inline-start: 4px solid currentColor;
+}
+
+.bubble__text,
+.bubble__note {
+  margin: 0;
+}
+
+.safe-blocks pre {
+  overflow-x: auto;
+  padding: var(--space-2);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.safe-blocks table {
+  border-collapse: collapse;
+}
+
+.safe-blocks th,
+.safe-blocks td {
+  padding-block: var(--space-1);
+  padding-inline: var(--space-2);
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  text-align: start;
+}
+
+.composer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-2);
+  align-items: end;
+}
+
+.composer__label {
+  grid-column: 1 / -1;
+}

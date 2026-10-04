@@ -67,5 +67,14 @@
   "conversations.untitled": "Untitled conversation",
   "conversations.delete": "Delete conversation: {title}",
   "conversations.delete_confirm": "Delete \"{title}\" and all its messages? This can't be undone.",
-  "conversations.delete_yes": "Yes, delete"
+  "conversations.delete_yes": "Yes, delete",
+  "chat.label": "Chat",
+  "chat.you": "You",
+  "chat.assistant": "Tarjuman",
+  "chat.composer.label": "Message",
+  "chat.send": "Send",
+  "chat.empty": "Ask anything about the language you're learning.",
+  "chat.key_hint": "Key: {hint}",
+  "chat.interrupted": "This answer was interrupted and may be incomplete.",
+  "chat.open_key_settings": "Open key settings"
 }
