@@ -15,5 +15,14 @@
   "common.language.mediation": "Explanation language",
   "common.language.target": "Language I'm learning",
   "common.itemCount": "{count, plural, =0 {No items} one {# item} other {# items}}",
-  "common.greeting": "Hello, {name}"
+  "common.greeting": "Hello, {name}",
+  "error.provider.invalid_credential": "This API key isn't valid. Check that you copied it completely, or enter a different one in the key settings.",
+  "error.provider.permission_denied": "This API key doesn't have permission to use this model. Check its permissions with your provider, or enter a different key in the key settings.",
+  "error.provider.quota_exhausted": "Your provider says this key has no credit or quota left. Add credit with your provider, or enter a different key in the key settings.",
+  "error.provider.rate_limited": "You're sending requests too fast. Wait a little and try again.",
+  "error.provider.rate_limited_wait": "You're sending requests too fast. Wait {seconds, plural, one {# second} other {# seconds}} and try again.",
+  "error.provider.overloaded": "The AI service is very busy right now. Try again in a moment.",
+  "error.provider.network": "Couldn't reach the AI service. Check your connection and try again.",
+  "error.provider.bad_request": "The AI service couldn't process this request. Try rewording your message.",
+  "error.provider.unknown": "Something went wrong while talking to the AI service. Try again."
 }
