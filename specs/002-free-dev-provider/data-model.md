@@ -7,7 +7,7 @@ below is either configuration or metadata attached to test artifacts.
 
 | Field | Type | Default | Rule |
 |---|---|---|---|
-| `baseUrl` | string (absolute http(s) URL, no trailing slash) | `http://localhost:11434` | Validated at construction; invalid → throws a configuration error (no network call). |
+| `baseUrl` | string (absolute http(s) URL) | `http://localhost:11434` | Validated at construction; trailing slashes are trimmed; a non-http(s) or unparsable value → throws a configuration error (no network call). |
 | `fetch` | `typeof fetch` | global `fetch` | Tests inject a stub; never retried. |
 | `diagnose` | `(d: OllamaDiagnostic) => void` | no-op | Receives non-secret diagnostics only (R4). |
 | `defaultModelId` | string | `gemma3:4b` | Used by `validateCredential` to check installation. |
@@ -69,7 +69,7 @@ Returned by `tests/support/live-provider.ts`:
 | `provider` | `ProviderPort` |
 | `secret` | `SecretHandle` (placeholder for Ollama; sealed `TARJUMAN_TEST_KEY` for Anthropic) |
 | `modelId` | string |
-| `provenance` | `FixtureProvenance` (without `recordedAt`, filled at write time) |
+| `provenance` | `FixtureProvenanceDraft` = `FixtureProvenance` without `recordedAt` (filled at write time) |
 
 Selection: `TARJUMAN_PROVIDER` = `ollama` (default) | `anthropic`. `anthropic` without
 `TARJUMAN_TEST_KEY` → exits with a message that names the variable and never prints its value.

@@ -68,10 +68,10 @@ no key or request headers.
    model.
 2. **Given** I run the live guardrail runner against the local model, **When** it finishes, **Then**
    the report shows refusal and acceptance rates and states, in its first lines, that these rates do
-   not satisfy SC-003, which applies to Claude.
+   not satisfy 001 SC-003, which applies to Claude.
 3. **Given** fixtures recorded with the local model, **When** the per-PR fixture suite runs, **Then**
    it passes or fails on the mechanics (verdict parsing, refusal rendering) and never reports them as
-   a Claude result.
+   a Claude result or as evidence for 001 SC-003.
 4. **Given** the local model is unavailable, **When** I run either tool, **Then** it stops with an
    actionable message and writes nothing partial.
 
@@ -105,6 +105,8 @@ development mode receives an answer.
   reported, and shows "unavailable" where it is not. It never invents numbers.
 - The local model has a small context window: context-window usage is shown against that model's
   window, and an oversized request fails with a clear message rather than silently truncating.
+  **Known gap**: Ollama truncates over-long prompts silently and the adapter cannot detect it; this
+  is mitigated by an explicit context-length setting, not met (research R5, plan.md).
 - A small local model ignores the first-line verdict instruction: the existing fail-closed behavior
   of the verdict parser applies, and tests record this as expected non-Claude behavior.
 - The user selects a model name that is not installed locally: the failure names the model and
@@ -146,8 +148,8 @@ development mode receives an answer.
   header to disk, logs, or output.
 - **FR-010**: Fixtures and reports produced with the local provider MUST carry provenance (provider,
   model name, date) and an explicit label that the model is not Claude and that the results prove
-  mechanics only. Fixtures recorded with it MUST NOT be presented as satisfying SC-003.
-- **FR-011**: The system MUST NOT treat results from the local provider as evidence for SC-003 (the
+  mechanics only. Fixtures recorded with it MUST NOT be presented as satisfying 001 SC-003.
+- **FR-011**: The system MUST NOT treat results from the local provider as evidence for 001 SC-003 (the
   refusal and acceptance rates required for Claude). The Anthropic-based check remains open until a
   live Claude run exists, and that gap MUST stay documented.
 - **FR-012**: The project MUST include a written setup guide covering: installing the local runtime,
@@ -173,7 +175,7 @@ development mode receives an answer.
 ### Key Entities
 
 - **Local provider**: a development-only provider. Attributes: identifier, base address of the
-  runtime, list of locally installed model names it can use. It holds no secret.
+  runtime, fixed list of supported model names maintained in the app (FR-014). It holds no secret.
 - **Local model entry**: a model the local provider can use. Attributes: name, display name, context
   window (or unknown), maximum output (or unknown), pricing (always none).
 - **Fixture provenance**: metadata attached to every recorded fixture and live-run report. Attributes:
@@ -199,7 +201,8 @@ development mode receives an answer.
 - **SC-001**: With a local model installed, the owner can go from a clean checkout to a streamed
   answer in the chat in under 30 minutes, using only the written guide.
 - **SC-002**: The fixture recorder and live guardrail runner complete a full run with zero
-  Anthropic keys present, and no output or file produced by them contains any secret.
+  Anthropic keys present, and no output or file produced by them contains any secret. *(Verified
+  when 001 Phase 4 implements T079/T080 — quickstart V4; this feature delivers what they use.)*
 - **SC-003**: 100% of fixtures and live reports produced with the local provider carry the model
   name and the "not Claude, mechanics only" label.
 - **SC-004**: The provider contract suite passes for the local provider with the same test cases as
@@ -210,7 +213,7 @@ development mode receives an answer.
   allowed, model missing), the developer gets a specific diagnostic that the setup guide maps to a
   fix.
 - **SC-007**: Phase 4 of `001-core-foundation` can be completed, including T079 and T080, without
-  buying or requesting an Anthropic key.
+  buying or requesting an Anthropic key. *(Verified at the end of 001 Phase 4.)*
 
 ## Assumptions
 
