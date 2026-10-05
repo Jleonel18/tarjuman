@@ -44,6 +44,21 @@ module.exports = {
       to: { path: "^packages/provider-(anthropic|ollama)/", dependencyTypesNot: NOT_TYPE_ONLY },
     },
     {
+      name: "providers-independent",
+      comment:
+        "Provider adapters never import each other: each stands alone behind ProviderPort (Principle XI).",
+      severity: "error",
+      from: { path: "^packages/provider-anthropic/" },
+      to: { path: "^packages/provider-ollama/|^@tarjuman/provider-ollama(/|$)" },
+    },
+    {
+      name: "providers-independent-reverse",
+      comment: "See providers-independent.",
+      severity: "error",
+      from: { path: "^packages/provider-ollama/" },
+      to: { path: "^packages/provider-anthropic/|^@tarjuman/provider-anthropic(/|$)|@anthropic-ai/sdk" },
+    },
+    {
       name: "provider-ollama-never-unseals",
       comment:
         "The dev-only Ollama adapter sends no credential (002 FR-007), so it must never be able to read a raw secret.",
