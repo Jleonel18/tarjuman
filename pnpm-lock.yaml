@@ -236,6 +236,9 @@ importers:
         specifier: ^5.0.15
         version: 5.0.15(@types/react@19.3.0)(react@19.3.0)(use-sync-external-store@1.7.0(react@19.3.0))
     devDependencies:
+      '@tarjuman/provider-ollama':
+        specifier: workspace:*
+        version: link:../../packages/provider-ollama
       '@tarjuman/testing':
         specifier: workspace:*
         version: link:../../packages/testing
@@ -276,6 +279,16 @@ importers:
       '@anthropic-ai/sdk':
         specifier: ^0.131.0
         version: 0.131.0(zod@4.6.5)
+      '@tarjuman/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@tarjuman/testing':
+        specifier: workspace:*
+        version: link:../testing
+
+  packages/provider-ollama:
+    dependencies:
       '@tarjuman/core':
         specifier: workspace:*
         version: link:../core

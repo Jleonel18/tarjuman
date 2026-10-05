@@ -16,7 +16,7 @@ module.exports = {
       to: {
         // Matches both resolved paths and bare package names: core declares none of these as
         // dependencies, so a violating import is "unresolved" and shows up by package name.
-        path: "^(packages/(capabilities|provider-anthropic|storage-web|ui|testing)|apps)/|^@tarjuman/(capability-.*|provider-anthropic|storage-web|ui|web|testing)(/|$)",
+        path: "^(packages/(capabilities|provider-anthropic|provider-ollama|storage-web|ui|testing)|apps)/|^@tarjuman/(capability-.*|provider-anthropic|provider-ollama|storage-web|ui|web|testing)(/|$)",
       },
     },
     {
@@ -40,8 +40,16 @@ module.exports = {
       comment:
         "A concrete provider is instantiated only in the composition root; everything else sees the ProviderPort type.",
       severity: "error",
-      from: { pathNot: "^(apps/web/src/composition-root\\.ts|apps/[^/]+/tests/|packages/provider-anthropic/|tests/)" },
-      to: { path: "^packages/provider-anthropic/", dependencyTypesNot: NOT_TYPE_ONLY },
+      from: { pathNot: "^(apps/web/src/composition-root\\.ts|apps/[^/]+/tests/|packages/provider-(anthropic|ollama)/|tests/)" },
+      to: { path: "^packages/provider-(anthropic|ollama)/", dependencyTypesNot: NOT_TYPE_ONLY },
+    },
+    {
+      name: "provider-ollama-never-unseals",
+      comment:
+        "The dev-only Ollama adapter sends no credential (002 FR-007), so it must never be able to read a raw secret.",
+      severity: "error",
+      from: { path: "^packages/provider-ollama/" },
+      to: { path: "^packages/core/src/(ports/secret-(store|unseal)|adapter)\\.ts$|^@tarjuman/core/adapter$" },
     },
     {
       name: "credentials-never-touch-provider",

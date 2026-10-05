@@ -17,7 +17,8 @@
     "test:e2e": "playwright test",
     "test:redteam": "vitest run --project adversarial",
     "test:live:guardrails": "TARJUMAN_LIVE=1 vitest run --project guardrails-live",
-    "test:live:redteam": "TARJUMAN_LIVE=1 vitest run --project adversarial-live"
+    "test:live:redteam": "TARJUMAN_LIVE=1 vitest run --project adversarial-live",
+    "test:live:ollama": "TARJUMAN_LIVE=1 vitest run --project provider-live"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
