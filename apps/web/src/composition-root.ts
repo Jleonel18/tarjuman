@@ -39,7 +39,12 @@ export interface AppServices {
   models: { ids: readonly string[]; defaultId: string };
 }
 
-/** Builds the provider. `VITE_PROVIDER=mock` (the e2e build) swaps in the deterministic mock. */
+/**
+ * Builds the provider. `VITE_PROVIDER=mock` (the e2e build) swaps in the deterministic mock.
+ * `VITE_PROVIDER=ollama` swaps in the local Ollama adapter, in the dev server only: the branch is
+ * guarded by `import.meta.env.DEV`, so a production build drops it and never contains the adapter
+ * (specs/002-free-dev-provider, SC-005).
+ */
 async function createProvider(): Promise<{ provider: ProviderPort; modelIds: string[]; defaultModelId: string }> {
   if (import.meta.env.VITE_PROVIDER === "mock") {
     // Subpath import: the package index also exports the contract suite, which needs vitest.
@@ -48,6 +53,20 @@ async function createProvider(): Promise<{ provider: ProviderPort; modelIds: str
       provider: new MockProvider({ latencyMs: 15 }),
       modelIds: MOCK_MODELS.map((model) => model.id),
       defaultModelId: "mock-model",
+    };
+  }
+  if (import.meta.env.DEV && import.meta.env.VITE_PROVIDER === "ollama") {
+    const { DEFAULT_OLLAMA_MODEL_ID, OLLAMA_MODELS, OllamaProvider } = await import("@tarjuman/provider-ollama");
+    const baseUrl = import.meta.env.VITE_OLLAMA_BASE_URL;
+    return {
+      provider: new OllamaProvider({
+        ...(baseUrl ? { baseUrl } : {}),
+        // Developer-only console output, not a user-facing string, so the i18n rule (Principle VIII)
+        // does not apply. It logs the diagnostic object only: no request or message content.
+        diagnose: (d) => console.warn("[tarjuman dev provider]", d.kind, d, "see docs/local-model.md#" + d.kind),
+      }),
+      modelIds: OLLAMA_MODELS.map((model) => model.id),
+      defaultModelId: DEFAULT_OLLAMA_MODEL_ID,
     };
   }
   return {
