@@ -23,6 +23,10 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.63.0",
+    "@tarjuman/core": "workspace:*",
+    "@tarjuman/provider-anthropic": "workspace:*",
+    "@tarjuman/provider-ollama": "workspace:*",
+    "@tarjuman/testing": "workspace:*",
     "@types/node": "^26.6.4",
     "dependency-cruiser": "^18.5.0",
     "eslint": "^10.11.0",

@@ -8,9 +8,11 @@
   "exports": {
     ".": "./src/index.ts",
     "./pseudo-rtl": "./src/pseudo-rtl.ts",
-    "./mock-provider": "./src/mock-provider.ts"
+    "./mock-provider": "./src/mock-provider.ts",
+    "./provenance": "./src/provenance.ts"
   },
   "dependencies": {
-    "@tarjuman/core": "workspace:*"
+    "@tarjuman/core": "workspace:*",
+    "zod": "^4.6.5"
   }
 }
