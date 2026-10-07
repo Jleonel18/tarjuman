@@ -1,4 +1,87 @@
 [
-  { "id": "chatcmpl-synthetic", "object": "chat.completion.chunk", "model": "gemma3:4b", "choices": [{ "index": 0, "delta": { "role": "assistant", "content": "Hola, " }, "finish_reason": null }] },
-  { "id": "chatcmpl-synthetic", "object": "chat.completion.chunk", "model": "gemma3:4b", "choices": [{ "index": 0, "delta": { "role": "assistant", "content": "mun" }, "finish_reason": null }] }
+  {
+    "id": "chatcmpl-274",
+    "object": "chat.completion.chunk",
+    "created": 1791388567,
+    "model": "gemma3:4b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "delta": {
+          "role": "assistant",
+          "content": "¡"
+        },
+        "finish_reason": null
+      }
+    ]
+  },
+  {
+    "id": "chatcmpl-274",
+    "object": "chat.completion.chunk",
+    "created": 1791388567,
+    "model": "gemma3:4b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "delta": {
+          "role": "assistant",
+          "content": "Hola"
+        },
+        "finish_reason": null
+      }
+    ]
+  },
+  {
+    "id": "chatcmpl-274",
+    "object": "chat.completion.chunk",
+    "created": 1791388567,
+    "model": "gemma3:4b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "delta": {
+          "role": "assistant",
+          "content": "!"
+        },
+        "finish_reason": null
+      }
+    ]
+  },
+  {
+    "id": "chatcmpl-274",
+    "object": "chat.completion.chunk",
+    "created": 1791388567,
+    "model": "gemma3:4b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "delta": {
+          "role": "assistant",
+          "content": " 😊"
+        },
+        "finish_reason": null
+      }
+    ]
+  },
+  {
+    "id": "chatcmpl-274",
+    "object": "chat.completion.chunk",
+    "created": 1791388567,
+    "model": "gemma3:4b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "delta": {
+          "role": "assistant",
+          "content": " How"
+        },
+        "finish_reason": null
+      }
+    ]
+  }
 ]

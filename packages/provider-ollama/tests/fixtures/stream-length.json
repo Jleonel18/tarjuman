@@ -1,5 +1,168 @@
 [
-  { "id": "chatcmpl-synthetic", "object": "chat.completion.chunk", "model": "gemma3:4b", "choices": [{ "index": 0, "delta": { "role": "assistant", "content": "Ser describes " }, "finish_reason": null }] },
-  { "id": "chatcmpl-synthetic", "object": "chat.completion.chunk", "model": "gemma3:4b", "choices": [{ "index": 0, "delta": { "role": "assistant", "content": "" }, "finish_reason": "length" }] },
-  { "id": "chatcmpl-synthetic", "object": "chat.completion.chunk", "model": "gemma3:4b", "choices": [], "usage": { "prompt_tokens": 30, "completion_tokens": 32, "total_tokens": 62 } }
+  {
+    "id": "chatcmpl-457",
+    "object": "chat.completion.chunk",
+    "created": 1791388568,
+    "model": "gemma3:4b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "delta": {
+          "role": "assistant",
+          "content": "Okay"
+        },
+        "finish_reason": null
+      }
+    ]
+  },
+  {
+    "id": "chatcmpl-457",
+    "object": "chat.completion.chunk",
+    "created": 1791388568,
+    "model": "gemma3:4b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "delta": {
+          "role": "assistant",
+          "content": ","
+        },
+        "finish_reason": null
+      }
+    ]
+  },
+  {
+    "id": "chatcmpl-457",
+    "object": "chat.completion.chunk",
+    "created": 1791388568,
+    "model": "gemma3:4b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "delta": {
+          "role": "assistant",
+          "content": " let"
+        },
+        "finish_reason": null
+      }
+    ]
+  },
+  {
+    "id": "chatcmpl-457",
+    "object": "chat.completion.chunk",
+    "created": 1791388568,
+    "model": "gemma3:4b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "delta": {
+          "role": "assistant",
+          "content": "'"
+        },
+        "finish_reason": null
+      }
+    ]
+  },
+  {
+    "id": "chatcmpl-457",
+    "object": "chat.completion.chunk",
+    "created": 1791388568,
+    "model": "gemma3:4b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "delta": {
+          "role": "assistant",
+          "content": "s"
+        },
+        "finish_reason": null
+      }
+    ]
+  },
+  {
+    "id": "chatcmpl-457",
+    "object": "chat.completion.chunk",
+    "created": 1791388568,
+    "model": "gemma3:4b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "delta": {
+          "role": "assistant",
+          "content": " tackle"
+        },
+        "finish_reason": null
+      }
+    ]
+  },
+  {
+    "id": "chatcmpl-457",
+    "object": "chat.completion.chunk",
+    "created": 1791388568,
+    "model": "gemma3:4b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "delta": {
+          "role": "assistant",
+          "content": " the"
+        },
+        "finish_reason": null
+      }
+    ]
+  },
+  {
+    "id": "chatcmpl-457",
+    "object": "chat.completion.chunk",
+    "created": 1791388568,
+    "model": "gemma3:4b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "delta": {
+          "role": "assistant",
+          "content": " notoriously"
+        },
+        "finish_reason": null
+      }
+    ]
+  },
+  {
+    "id": "chatcmpl-457",
+    "object": "chat.completion.chunk",
+    "created": 1791388568,
+    "model": "gemma3:4b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [
+      {
+        "index": 0,
+        "delta": {
+          "role": "assistant",
+          "content": ""
+        },
+        "finish_reason": "length"
+      }
+    ]
+  },
+  {
+    "id": "chatcmpl-457",
+    "object": "chat.completion.chunk",
+    "created": 1791388568,
+    "model": "gemma3:4b",
+    "system_fingerprint": "fp_ollama",
+    "choices": [],
+    "usage": {
+      "prompt_tokens": 20,
+      "completion_tokens": 8,
+      "total_tokens": 28
+    }
+  }
 ]

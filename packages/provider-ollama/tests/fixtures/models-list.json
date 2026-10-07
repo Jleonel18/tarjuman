@@ -1,7 +1,23 @@
 {
   "object": "list",
   "data": [
-    { "id": "gemma3:4b", "object": "model", "created": 1759536000, "owned_by": "library" },
-    { "id": "gemma3:1b", "object": "model", "created": 1759536000, "owned_by": "library" }
+    {
+      "id": "gemma3:4b",
+      "object": "model",
+      "created": 1791388489,
+      "owned_by": "library"
+    },
+    {
+      "id": "qwen3.5:latest",
+      "object": "model",
+      "created": 1786123116,
+      "owned_by": "library"
+    },
+    {
+      "id": "qwen3:4b",
+      "object": "model",
+      "created": 1784678826,
+      "owned_by": "library"
+    }
   ]
 }

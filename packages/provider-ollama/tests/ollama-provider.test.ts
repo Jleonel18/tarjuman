@@ -123,12 +123,13 @@ describe("OllamaProvider: stream mapping (synthetic wire fixtures)", () => {
   it("maps the answer fixture to text, one usage, and stop end", async () => {
     const { provider } = setup({ kind: "sse", chunks: streamAnswer });
     const events = await collect(provider.stream(REQUEST, SECRET, new AbortController().signal));
-    expect(events).toEqual([
-      { type: "text", delta: "Hola, " },
-      { type: "text", delta: "mundo." },
-      { type: "usage", inputTokens: 42, outputTokens: 7 },
+    const text = events.flatMap((e) => (e.type === "text" ? [e.delta] : [])).join("");
+    expect(text).toBe("¡Hola! 😊 How can I help you today?");
+    expect(events.slice(-2)).toEqual([
+      { type: "usage", inputTokens: 25, outputTokens: 12 },
       { type: "stop", reason: "end" },
     ]);
+    expect(events.filter((e) => e.type === "usage")).toHaveLength(1);
   });
 
   it("maps finish_reason length to max_tokens", async () => {
@@ -148,13 +149,15 @@ describe("OllamaProvider: stream mapping (synthetic wire fixtures)", () => {
     const withoutUsage = streamAnswer.filter((c) => !("usage" in c));
     const { provider } = setup({ kind: "sse", chunks: withoutUsage });
     const events = await collect(provider.stream(REQUEST, SECRET, new AbortController().signal));
-    expect(events.map((e) => e.type)).toEqual(["text", "text", "stop"]);
+    expect(events.some((e) => e.type === "usage")).toBe(false);
+    expect(events.at(-1)).toEqual({ type: "stop", reason: "end" });
   });
 
   it("handles usage arriving on the same chunk as finish_reason", async () => {
-    const [first, second, finish] = streamAnswer;
+    const textChunks = streamAnswer.slice(0, -2);
+    const finish = streamAnswer.at(-2);
     const merged = { ...finish, usage: { prompt_tokens: 5, completion_tokens: 6, total_tokens: 11 } };
-    const { provider } = setup({ kind: "sse", chunks: [first, second, merged] });
+    const { provider } = setup({ kind: "sse", chunks: [...textChunks, merged] });
     const events = await collect(provider.stream(REQUEST, SECRET, new AbortController().signal));
     expect(events.slice(-2)).toEqual([
       { type: "usage", inputTokens: 5, outputTokens: 6 },

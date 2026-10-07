@@ -211,4 +211,41 @@ the results must be recorded below under "Verification Results".
 
 ## Verification Results
 
-*(To be filled during implementation against a running Ollama, with its version and the date.)*
+Run on **2026-10-07** against **Ollama 0.32.1** (macOS, `gemma3:4b`, 4.3B Q4_K_M), by sending raw
+HTTP requests to `http://localhost:11434` (task T019). `GET /api/ps` reported `context_length: 4096`
+for the loaded model, so `OLLAMA_CONTEXT_LENGTH` was **not** set on this machine, which is the
+default case R5 warns about.
+
+| Item | Result | Status |
+|---|---|---|
+| R3: usage chunk position | A separate chunk with `"choices": []` and `usage {prompt_tokens, completion_tokens, total_tokens}`, arriving **after** the chunk that carries `finish_reason`, then `data: [DONE]`. | Confirmed |
+| R3: `finish_reason` placement | On its own chunk with empty `delta.content` (`""`), not on the last text chunk. Values seen: `"stop"` and `"length"` (with `max_tokens: 8`). The adapter handles both placements anyway. | Confirmed |
+| R3: framing | `content-type: text/event-stream`, one `data: {json}` line per chunk, each chunk has `system_fingerprint: "fp_ollama"`. | Confirmed |
+| R4: missing model | HTTP **404**, `content-type: application/json`, body `{"error":{"message":"model '<id>' not found","type":"not_found_error","param":null,"code":null}}`. The adapter never reads that body, only the status. | Confirmed |
+| R4: overloaded status | Not triggered. Reaching it needs more concurrent requests than `OLLAMA_MAX_QUEUE` (default 512) on a laptop, which is not a reasonable test. The 503 mapping stays as documented. | **Unverified** |
+| R8: `GET /v1/models` | Exists, returns 200 and `{"object":"list","data":[{"id":"gemma3:4b","object":"model","created":...,"owned_by":"library"}, ...]}`. Ids are the pulled tags (`gemma3:4b`, `qwen3:4b`, `qwen3.5:latest`). | Confirmed |
+| R2: system message kept | A system message of about 2 100 tokens (within the context) was kept in full: the model recalled a word defined in it. | Confirmed within the context |
+| R2/R5: prompt larger than the context | **Silent truncation confirmed, and it drops the START of the prompt.** With a system message of about 15 000 tokens and `context_length` 4096, the response was `200` with `prompt_tokens: 2051` and no error or warning. A rule placed at the **start** of the system message was lost (the model answered "Unicorn"); the same rule placed at the **end** was kept ("pineapple"). | Confirmed, see warning |
+
+**Warning for the owner (not a plan contradiction, but it raises the weight of a known gap).** R5
+records silent truncation as a known limitation but not which end Ollama keeps. It keeps the end.
+The adapter puts the security layer **first** in the single system message (R2), so an oversized
+prompt loses the security layer before anything else, with no error. Consequences:
+
+- Guardrail fixtures recorded with a prompt larger than the context would silently run **without**
+  the security layer. They must not be read as evidence about injection defense. `FixtureProvenance`
+  (Phase 4) already labels these runs as non-Claude mechanics-only, but it does not detect this.
+- The setup guide (T026) must tell the developer to set `OLLAMA_CONTEXT_LENGTH=32768`, and say that
+  without it the context is 4 096 here.
+- Possible mitigations, **not implemented**, for the owner to decide: (a) `prompt_tokens` is reported
+  in the usage chunk, so a runner could warn when it is far below a local estimate of the prompt size;
+  (b) order the layers so the security layer is last for this adapter only (changes the layer
+  contract, so it needs a spec decision); (c) accept it as a documented dev-only gap.
+
+**Decision (owner, 2026-10-07): (c) plus (a).** Accept the truncation as a documented dev-only gap:
+T026 (`docs/local-model.md`) must make `OLLAMA_CONTEXT_LENGTH=32768` a required step and explain that
+an oversized prompt silently loses its start, where the security layer sits. When the recorder
+(001 T079) is written, it must warn when the reported `prompt_tokens` is far below a local estimate of
+the prompt size. The layer order is not changed.
+
+The real captures from this run replaced the synthetic fixtures in T020.
