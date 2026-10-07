@@ -1,0 +1,7 @@
+{
+  "object": "list",
+  "data": [
+    { "id": "gemma3:4b", "object": "model", "created": 1759536000, "owned_by": "library" },
+    { "id": "gemma3:1b", "object": "model", "created": 1759536000, "owned_by": "library" }
+  ]
+}

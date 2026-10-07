@@ -161,12 +161,19 @@ export function runProviderContractSuite(
       }
     });
 
-    it("validates a good key as ok and a bad one with a typed code", async () => {
+    it("validates a good key as ok", async () => {
       const h = await makeHarness();
       h.prepare({ kind: "answer", chunks: ["ok"], inputTokens: 1, outputTokens: 1 });
       expect(await h.provider.validateCredential(h.secret)).toEqual({ ok: true });
-      h.prepare({ kind: "fail", code: "invalid_credential" });
-      expect(await h.provider.validateCredential(h.secret)).toEqual({ ok: false, code: "invalid_credential" });
     });
+
+    // A keyless runtime (Ollama) can never answer `invalid_credential`, so it does not list it.
+    if (codes.includes("invalid_credential")) {
+      it("validates a bad key with a typed code", async () => {
+        const h = await makeHarness();
+        h.prepare({ kind: "fail", code: "invalid_credential" });
+        expect(await h.provider.validateCredential(h.secret)).toEqual({ ok: false, code: "invalid_credential" });
+      });
+    }
   });
 }

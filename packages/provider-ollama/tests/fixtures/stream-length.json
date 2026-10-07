@@ -1,0 +1,5 @@
+[
+  { "id": "chatcmpl-synthetic", "object": "chat.completion.chunk", "model": "gemma3:4b", "choices": [{ "index": 0, "delta": { "role": "assistant", "content": "Ser describes " }, "finish_reason": null }] },
+  { "id": "chatcmpl-synthetic", "object": "chat.completion.chunk", "model": "gemma3:4b", "choices": [{ "index": 0, "delta": { "role": "assistant", "content": "" }, "finish_reason": "length" }] },
+  { "id": "chatcmpl-synthetic", "object": "chat.completion.chunk", "model": "gemma3:4b", "choices": [], "usage": { "prompt_tokens": 30, "completion_tokens": 32, "total_tokens": 62 } }
+]
