@@ -135,12 +135,19 @@ Run `pnpm typecheck && pnpm lint && pnpm lint:arch && pnpm test` before declarin
 
 ## Current state
 
-Phases 1 and 2 of 11 are done (T001-T041): tooling, ports and types, encrypted storage, the mock
-provider and contract suite, i18n, and the app shell with its CSP. Phase 3 (User Story 1, the MVP
-chat) is next. The provider spike (T018) was done without a key because the owner has no Anthropic
-key and will not buy one; its results are in `research.md` -> Spike Results, and what it could not
-confirm is listed there as unverified. Do not ask for a key. Test fixtures that imitate the
-provider's wire format are synthetic until a live capture exists, and must say so.
+Phases 1-3 of 11 are done for feature 001: tooling, ports and types, encrypted storage, the mock
+provider and contract suite, i18n, the app shell with its CSP, and User Story 1 (the MVP chat).
+Phase 4 (User Story 2, guardrails) is next.
+
+The provider spike (T018) was done without a key because the owner has no Anthropic key and will
+not buy one; its results are in `research.md` -> Spike Results, and what it could not confirm is
+listed there as unverified. Do not ask for a key. Test fixtures that imitate the provider's wire
+format are synthetic until a live capture exists, and must say so.
+
+Feature 002 (`specs/002-free-dev-provider/`) adds a dev-only Ollama provider so guardrail fixtures
+can be recorded and run without a key. Anthropic is still the only product provider. Results from a
+non-Claude model never count as 001 SC-003 evidence; fixture provenance says which model produced
+them. Setup: [docs/local-model.md](docs/local-model.md).
 
 Gotchas learned so far:
 
@@ -150,3 +157,6 @@ Gotchas learned so far:
 - E2E runs against the production build (`vite build` + `vite preview`) so the real CSP is tested.
 - `i18next` catalogs are flat and dotted (`common.save`); key and namespace separators are off.
 - Do not import across package roots in tests (`tsc -b` would emit stray `.js` files).
+- `VITE_PROVIDER=ollama` is dev-only: it is guarded by `import.meta.env.DEV` and stripped from
+  production builds. Ollama silently drops the start of a prompt larger than its context, where
+  the security layer sits, so `OLLAMA_CONTEXT_LENGTH=32768` is required.

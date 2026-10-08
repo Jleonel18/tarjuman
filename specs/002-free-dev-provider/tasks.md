@@ -126,8 +126,8 @@ pnpm monorepo. All paths are relative to the repository root. The new package mi
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-- [ ] T028 Update `CLAUDE.md` "Current state": feature 002 adds a dev-only Ollama provider; Anthropic is still the only product provider; non-Claude results never count as 001 SC-003 evidence; add a gotcha line on `VITE_PROVIDER=ollama` being dev-only and stripped from production builds
-- [ ] T029 Secret sweep (SC-002): confirm `grep -rE "sk-ant|x-api-key|authorization" packages/provider-ollama packages/testing/fixtures tests/support` finds only test assertions and synthetic constants, never a real value; confirm no file under `packages/provider-ollama` imports `@tarjuman/core/adapter`
+- [X] T028 Update `CLAUDE.md` "Current state": feature 002 adds a dev-only Ollama provider; Anthropic is still the only product provider; non-Claude results never count as 001 SC-003 evidence; add a gotcha line on `VITE_PROVIDER=ollama` being dev-only and stripped from production builds
+- [X] T029 Secret sweep (SC-002): confirm `grep -rE "sk-ant|x-api-key|authorization" packages/provider-ollama packages/testing/fixtures tests/support` finds only test assertions and synthetic constants, never a real value; confirm no file under `packages/provider-ollama` imports `@tarjuman/core/adapter`
 - [ ] T030 Run `pnpm typecheck && pnpm lint && pnpm lint:css && pnpm lint:arch && pnpm test` plus quickstart V1–V3 and V5, and record results (pass/fail, Ollama version, timing for V5) in `specs/002-free-dev-provider/checklists/validation.md`
 
 ---
