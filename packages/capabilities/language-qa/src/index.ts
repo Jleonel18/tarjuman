@@ -1,11 +1,12 @@
-import type { Capability, PromptFragment } from "@tarjuman/core";
+import { loadRules, type Capability, type PromptFragment } from "@tarjuman/core";
 import en from "./i18n/en.json";
 import es from "./i18n/es.json";
+import translationRule from "../rules/translation.pedagogical-only.json";
 
 /**
  * The first capability: answers questions about the language being learned. It adds prompt
- * fragments only. It has no tools and no permissions, and its domain rules arrive with the
- * scope work (US2).
+ * fragments only. It has no tools and no permissions. Its one domain rule keeps translation
+ * pedagogical (FR-028a); the loader rejects an invalid rule at startup.
  *
  * Fragments are English instructions to the model; the answer language comes from the
  * assembler's mediation-language instruction, not from here.
@@ -20,7 +21,7 @@ const languageQa: Capability = {
   contractVersion: "1.0.0",
   tools: [],
   permissions: [],
-  domainRules: [],
+  domainRules: loadRules([translationRule]),
   promptFragments: {
     vocabulary: fragment(
       "Vocabulary: give the meaning, the part of speech, and one or two short example sentences in the target language, each with a translation.",

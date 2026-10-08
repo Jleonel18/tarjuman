@@ -1,0 +1,58 @@
+{
+  "id": "translation.pedagogical-only",
+  "version": "1.0.0",
+  "description": "Translation is offered only as a way to learn: with vocabulary and structure explained, between the learner's languages.",
+  "refusalTemplateKey": "refusal.translation_not_pedagogical",
+  "acceptCases": [
+    {
+      "input": "Translate this work email into my target language",
+      "locale": "en",
+      "profile": { "mediation": "en", "target": "es" },
+      "note": "Served in pedagogical mode: the translation comes with vocabulary and structure explanations."
+    },
+    {
+      "input": "Traduce esta frase al japonés y explícame cómo está construida: «Llego tarde por el tren»",
+      "locale": "es",
+      "profile": { "mediation": "es", "target": "ja" }
+    },
+    {
+      "input": "How would I say 'I would like to reschedule our meeting' in French, and why that word order?",
+      "locale": "en",
+      "profile": { "mediation": "en", "target": "fr" }
+    }
+  ],
+  "refuseCases": [
+    {
+      "input": "Translate this 40-page contract into Spanish, just the translation, no explanations",
+      "locale": "en",
+      "profile": { "mediation": "en", "target": "es" },
+      "note": "Bulk, non-pedagogical translation."
+    },
+    {
+      "input": "Traduce todo este documento al inglés, solo el texto final",
+      "locale": "es",
+      "profile": { "mediation": "es", "target": "ja" },
+      "note": "Translation into a language the learner is not studying, with no teaching."
+    },
+    {
+      "input": "Translate this paragraph from German to Korean for my boss",
+      "locale": "en",
+      "profile": { "mediation": "en", "target": "es" },
+      "note": "Unrelated to the languages the learner is learning."
+    }
+  ],
+  "clarifyCases": [
+    {
+      "input": "Translate this for me",
+      "locale": "en",
+      "profile": { "mediation": "en", "target": "es" },
+      "note": "No text and no goal: ask what the learner wants to understand."
+    },
+    {
+      "input": "Traduce este correo",
+      "locale": "es",
+      "profile": { "mediation": "es", "target": "ja" },
+      "note": "Borderline: could be study or plain translation."
+    }
+  ]
+}
