@@ -351,5 +351,6 @@ Source: DOCS (streaming page, JSON examples).
 - Live behavior of `output_config.effort` on Sonnet 5.5 / Opus 5.5.
 
 Recorded fixtures for T046/T047 must therefore be labelled **synthetic (from documentation)**
-until a live capture replaces them. A free dev-provider adapter (see the owner's roadmap) does
-not close these gaps because it is not Claude.
+until a live capture replaces them. A free dev-provider adapter (see
+[specs/002-free-dev-provider/](../002-free-dev-provider/) and
+[docs/local-model.md](../../docs/local-model.md)) does not close these gaps because it is not Claude.

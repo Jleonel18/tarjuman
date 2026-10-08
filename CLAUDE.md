@@ -102,7 +102,11 @@ pnpm test          # Vitest, all projects
 pnpm test:redteam  # adversarial project only
 pnpm test:e2e      # Playwright
 pnpm --filter @tarjuman/web dev
+VITE_PROVIDER=ollama pnpm --filter @tarjuman/web dev   # dev-only free local model
+pnpm test:live:ollama                                    # live smoke test, needs Ollama running
 ```
+
+Setup for the local model: [docs/local-model.md](docs/local-model.md).
 
 Run `pnpm typecheck && pnpm lint && pnpm lint:arch && pnpm test` before declaring work done.
 
