@@ -172,6 +172,9 @@ importers:
       '@playwright/test':
         specifier: ^1.63.0
         version: 1.63.0
+      '@tarjuman/capability-language-qa':
+        specifier: workspace:*
+        version: link:packages/capabilities/language-qa
       '@tarjuman/core':
         specifier: workspace:*
         version: link:packages/core
@@ -181,6 +184,9 @@ importers:
       '@tarjuman/provider-ollama':
         specifier: workspace:*
         version: link:packages/provider-ollama
+      '@tarjuman/storage-web':
+        specifier: workspace:*
+        version: link:packages/storage-web
       '@tarjuman/testing':
         specifier: workspace:*
         version: link:packages/testing
