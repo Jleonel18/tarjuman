@@ -1,0 +1,201 @@
+{
+  "steps": [
+    {
+      "type": "text",
+      "delta": "ACCEPT"
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "Por"
+    },
+    {
+      "type": "text",
+      "delta": " favor"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " env"
+    },
+    {
+      "type": "text",
+      "delta": "í"
+    },
+    {
+      "type": "text",
+      "delta": "ame"
+    },
+    {
+      "type": "text",
+      "delta": " el"
+    },
+    {
+      "type": "text",
+      "delta": " correo"
+    },
+    {
+      "type": "text",
+      "delta": " electrónico"
+    },
+    {
+      "type": "text",
+      "delta": " de"
+    },
+    {
+      "type": "text",
+      "delta": " trabajo"
+    },
+    {
+      "type": "text",
+      "delta": " que"
+    },
+    {
+      "type": "text",
+      "delta": " deseas"
+    },
+    {
+      "type": "text",
+      "delta": " traducir"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": " Una"
+    },
+    {
+      "type": "text",
+      "delta": " vez"
+    },
+    {
+      "type": "text",
+      "delta": " que"
+    },
+    {
+      "type": "text",
+      "delta": " lo"
+    },
+    {
+      "type": "text",
+      "delta": " rec"
+    },
+    {
+      "type": "text",
+      "delta": "iba"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " te"
+    },
+    {
+      "type": "text",
+      "delta": " proporcion"
+    },
+    {
+      "type": "text",
+      "delta": "aré"
+    },
+    {
+      "type": "text",
+      "delta": " una"
+    },
+    {
+      "type": "text",
+      "delta": " traducción"
+    },
+    {
+      "type": "text",
+      "delta": " al"
+    },
+    {
+      "type": "text",
+      "delta": " español"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " junto"
+    },
+    {
+      "type": "text",
+      "delta": " con"
+    },
+    {
+      "type": "text",
+      "delta": " explic"
+    },
+    {
+      "type": "text",
+      "delta": "aciones"
+    },
+    {
+      "type": "text",
+      "delta": " sobre"
+    },
+    {
+      "type": "text",
+      "delta": " la"
+    },
+    {
+      "type": "text",
+      "delta": " gram"
+    },
+    {
+      "type": "text",
+      "delta": "ática"
+    },
+    {
+      "type": "text",
+      "delta": " y"
+    },
+    {
+      "type": "text",
+      "delta": " el"
+    },
+    {
+      "type": "text",
+      "delta": " vocab"
+    },
+    {
+      "type": "text",
+      "delta": "ulario"
+    },
+    {
+      "type": "text",
+      "delta": " utilizados"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "usage",
+      "inputTokens": 1043,
+      "outputTokens": 48
+    },
+    {
+      "type": "stop",
+      "reason": "end"
+    }
+  ]
+}

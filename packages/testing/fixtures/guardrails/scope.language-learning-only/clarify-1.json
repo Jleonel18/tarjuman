@@ -1,0 +1,97 @@
+{
+  "steps": [
+    {
+      "type": "text",
+      "delta": "CL"
+    },
+    {
+      "type": "text",
+      "delta": "AR"
+    },
+    {
+      "type": "text",
+      "delta": "IFY"
+    },
+    {
+      "type": "text",
+      "delta": ":"
+    },
+    {
+      "type": "text",
+      "delta": " ¿"
+    },
+    {
+      "type": "text",
+      "delta": "Qué"
+    },
+    {
+      "type": "text",
+      "delta": " parte"
+    },
+    {
+      "type": "text",
+      "delta": " específica"
+    },
+    {
+      "type": "text",
+      "delta": " de"
+    },
+    {
+      "type": "text",
+      "delta": " tu"
+    },
+    {
+      "type": "text",
+      "delta": " curr"
+    },
+    {
+      "type": "text",
+      "delta": "ícul"
+    },
+    {
+      "type": "text",
+      "delta": "um"
+    },
+    {
+      "type": "text",
+      "delta": " necesitas"
+    },
+    {
+      "type": "text",
+      "delta": " ayuda"
+    },
+    {
+      "type": "text",
+      "delta": " para"
+    },
+    {
+      "type": "text",
+      "delta": " traducir"
+    },
+    {
+      "type": "text",
+      "delta": " o"
+    },
+    {
+      "type": "text",
+      "delta": " entender"
+    },
+    {
+      "type": "text",
+      "delta": "?"
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "usage",
+      "inputTokens": 1043,
+      "outputTokens": 22
+    },
+    {
+      "type": "stop",
+      "reason": "end"
+    }
+  ]
+}

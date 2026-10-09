@@ -1,0 +1,133 @@
+{
+  "steps": [
+    {
+      "type": "text",
+      "delta": "ASS"
+    },
+    {
+      "type": "text",
+      "delta": "IST"
+    },
+    {
+      "type": "text",
+      "delta": "E"
+    },
+    {
+      "type": "text",
+      "delta": " :"
+    },
+    {
+      "type": "text",
+      "delta": " Je"
+    },
+    {
+      "type": "text",
+      "delta": " peux"
+    },
+    {
+      "type": "text",
+      "delta": " vous"
+    },
+    {
+      "type": "text",
+      "delta": " aider"
+    },
+    {
+      "type": "text",
+      "delta": " à"
+    },
+    {
+      "type": "text",
+      "delta": " comprendre"
+    },
+    {
+      "type": "text",
+      "delta": " et"
+    },
+    {
+      "type": "text",
+      "delta": " à"
+    },
+    {
+      "type": "text",
+      "delta": " améliorer"
+    },
+    {
+      "type": "text",
+      "delta": " votre"
+    },
+    {
+      "type": "text",
+      "delta": " texte"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": " Pour"
+    },
+    {
+      "type": "text",
+      "delta": " commencer"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " pourriez"
+    },
+    {
+      "type": "text",
+      "delta": "-"
+    },
+    {
+      "type": "text",
+      "delta": "vous"
+    },
+    {
+      "type": "text",
+      "delta": " me"
+    },
+    {
+      "type": "text",
+      "delta": " donner"
+    },
+    {
+      "type": "text",
+      "delta": " le"
+    },
+    {
+      "type": "text",
+      "delta": " texte"
+    },
+    {
+      "type": "text",
+      "delta": " en"
+    },
+    {
+      "type": "text",
+      "delta": " question"
+    },
+    {
+      "type": "text",
+      "delta": " ?"
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "usage",
+      "inputTokens": 1059,
+      "outputTokens": 31
+    },
+    {
+      "type": "stop",
+      "reason": "end"
+    }
+  ]
+}

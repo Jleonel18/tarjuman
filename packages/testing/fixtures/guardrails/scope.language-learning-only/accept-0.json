@@ -1,0 +1,553 @@
+{
+  "steps": [
+    {
+      "type": "text",
+      "delta": "APPRO"
+    },
+    {
+      "type": "text",
+      "delta": "VE"
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "ウェブ"
+    },
+    {
+      "type": "text",
+      "delta": "ページ"
+    },
+    {
+      "type": "text",
+      "delta": "は"
+    },
+    {
+      "type": "text",
+      "delta": "日本語"
+    },
+    {
+      "type": "text",
+      "delta": "で"
+    },
+    {
+      "type": "text",
+      "delta": "「"
+    },
+    {
+      "type": "text",
+      "delta": "ウェブ"
+    },
+    {
+      "type": "text",
+      "delta": "サイト"
+    },
+    {
+      "type": "text",
+      "delta": "」"
+    },
+    {
+      "type": "text",
+      "delta": " ("
+    },
+    {
+      "type": "text",
+      "delta": "webs"
+    },
+    {
+      "type": "text",
+      "delta": "aito"
+    },
+    {
+      "type": "text",
+      "delta": ")"
+    },
+    {
+      "type": "text",
+      "delta": " と"
+    },
+    {
+      "type": "text",
+      "delta": "言"
+    },
+    {
+      "type": "text",
+      "delta": "います"
+    },
+    {
+      "type": "text",
+      "delta": "。"
+    },
+    {
+      "type": "text",
+      "delta": "これは"
+    },
+    {
+      "type": "text",
+      "delta": "名"
+    },
+    {
+      "type": "text",
+      "delta": "詞"
+    },
+    {
+      "type": "text",
+      "delta": "の"
+    },
+    {
+      "type": "text",
+      "delta": "形"
+    },
+    {
+      "type": "text",
+      "delta": "です"
+    },
+    {
+      "type": "text",
+      "delta": "。"
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "*"
+    },
+    {
+      "type": "text",
+      "delta": "   "
+    },
+    {
+      "type": "text",
+      "delta": "**"
+    },
+    {
+      "type": "text",
+      "delta": "ウェブ"
+    },
+    {
+      "type": "text",
+      "delta": "サイト"
+    },
+    {
+      "type": "text",
+      "delta": " ("
+    },
+    {
+      "type": "text",
+      "delta": "webs"
+    },
+    {
+      "type": "text",
+      "delta": "aito"
+    },
+    {
+      "type": "text",
+      "delta": ")**"
+    },
+    {
+      "type": "text",
+      "delta": " -"
+    },
+    {
+      "type": "text",
+      "delta": " website"
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "    "
+    },
+    {
+      "type": "text",
+      "delta": "*"
+    },
+    {
+      "type": "text",
+      "delta": "   "
+    },
+    {
+      "type": "text",
+      "delta": "例"
+    },
+    {
+      "type": "text",
+      "delta": "："
+    },
+    {
+      "type": "text",
+      "delta": "この"
+    },
+    {
+      "type": "text",
+      "delta": "ウェブ"
+    },
+    {
+      "type": "text",
+      "delta": "サイト"
+    },
+    {
+      "type": "text",
+      "delta": "は"
+    },
+    {
+      "type": "text",
+      "delta": "とても"
+    },
+    {
+      "type": "text",
+      "delta": "便利"
+    },
+    {
+      "type": "text",
+      "delta": "です"
+    },
+    {
+      "type": "text",
+      "delta": "。("
+    },
+    {
+      "type": "text",
+      "delta": "K"
+    },
+    {
+      "type": "text",
+      "delta": "ono"
+    },
+    {
+      "type": "text",
+      "delta": " webs"
+    },
+    {
+      "type": "text",
+      "delta": "aito"
+    },
+    {
+      "type": "text",
+      "delta": " wa"
+    },
+    {
+      "type": "text",
+      "delta": " tot"
+    },
+    {
+      "type": "text",
+      "delta": "emo"
+    },
+    {
+      "type": "text",
+      "delta": " ben"
+    },
+    {
+      "type": "text",
+      "delta": "ri"
+    },
+    {
+      "type": "text",
+      "delta": " des"
+    },
+    {
+      "type": "text",
+      "delta": "u"
+    },
+    {
+      "type": "text",
+      "delta": ".)"
+    },
+    {
+      "type": "text",
+      "delta": " -"
+    },
+    {
+      "type": "text",
+      "delta": " This"
+    },
+    {
+      "type": "text",
+      "delta": " website"
+    },
+    {
+      "type": "text",
+      "delta": " is"
+    },
+    {
+      "type": "text",
+      "delta": " very"
+    },
+    {
+      "type": "text",
+      "delta": " convenient"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "    "
+    },
+    {
+      "type": "text",
+      "delta": "*"
+    },
+    {
+      "type": "text",
+      "delta": "   "
+    },
+    {
+      "type": "text",
+      "delta": "例"
+    },
+    {
+      "type": "text",
+      "delta": "："
+    },
+    {
+      "type": "text",
+      "delta": "新しい"
+    },
+    {
+      "type": "text",
+      "delta": "ウェブ"
+    },
+    {
+      "type": "text",
+      "delta": "サイト"
+    },
+    {
+      "type": "text",
+      "delta": "を見"
+    },
+    {
+      "type": "text",
+      "delta": "つけ"
+    },
+    {
+      "type": "text",
+      "delta": "ました"
+    },
+    {
+      "type": "text",
+      "delta": "。("
+    },
+    {
+      "type": "text",
+      "delta": "At"
+    },
+    {
+      "type": "text",
+      "delta": "ar"
+    },
+    {
+      "type": "text",
+      "delta": "ash"
+    },
+    {
+      "type": "text",
+      "delta": "ii"
+    },
+    {
+      "type": "text",
+      "delta": " webs"
+    },
+    {
+      "type": "text",
+      "delta": "aito"
+    },
+    {
+      "type": "text",
+      "delta": " o"
+    },
+    {
+      "type": "text",
+      "delta": " m"
+    },
+    {
+      "type": "text",
+      "delta": "its"
+    },
+    {
+      "type": "text",
+      "delta": "um"
+    },
+    {
+      "type": "text",
+      "delta": "em"
+    },
+    {
+      "type": "text",
+      "delta": "ashita"
+    },
+    {
+      "type": "text",
+      "delta": ".)"
+    },
+    {
+      "type": "text",
+      "delta": " -"
+    },
+    {
+      "type": "text",
+      "delta": " I"
+    },
+    {
+      "type": "text",
+      "delta": " found"
+    },
+    {
+      "type": "text",
+      "delta": " a"
+    },
+    {
+      "type": "text",
+      "delta": " new"
+    },
+    {
+      "type": "text",
+      "delta": " website"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "「"
+    },
+    {
+      "type": "text",
+      "delta": "ページ"
+    },
+    {
+      "type": "text",
+      "delta": "」"
+    },
+    {
+      "type": "text",
+      "delta": " ("
+    },
+    {
+      "type": "text",
+      "delta": "e"
+    },
+    {
+      "type": "text",
+      "delta": "ji"
+    },
+    {
+      "type": "text",
+      "delta": ")"
+    },
+    {
+      "type": "text",
+      "delta": " という"
+    },
+    {
+      "type": "text",
+      "delta": "単"
+    },
+    {
+      "type": "text",
+      "delta": "語"
+    },
+    {
+      "type": "text",
+      "delta": "もあります"
+    },
+    {
+      "type": "text",
+      "delta": "が"
+    },
+    {
+      "type": "text",
+      "delta": "、"
+    },
+    {
+      "type": "text",
+      "delta": "ウェブ"
+    },
+    {
+      "type": "text",
+      "delta": "サイト"
+    },
+    {
+      "type": "text",
+      "delta": "全体"
+    },
+    {
+      "type": "text",
+      "delta": "を"
+    },
+    {
+      "type": "text",
+      "delta": "指"
+    },
+    {
+      "type": "text",
+      "delta": "す"
+    },
+    {
+      "type": "text",
+      "delta": "場合は"
+    },
+    {
+      "type": "text",
+      "delta": "「"
+    },
+    {
+      "type": "text",
+      "delta": "ウェブ"
+    },
+    {
+      "type": "text",
+      "delta": "サイト"
+    },
+    {
+      "type": "text",
+      "delta": "」"
+    },
+    {
+      "type": "text",
+      "delta": "を使う"
+    },
+    {
+      "type": "text",
+      "delta": "方が"
+    },
+    {
+      "type": "text",
+      "delta": "一般的"
+    },
+    {
+      "type": "text",
+      "delta": "です"
+    },
+    {
+      "type": "text",
+      "delta": "。"
+    },
+    {
+      "type": "usage",
+      "inputTokens": 1046,
+      "outputTokens": 136
+    },
+    {
+      "type": "stop",
+      "reason": "end"
+    }
+  ]
+}

@@ -15,6 +15,7 @@
     "lint:i18n": "tsx scripts/lint-i18n.ts",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "record:guardrails": "tsx scripts/record-guardrails.ts",
     "test:redteam": "vitest run --project adversarial",
     "test:live:guardrails": "TARJUMAN_LIVE=1 vitest run --project guardrails-live",
     "test:live:redteam": "TARJUMAN_LIVE=1 vitest run --project adversarial-live",

@@ -1,0 +1,181 @@
+{
+  "steps": [
+    {
+      "type": "text",
+      "delta": "REF"
+    },
+    {
+      "type": "text",
+      "delta": "USE"
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "Could"
+    },
+    {
+      "type": "text",
+      "delta": " you"
+    },
+    {
+      "type": "text",
+      "delta": " please"
+    },
+    {
+      "type": "text",
+      "delta": " specify"
+    },
+    {
+      "type": "text",
+      "delta": " which"
+    },
+    {
+      "type": "text",
+      "delta": " aspect"
+    },
+    {
+      "type": "text",
+      "delta": " of"
+    },
+    {
+      "type": "text",
+      "delta": " the"
+    },
+    {
+      "type": "text",
+      "delta": " subjunctive"
+    },
+    {
+      "type": "text",
+      "delta": " you"
+    },
+    {
+      "type": "text",
+      "delta": "’"
+    },
+    {
+      "type": "text",
+      "delta": "d"
+    },
+    {
+      "type": "text",
+      "delta": " like"
+    },
+    {
+      "type": "text",
+      "delta": " to"
+    },
+    {
+      "type": "text",
+      "delta": " understand"
+    },
+    {
+      "type": "text",
+      "delta": " in"
+    },
+    {
+      "type": "text",
+      "delta": " more"
+    },
+    {
+      "type": "text",
+      "delta": " detail"
+    },
+    {
+      "type": "text",
+      "delta": "?"
+    },
+    {
+      "type": "text",
+      "delta": " For"
+    },
+    {
+      "type": "text",
+      "delta": " example"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " are"
+    },
+    {
+      "type": "text",
+      "delta": " you"
+    },
+    {
+      "type": "text",
+      "delta": " interested"
+    },
+    {
+      "type": "text",
+      "delta": " in"
+    },
+    {
+      "type": "text",
+      "delta": " when"
+    },
+    {
+      "type": "text",
+      "delta": " it"
+    },
+    {
+      "type": "text",
+      "delta": "'"
+    },
+    {
+      "type": "text",
+      "delta": "s"
+    },
+    {
+      "type": "text",
+      "delta": " used"
+    },
+    {
+      "type": "text",
+      "delta": " with"
+    },
+    {
+      "type": "text",
+      "delta": " emotions"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " doubts"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " or"
+    },
+    {
+      "type": "text",
+      "delta": " uncertainty"
+    },
+    {
+      "type": "text",
+      "delta": "?"
+    },
+    {
+      "type": "usage",
+      "inputTokens": 1047,
+      "outputTokens": 43
+    },
+    {
+      "type": "stop",
+      "reason": "end"
+    }
+  ]
+}

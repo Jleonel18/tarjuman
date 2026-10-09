@@ -1,0 +1,8 @@
+{
+  "providerId": "ollama",
+  "modelId": "gemma3:4b",
+  "runtimeVersion": "0.32.1",
+  "recordedAt": "2026-10-09",
+  "isClaude": false,
+  "label": "Recorded with a non-Claude model (gemma3:4b). Proves pipeline mechanics only; not evidence for 001 SC-003."
+}

@@ -336,6 +336,9 @@ importers:
       '@tarjuman/core':
         specifier: workspace:*
         version: link:../core
+      '@tarjuman/storage-web':
+        specifier: workspace:*
+        version: link:../storage-web
       zod:
         specifier: ^4.6.5
         version: 4.6.5

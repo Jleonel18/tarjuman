@@ -1,0 +1,285 @@
+{
+  "steps": [
+    {
+      "type": "text",
+      "delta": "REF"
+    },
+    {
+      "type": "text",
+      "delta": "USE"
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "Je"
+    },
+    {
+      "type": "text",
+      "delta": " suis"
+    },
+    {
+      "type": "text",
+      "delta": " dés"
+    },
+    {
+      "type": "text",
+      "delta": "olé"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " Tar"
+    },
+    {
+      "type": "text",
+      "delta": "j"
+    },
+    {
+      "type": "text",
+      "delta": "uman"
+    },
+    {
+      "type": "text",
+      "delta": " aide"
+    },
+    {
+      "type": "text",
+      "delta": " les"
+    },
+    {
+      "type": "text",
+      "delta": " gens"
+    },
+    {
+      "type": "text",
+      "delta": " à"
+    },
+    {
+      "type": "text",
+      "delta": " apprendre"
+    },
+    {
+      "type": "text",
+      "delta": " des"
+    },
+    {
+      "type": "text",
+      "delta": " langues"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " et"
+    },
+    {
+      "type": "text",
+      "delta": " ne"
+    },
+    {
+      "type": "text",
+      "delta": " peut"
+    },
+    {
+      "type": "text",
+      "delta": " pas"
+    },
+    {
+      "type": "text",
+      "delta": " écrire"
+    },
+    {
+      "type": "text",
+      "delta": " de"
+    },
+    {
+      "type": "text",
+      "delta": " scripts"
+    },
+    {
+      "type": "text",
+      "delta": " Python"
+    },
+    {
+      "type": "text",
+      "delta": " ou"
+    },
+    {
+      "type": "text",
+      "delta": " d"
+    },
+    {
+      "type": "text",
+      "delta": "'"
+    },
+    {
+      "type": "text",
+      "delta": "autres"
+    },
+    {
+      "type": "text",
+      "delta": " programmes"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": " Je"
+    },
+    {
+      "type": "text",
+      "delta": " peux"
+    },
+    {
+      "type": "text",
+      "delta": " cependant"
+    },
+    {
+      "type": "text",
+      "delta": " vous"
+    },
+    {
+      "type": "text",
+      "delta": " aider"
+    },
+    {
+      "type": "text",
+      "delta": " à"
+    },
+    {
+      "type": "text",
+      "delta": " apprendre"
+    },
+    {
+      "type": "text",
+      "delta": " comment"
+    },
+    {
+      "type": "text",
+      "delta": " tri"
+    },
+    {
+      "type": "text",
+      "delta": "er"
+    },
+    {
+      "type": "text",
+      "delta": " des"
+    },
+    {
+      "type": "text",
+      "delta": " list"
+    },
+    {
+      "type": "text",
+      "delta": "es"
+    },
+    {
+      "type": "text",
+      "delta": " en"
+    },
+    {
+      "type": "text",
+      "delta": " japonais"
+    },
+    {
+      "type": "text",
+      "delta": " !"
+    },
+    {
+      "type": "text",
+      "delta": " Par"
+    },
+    {
+      "type": "text",
+      "delta": " exemple"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " je"
+    },
+    {
+      "type": "text",
+      "delta": " peux"
+    },
+    {
+      "type": "text",
+      "delta": " vous"
+    },
+    {
+      "type": "text",
+      "delta": " expliquer"
+    },
+    {
+      "type": "text",
+      "delta": " la"
+    },
+    {
+      "type": "text",
+      "delta": " fonction"
+    },
+    {
+      "type": "text",
+      "delta": " `"
+    },
+    {
+      "type": "text",
+      "delta": "sort"
+    },
+    {
+      "type": "text",
+      "delta": "()`"
+    },
+    {
+      "type": "text",
+      "delta": " en"
+    },
+    {
+      "type": "text",
+      "delta": " japonais"
+    },
+    {
+      "type": "text",
+      "delta": " avec"
+    },
+    {
+      "type": "text",
+      "delta": " des"
+    },
+    {
+      "type": "text",
+      "delta": " exemples"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "usage",
+      "inputTokens": 1064,
+      "outputTokens": 69
+    },
+    {
+      "type": "stop",
+      "reason": "end"
+    }
+  ]
+}

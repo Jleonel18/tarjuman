@@ -1,0 +1,93 @@
+{
+  "steps": [
+    {
+      "type": "text",
+      "delta": "CL"
+    },
+    {
+      "type": "text",
+      "delta": "AR"
+    },
+    {
+      "type": "text",
+      "delta": "IFY"
+    },
+    {
+      "type": "text",
+      "delta": ":"
+    },
+    {
+      "type": "text",
+      "delta": " ¿"
+    },
+    {
+      "type": "text",
+      "delta": "Pod"
+    },
+    {
+      "type": "text",
+      "delta": "r"
+    },
+    {
+      "type": "text",
+      "delta": "ías"
+    },
+    {
+      "type": "text",
+      "delta": " proporcion"
+    },
+    {
+      "type": "text",
+      "delta": "arme"
+    },
+    {
+      "type": "text",
+      "delta": " el"
+    },
+    {
+      "type": "text",
+      "delta": " texto"
+    },
+    {
+      "type": "text",
+      "delta": " del"
+    },
+    {
+      "type": "text",
+      "delta": " correo"
+    },
+    {
+      "type": "text",
+      "delta": " electrónico"
+    },
+    {
+      "type": "text",
+      "delta": " que"
+    },
+    {
+      "type": "text",
+      "delta": " quieres"
+    },
+    {
+      "type": "text",
+      "delta": " traducir"
+    },
+    {
+      "type": "text",
+      "delta": "?"
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "usage",
+      "inputTokens": 1039,
+      "outputTokens": 21
+    },
+    {
+      "type": "stop",
+      "reason": "end"
+    }
+  ]
+}

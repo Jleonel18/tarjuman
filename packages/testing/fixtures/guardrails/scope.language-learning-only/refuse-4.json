@@ -1,0 +1,161 @@
+{
+  "steps": [
+    {
+      "type": "text",
+      "delta": "REF"
+    },
+    {
+      "type": "text",
+      "delta": "USE"
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "Tar"
+    },
+    {
+      "type": "text",
+      "delta": "j"
+    },
+    {
+      "type": "text",
+      "delta": "uman"
+    },
+    {
+      "type": "text",
+      "delta": " helps"
+    },
+    {
+      "type": "text",
+      "delta": " people"
+    },
+    {
+      "type": "text",
+      "delta": " learn"
+    },
+    {
+      "type": "text",
+      "delta": " languages"
+    },
+    {
+      "type": "text",
+      "delta": " through"
+    },
+    {
+      "type": "text",
+      "delta": " explanations"
+    },
+    {
+      "type": "text",
+      "delta": " and"
+    },
+    {
+      "type": "text",
+      "delta": " examples"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " and"
+    },
+    {
+      "type": "text",
+      "delta": " does"
+    },
+    {
+      "type": "text",
+      "delta": " nothing"
+    },
+    {
+      "type": "text",
+      "delta": " else"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": " Would"
+    },
+    {
+      "type": "text",
+      "delta": " you"
+    },
+    {
+      "type": "text",
+      "delta": " like"
+    },
+    {
+      "type": "text",
+      "delta": " me"
+    },
+    {
+      "type": "text",
+      "delta": " to"
+    },
+    {
+      "type": "text",
+      "delta": " translate"
+    },
+    {
+      "type": "text",
+      "delta": " a"
+    },
+    {
+      "type": "text",
+      "delta": " sentence"
+    },
+    {
+      "type": "text",
+      "delta": " from"
+    },
+    {
+      "type": "text",
+      "delta": " Arabic"
+    },
+    {
+      "type": "text",
+      "delta": " into"
+    },
+    {
+      "type": "text",
+      "delta": " Japanese"
+    },
+    {
+      "type": "text",
+      "delta": " and"
+    },
+    {
+      "type": "text",
+      "delta": " explain"
+    },
+    {
+      "type": "text",
+      "delta": " its"
+    },
+    {
+      "type": "text",
+      "delta": " structure"
+    },
+    {
+      "type": "text",
+      "delta": "?"
+    },
+    {
+      "type": "usage",
+      "inputTokens": 1057,
+      "outputTokens": 38
+    },
+    {
+      "type": "stop",
+      "reason": "end"
+    }
+  ]
+}

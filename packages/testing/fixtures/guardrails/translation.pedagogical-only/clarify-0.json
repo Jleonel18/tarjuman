@@ -1,0 +1,141 @@
+{
+  "steps": [
+    {
+      "type": "text",
+      "delta": "ACCEPT"
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "Please"
+    },
+    {
+      "type": "text",
+      "delta": " provide"
+    },
+    {
+      "type": "text",
+      "delta": " the"
+    },
+    {
+      "type": "text",
+      "delta": " text"
+    },
+    {
+      "type": "text",
+      "delta": " you"
+    },
+    {
+      "type": "text",
+      "delta": " would"
+    },
+    {
+      "type": "text",
+      "delta": " like"
+    },
+    {
+      "type": "text",
+      "delta": " me"
+    },
+    {
+      "type": "text",
+      "delta": " to"
+    },
+    {
+      "type": "text",
+      "delta": " translate"
+    },
+    {
+      "type": "text",
+      "delta": " into"
+    },
+    {
+      "type": "text",
+      "delta": " Spanish"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": " I"
+    },
+    {
+      "type": "text",
+      "delta": " will"
+    },
+    {
+      "type": "text",
+      "delta": " explain"
+    },
+    {
+      "type": "text",
+      "delta": " the"
+    },
+    {
+      "type": "text",
+      "delta": " translation"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " including"
+    },
+    {
+      "type": "text",
+      "delta": " vocabulary"
+    },
+    {
+      "type": "text",
+      "delta": " and"
+    },
+    {
+      "type": "text",
+      "delta": " grammar"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " to"
+    },
+    {
+      "type": "text",
+      "delta": " help"
+    },
+    {
+      "type": "text",
+      "delta": " you"
+    },
+    {
+      "type": "text",
+      "delta": " learn"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "usage",
+      "inputTokens": 1039,
+      "outputTokens": 33
+    },
+    {
+      "type": "stop",
+      "reason": "end"
+    }
+  ]
+}

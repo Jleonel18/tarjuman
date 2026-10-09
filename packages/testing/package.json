@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@tarjuman/core": "workspace:*",
+    "@tarjuman/storage-web": "workspace:*",
     "zod": "^4.6.5"
   }
 }

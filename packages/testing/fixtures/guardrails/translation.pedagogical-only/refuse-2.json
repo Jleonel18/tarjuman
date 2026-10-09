@@ -1,0 +1,25 @@
+{
+  "steps": [
+    {
+      "type": "text",
+      "delta": "REF"
+    },
+    {
+      "type": "text",
+      "delta": "USE"
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "usage",
+      "inputTokens": 1045,
+      "outputTokens": 4
+    },
+    {
+      "type": "stop",
+      "reason": "end"
+    }
+  ]
+}

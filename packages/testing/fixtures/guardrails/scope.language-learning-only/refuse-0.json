@@ -1,0 +1,97 @@
+{
+  "steps": [
+    {
+      "type": "text",
+      "delta": "REF"
+    },
+    {
+      "type": "text",
+      "delta": "USE"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": " "
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "The"
+    },
+    {
+      "type": "text",
+      "delta": " request"
+    },
+    {
+      "type": "text",
+      "delta": " is"
+    },
+    {
+      "type": "text",
+      "delta": " outside"
+    },
+    {
+      "type": "text",
+      "delta": " scope"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": " Do"
+    },
+    {
+      "type": "text",
+      "delta": " not"
+    },
+    {
+      "type": "text",
+      "delta": " fulfil"
+    },
+    {
+      "type": "text",
+      "delta": " it"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " not"
+    },
+    {
+      "type": "text",
+      "delta": " even"
+    },
+    {
+      "type": "text",
+      "delta": " partly"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "usage",
+      "inputTokens": 1040,
+      "outputTokens": 22
+    },
+    {
+      "type": "stop",
+      "reason": "end"
+    }
+  ]
+}
