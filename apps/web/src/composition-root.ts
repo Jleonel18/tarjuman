@@ -106,7 +106,17 @@ export function assembleServices(options: AssembleOptions): AppServices {
     if (!profile) throw new Error("No profile: onboarding has not been completed.");
     return profile;
   };
-  const pipeline = new Pipeline({ provider, conversations, credentials, capabilities: registry, getProfile });
+  // Refusal templates come from the interface catalogs, which the core cannot import (FR-027).
+  const refusalTemplate = (key: string, locale: string): string | undefined =>
+    i18n.exists(key, { lng: locale }) ? i18n.t(key, { lng: locale }) : undefined;
+  const pipeline = new Pipeline({
+    provider,
+    conversations,
+    credentials,
+    capabilities: registry,
+    getProfile,
+    refusalTemplate,
+  });
   const keys = new KeyManager({
     validator: new ProviderCredentialValidator(provider),
     store: credentials,

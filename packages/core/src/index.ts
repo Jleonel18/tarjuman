@@ -17,6 +17,7 @@ export { CAPABILITY_CONTRACT_VERSION } from "./capabilities/types";
 export { capabilitySchema, domainRuleSchema, permissionSchema } from "./capabilities/schema";
 export { CapabilityRegistry, CapabilityRegistrationError } from "./capabilities/registry";
 export { loadRules, RuleLoadError } from "./guardrails/rule-loader";
+export type { RefusalTemplates } from "./guardrails/refusal";
 
 export * from "./i18n/locales";
 

@@ -34,7 +34,7 @@ const credentials: CredentialStore = {
 };
 
 const HAPPY: Step[] = [
-  { type: "text", delta: "Ser describe " },
+  { type: "text", delta: "ACCEPT\nSer describe " },
   { type: "text", delta: "identidad." },
   { type: "usage", inputTokens: 100, outputTokens: 10 },
   { type: "stop", reason: "end" },
@@ -72,6 +72,7 @@ function makePipeline(script: Step[]) {
     credentials,
     capabilities,
     getProfile: async () => PROFILE,
+    refusalTemplate: () => undefined,
   });
   return { provider, pipeline };
 }
@@ -154,7 +155,7 @@ describe("Pipeline: abort (FR-004)", () => {
   it("yields done(interrupted) and keeps the partial text", async () => {
     const abort = createTestAbort();
     const { pipeline } = makePipeline([
-      { type: "text", delta: "Partial answer" },
+      { type: "text", delta: "ACCEPT\nPartial answer" },
       { type: "wait_for_abort" },
     ]);
 
@@ -185,7 +186,7 @@ describe("Pipeline: abort (FR-004)", () => {
 describe("Pipeline: provider errors", () => {
   it("a network error mid-stream yields done(interrupted) and keeps the partial text", async () => {
     const { pipeline } = makePipeline([
-      { type: "text", delta: "Half an ans" },
+      { type: "text", delta: "ACCEPT\nHalf an ans" },
       { type: "error", code: "network" },
     ]);
     const events = await collect(pipeline.run(turn(), createTestAbort().signal));
@@ -221,7 +222,7 @@ describe("Pipeline: provider errors", () => {
 
   it("never retries after a mid-stream failure either", async () => {
     const { pipeline, provider } = makePipeline([
-      { type: "text", delta: "x" },
+      { type: "text", delta: "ACCEPT\nx" },
       { type: "error", code: "overloaded" },
     ]);
     await collect(pipeline.run(turn(), createTestAbort().signal));
@@ -234,8 +235,8 @@ describe("Pipeline: one terminal event per turn", () => {
     const scripts: Step[][] = [
       HAPPY,
       [{ type: "error", code: "network" }],
-      [{ type: "text", delta: "a" }, { type: "error", code: "unknown" }],
-      [{ type: "text", delta: "a" }, { type: "stop", reason: "max_tokens" }],
+      [{ type: "text", delta: "ACCEPT\na" }, { type: "error", code: "unknown" }],
+      [{ type: "text", delta: "ACCEPT\na" }, { type: "stop", reason: "max_tokens" }],
       [],
     ];
     for (const script of scripts) {

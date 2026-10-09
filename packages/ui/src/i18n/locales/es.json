@@ -77,5 +77,7 @@
   "chat.key_hint": "Clave: {hint}",
   "chat.interrupted": "Esta respuesta se interrumpió y puede estar incompleta.",
   "chat.open_key_settings": "Abrir ajustes de la clave",
-  "app.boot_failed": "Tarjuman no pudo iniciar. Recarga la página. Si sigue pasando, revisa que tu navegador permita a este sitio guardar datos."
+  "app.boot_failed": "Tarjuman no pudo iniciar. Recarga la página. Si sigue pasando, revisa que tu navegador permita a este sitio guardar datos.",
+  "refusal.out_of_scope": "Tarjuman te ayuda a aprender idiomas, así que con eso no puedo ayudarte. Puedo explicarte una palabra, un punto de gramática o cómo decir algo en el idioma que estudias. ¿Qué te gustaría saber?",
+  "refusal.translation_not_pedagogical": "Traduzco para ayudarte a aprender, no para reemplazar tu propia escritura. Pregúntame cómo decir algo en el idioma que estudias y te explico las palabras y la estructura."
 }

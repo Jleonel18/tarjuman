@@ -1,6 +1,7 @@
 {
   "provenance": "synthetic (from documentation)",
   "steps": [
+    { "type": "text", "delta": "ACCEPT\n" },
     { "type": "text", "delta": "Hola! " },
     { "type": "text", "delta": "Ser describes identity; estar describes state." },
     { "type": "usage", "inputTokens": 120, "outputTokens": 24 },

@@ -150,7 +150,7 @@ describe("send", () => {
   it("stop keeps the partial answer, marked interrupted, and retry asks again as a new answer", async () => {
     const slow: MockScript = {
       steps: [
-        { type: "text", delta: "Partial " },
+        { type: "text", delta: "ACCEPT\nPartial " },
         { type: "delay", ms: 5_000 },
         { type: "text", delta: "never shown" },
         { type: "stop", reason: "end" },

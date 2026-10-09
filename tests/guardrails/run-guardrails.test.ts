@@ -36,11 +36,15 @@ import { afterAll, describe, expect, it } from "vitest";
 const ROOT = resolve(import.meta.dirname, "../..");
 const FIXTURES = join(ROOT, "packages/testing/fixtures/guardrails");
 const RULE_DIRS = ["packages/core/rules", "packages/capabilities/language-qa/rules"];
-const CATALOGS = { en: "packages/ui/src/i18n/locales/en.json", es: "packages/ui/src/i18n/locales/es.json" } as const;
+const CATALOGS = {
+  en: "packages/ui/src/i18n/locales/en.json",
+  es: "packages/ui/src/i18n/locales/es.json",
+} as const;
 
 type Kind = "accept" | "refuse" | "clarify";
 interface Rule {
   id: string;
+  version: string;
   refusalTemplateKey: string;
   acceptCases: RuleCase[];
   refuseCases: RuleCase[];
@@ -97,13 +101,16 @@ function casesOf(rule: Rule): Case[] {
 }
 
 const cases = rules.flatMap(casesOf);
-const allRuleIds = rules.map((r) => r.id).sort();
+/** The verdict and the stored message name each rule as `id@version`. */
+const allRuleIds = rules.map((r) => `${r.id}@${r.version}`).sort();
 
 /** Missing or invalid provenance is an error for every case, never a silent default. */
 function provenance(): FixtureProvenance {
   const path = join(FIXTURES, "provenance.json");
   if (!existsSync(path)) {
-    throw new Error("packages/testing/fixtures/guardrails/provenance.json is missing; run `pnpm record:guardrails`.");
+    throw new Error(
+      "packages/testing/fixtures/guardrails/provenance.json is missing; run `pnpm record:guardrails`.",
+    );
   }
   return parseProvenance(readJson(path));
 }
@@ -164,7 +171,9 @@ const outcomes = new Map<string, Outcome>();
 
 async function runCase(c: Case): Promise<Outcome> {
   if (!existsSync(c.fixturePath)) {
-    throw new Error(`Recorded response missing: ${c.fixturePath.slice(ROOT.length + 1)}; run \`pnpm record:guardrails\`.`);
+    throw new Error(
+      `Recorded response missing: ${c.fixturePath.slice(ROOT.length + 1)}; run \`pnpm record:guardrails\`.`,
+    );
   }
   const script = parseFixture(readJson(c.fixturePath));
   const provider = new MockProvider({ scripts: [script] });
@@ -196,7 +205,15 @@ async function runCase(c: Case): Promise<Outcome> {
     createdAt: "2026-10-08T00:00:00.000Z",
     updatedAt: "2026-10-08T00:00:00.000Z",
   };
-  const pipeline = new Pipeline({ provider, conversations, credentials, capabilities, getProfile: async () => profile });
+  const pipeline = new Pipeline({
+    provider,
+    conversations,
+    credentials,
+    capabilities,
+    getProfile: async () => profile,
+    // The app resolves these from its interface catalogs; here they come straight from the files.
+    refusalTemplate: (key, locale) => catalog(locale)[key],
+  });
   const conversation = await conversations.create({
     capabilityId: "language-qa",
     languageSnapshot: { mediation: c.mediation, target: c.target },
@@ -314,7 +331,9 @@ describe("guardrail report", () => {
     if (!record.isClaude) return;
 
     // 100% of refuse cases refused; at least 95% of accept cases answered (SC-003).
-    expect(refuseCases.filter((c) => outcomeOf(c)?.verdict !== "refuse").map((c) => c.name)).toEqual([]);
+    expect(
+      refuseCases.filter((c) => outcomeOf(c)?.verdict !== "refuse").map((c) => c.name),
+    ).toEqual([]);
     const answered = acceptCases.filter((c) => outcomeOf(c)?.verdict === "accept").length;
     expect(answered / acceptCases.length).toBeGreaterThanOrEqual(0.95);
   });

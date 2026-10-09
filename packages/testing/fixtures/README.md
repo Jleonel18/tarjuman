@@ -41,6 +41,6 @@ safe to commit.
 
 Files here:
 
-- `stream-happy.json`: a normal answer with usage.
+- `stream-happy.json`: a normal answer with usage. It starts with an `ACCEPT` verdict line, because the pipeline reads the first line of every answer (a missing verdict is refused).
 - `stream-network-drop.json`: text, then a `network` error mid-stream.
 - `stream-refusal.json`: a provider safety refusal.

@@ -77,5 +77,7 @@
   "chat.key_hint": "Key: {hint}",
   "chat.interrupted": "This answer was interrupted and may be incomplete.",
   "chat.open_key_settings": "Open key settings",
-  "app.boot_failed": "Tarjuman couldn't start. Reload the page. If it keeps happening, check that your browser allows this site to store data."
+  "app.boot_failed": "Tarjuman couldn't start. Reload the page. If it keeps happening, check that your browser allows this site to store data.",
+  "refusal.out_of_scope": "Tarjuman helps you learn languages, so I can't help with that. I can explain a word, a grammar point, or how to say something in the language you're learning. What would you like to know?",
+  "refusal.translation_not_pedagogical": "I translate to help you learn, not to replace your own writing. Ask me how to say something in the language you're learning and I'll explain the words and the structure."
 }

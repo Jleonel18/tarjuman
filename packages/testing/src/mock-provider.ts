@@ -65,6 +65,8 @@ export interface MockProviderOptions {
 
 export const HAPPY_SCRIPT: MockScript = {
   steps: [
+    // The domain-scope layer makes every answer start with a one-word verdict line (US2).
+    { type: "text", delta: "ACCEPT\n" },
     { type: "text", delta: "Hola! " },
     { type: "text", delta: "Ser describes identity; estar describes state." },
     { type: "usage", inputTokens: 120, outputTokens: 24 },
