@@ -2,6 +2,7 @@ import type { CapabilityRegistry, DomainRule, ModelRequest, ProviderPort, Refusa
 import { guardrailCases } from "./guardrail-cases";
 import { runGuardrailCase } from "./guardrail-harness";
 import type { MockScript } from "./mock-provider";
+import { sha256Hex, stableStringify } from "./hash";
 import { FixtureProvenance, FixtureProvenanceDraft } from "./provenance";
 
 /**
@@ -118,17 +119,5 @@ export async function recordedHash(rules: readonly DomainRule[], requests: reado
     rules: [...rules].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)),
     layers: [...layers].sort(),
   });
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(canonical));
-  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-function stableStringify(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(stableStringify).join(",")}]`;
-  if (typeof value === "object" && value !== null) {
-    const entries = Object.entries(value as Record<string, unknown>)
-      .filter(([, v]) => v !== undefined)
-      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
-    return `{${entries.map(([k, v]) => `${JSON.stringify(k)}:${stableStringify(v)}`).join(",")}}`;
-  }
-  return JSON.stringify(value);
+  return sha256Hex(canonical);
 }

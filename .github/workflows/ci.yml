@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # lint:rules compares rule versions with the base branch, so it needs history.
+          fetch-depth: 0
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -24,6 +27,7 @@ jobs:
       - run: pnpm lint:css
       - run: pnpm lint:arch
       - run: pnpm lint:i18n
+      - run: pnpm lint:rules
       - run: pnpm test
       - run: pnpm test:redteam
       - run: pnpm exec playwright install --with-deps

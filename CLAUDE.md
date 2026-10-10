@@ -98,12 +98,15 @@ pnpm lint          # ESLint
 pnpm lint:css      # Stylelint (logical properties)
 pnpm lint:arch     # dependency-cruiser (package boundaries)
 pnpm lint:i18n     # catalog parity (placeholder until T038)
+pnpm lint:rules    # rule versions vs base branch, and recorded guardrail fixtures vs rules and prompts
 pnpm test          # Vitest, all projects
 pnpm test:redteam  # adversarial project only
 pnpm test:e2e      # Playwright
 pnpm --filter @tarjuman/web dev
 VITE_PROVIDER=ollama pnpm --filter @tarjuman/web dev   # dev-only free local model
 pnpm test:live:ollama                                    # live smoke test, needs Ollama running
+pnpm record:guardrails                                   # re-record guardrail fixtures (Ollama by default)
+pnpm test:live:guardrails                                # run guardrail cases against a live model
 ```
 
 Setup for the local model: [docs/local-model.md](docs/local-model.md).
@@ -135,9 +138,11 @@ Run `pnpm typecheck && pnpm lint && pnpm lint:arch && pnpm test` before declarin
 
 ## Current state
 
-Phases 1-3 of 11 are done for feature 001: tooling, ports and types, encrypted storage, the mock
-provider and contract suite, i18n, the app shell with its CSP, and User Story 1 (the MVP chat).
-Phase 4 (User Story 2, guardrails) is next.
+Phases 1-4 of 11 are done for feature 001: tooling, ports and types, encrypted storage, the mock
+provider and contract suite, i18n, the app shell with its CSP, User Story 1 (the MVP chat), and
+User Story 2 (guardrails: scope rules, first-line verdict, refusal in the explanation language,
+recorder and live runner). The guardrail fixtures were recorded with a non-Claude model, so the
+mechanics are verified and SC-003 is not. Phase 5 (User Story 3, injection defense) is next.
 
 The provider spike (T018) was done without a key because the owner has no Anthropic key and will
 not buy one; its results are in `research.md` -> Spike Results, and what it could not confirm is
@@ -157,6 +162,10 @@ Gotchas learned so far:
 - E2E runs against the production build (`vite build` + `vite preview`) so the real CSP is tested.
 - `i18next` catalogs are flat and dotted (`common.save`); key and namespace separators are off.
 - Do not import across package roots in tests (`tsc -b` would emit stray `.js` files).
+- Every model answer must start with a one-word verdict line (`ACCEPT` | `REFUSE` | `CLARIFY`); a
+  missing or malformed one is refused. Mock scripts and fixtures therefore start with `ACCEPT\n`.
+- Changing a rule file needs a `version` bump, and changing a rule or any prompt layer makes
+  `lint:rules` fail until `pnpm record:guardrails` is run again (`.recorded-hash`).
 - `VITE_PROVIDER=ollama` is dev-only: it is guarded by `import.meta.env.DEV` and stripped from
   production builds. Ollama silently drops the start of a prompt larger than its context, where
   the security layer sits, so `OLLAMA_CONTEXT_LENGTH=32768` is required.

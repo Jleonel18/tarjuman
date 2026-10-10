@@ -56,6 +56,11 @@ export interface MockProviderOptions {
   validKeys?: string[];
   /** Pause inserted before every streamed event, in ms. Default 0. */
   latencyMs?: number;
+  /**
+   * Chooses a script from the request. Consulted first; returning `undefined` falls through to
+   * `scripts`, then `defaultScript`. Lets the e2e suite answer by what was asked.
+   */
+  responder?: (req: ModelRequest) => MockScript | undefined;
   /** Scripts consumed one per `stream()` call. When empty, `defaultScript` is used. */
   scripts?: MockScript[];
   defaultScript?: MockScript;
@@ -94,6 +99,7 @@ export class MockProvider implements ProviderPort {
   readonly #validKeys: Set<string>;
   readonly #queue: MockScript[];
   readonly #latencyMs: number;
+  readonly #responder: ((req: ModelRequest) => MockScript | undefined) | undefined;
   #defaultScript: MockScript;
   #validationFailure: ProviderErrorCode | undefined;
 
@@ -102,6 +108,7 @@ export class MockProvider implements ProviderPort {
     this.#validKeys = new Set(options.validKeys ?? [DEFAULT_MOCK_KEY]);
     this.#queue = [...(options.scripts ?? [])];
     this.#latencyMs = options.latencyMs ?? 0;
+    this.#responder = options.responder;
     this.#defaultScript = options.defaultScript ?? HAPPY_SCRIPT;
     this.#validationFailure = options.validationFailure;
   }
@@ -147,7 +154,7 @@ export class MockProvider implements ProviderPort {
       return;
     }
 
-    const script = this.#queue.shift() ?? this.#defaultScript;
+    const script = this.#responder?.(req) ?? this.#queue.shift() ?? this.#defaultScript;
     for (const step of script.steps) {
       if (signal.aborted) {
         yield { type: "stop", reason: "aborted" };
@@ -168,6 +175,43 @@ export class MockProvider implements ProviderPort {
       if (step.type === "error") return;
     }
   }
+}
+
+const reply = (text: string): MockScript => ({
+  steps: [
+    { type: "text", delta: text },
+    { type: "usage", inputTokens: 120, outputTokens: 24 },
+    { type: "stop", reason: "end" },
+  ],
+});
+
+/**
+ * A responder that answers the way a model following the domain-scope layer would, for a few
+ * fixed requests used by the e2e suite (US2). It is a keyword test double, not a classifier.
+ * Anything it does not recognize gets the default answer. It reads only the latest user message.
+ */
+export function scopeAwareResponder(req: ModelRequest): MockScript | undefined {
+  const asked = [...req.messages].reverse().find((m) => m.role === "user")?.content ?? "";
+  if (/\bhtml\b[\s\S]*\bapp\b|coding assistant/i.test(asked)) return reply("REFUSE\n");
+  if (/web page/i.test(asked)) {
+    return reply("ACCEPT\nIn Japanese, \"web page\" is **ウェブページ** (webu pēji), a loanword written in katakana.");
+  }
+  if (/translate this work email/i.test(asked)) {
+    return reply(
+      [
+        "ACCEPT",
+        "Here is a study translation, with the reasoning behind it.",
+        "",
+        "## Vocabulary",
+        "- *reunión*: meeting",
+        "- *adjunto*: attached",
+        "",
+        "## Structure",
+        "- The verb comes right after the subject, and the greeting is a separate short sentence.",
+      ].join("\n"),
+    );
+  }
+  return undefined;
 }
 
 /** Resolves true if aborted before the timer fired. */

@@ -48,9 +48,9 @@ export interface AppServices {
 async function createProvider(): Promise<{ provider: ProviderPort; modelIds: string[]; defaultModelId: string }> {
   if (import.meta.env.VITE_PROVIDER === "mock") {
     // Subpath import: the package index also exports the contract suite, which needs vitest.
-    const { MockProvider, MOCK_MODELS } = await import("@tarjuman/testing/mock-provider");
+    const { MockProvider, MOCK_MODELS, scopeAwareResponder } = await import("@tarjuman/testing/mock-provider");
     return {
-      provider: new MockProvider({ latencyMs: 15 }),
+      provider: new MockProvider({ latencyMs: 15, responder: scopeAwareResponder }),
       modelIds: MOCK_MODELS.map((model) => model.id),
       defaultModelId: "mock-model",
     };
