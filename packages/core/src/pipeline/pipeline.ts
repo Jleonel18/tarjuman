@@ -1,6 +1,6 @@
 import type { CapabilityRegistry } from "../capabilities/registry";
 import type { ConversationService, FinishDetails } from "../conversation/service";
-import type { Segment, Verdict } from "../conversation/types";
+import type { Verdict } from "../conversation/types";
 import { CORE_RULES } from "../guardrails/core-rules";
 import { resolveRefusal, shippedLocaleOf, type RefusalTemplates } from "../guardrails/refusal";
 import { renderScopeLayer, ruleKey } from "../guardrails/scope-layer";
@@ -10,6 +10,7 @@ import type { AbortSignalLike } from "../ports/provider";
 import type { CredentialStore } from "../ports/storage";
 import type { LearnerProfile } from "../profile/types";
 import { ContextAssembler } from "./context-assembler";
+import { guardInput } from "./input-guard";
 import { OutputGuard } from "./output-guard";
 import type { Pipeline as PipelineContract, TurnEvent, TurnInput } from "./types";
 
@@ -31,8 +32,8 @@ export interface PipelineDeps {
  *
  * Stage order is fixed here, not configurable and not injectable:
  * InputGuard → ContextAssembler → ModelCall → OutputGuard → Metrics.
- * InputGuard and Metrics are identity stages for now; they get their behavior in US3 and US4
- * without changing the order or the count. The OutputGuard also reads the first-line verdict
+ * Metrics is an identity stage for now; it gets its behavior in US4 without changing the order or
+ * the count. The OutputGuard also reads the first-line verdict
  * (ACCEPT | REFUSE | CLARIFY): a refusal replaces the model's text, and a missing verdict fails
  * closed to a refusal.
  */
@@ -61,11 +62,10 @@ export class Pipeline implements PipelineContract {
     }
     const profile = await this.#deps.getProfile();
 
-    // Stage 1: InputGuard (identity for now).
-    const segments: Segment[] = [
-      { trust: "user", text: turn.userText },
-      ...(turn.untrustedMaterial ?? []).map((m): Segment => ({ trust: "untrusted", text: m.text })),
-    ];
+    // Stage 1: InputGuard. Key-shaped text is withheld from the model and from storage; only the
+    // guarded text goes any further.
+    const guarded = guardInput(turn);
+    if (guarded.keyShapeDetected) yield { type: "guard_warning", code: "key_shape_detected" };
 
     // Stage 2: ContextAssembler. The scope layer holds every loaded rule: the core's, then the
     // capability's. The verdict names all of them, because the one-word verdict line cannot say
@@ -78,7 +78,7 @@ export class Pipeline implements PipelineContract {
       capability,
       domainScope: renderScopeLayer(rules, { mediationLanguage: profile.mediationLanguage, mediationHasCatalog }),
       history: opened.messages,
-      turn: { userText: turn.userText, untrustedMaterial: turn.untrustedMaterial },
+      turn: { userText: guarded.userText, untrustedMaterial: guarded.untrustedMaterial },
     });
     const model = this.#deps.provider.listModels().find((m) => m.id === profile.modelId);
     const request: ModelRequest = {
@@ -89,7 +89,7 @@ export class Pipeline implements PipelineContract {
       ...effortFor(model, profile.configuredEffort),
     };
 
-    await conversations.addUserMessage(turn.conversationId, segments);
+    await conversations.addUserMessage(turn.conversationId, guarded.segments);
     const reply = await conversations.beginAssistantMessage(turn.conversationId);
     let finished = false;
     const finish = async (status: "complete" | "interrupted" | "refused", details: FinishDetails = {}) => {
