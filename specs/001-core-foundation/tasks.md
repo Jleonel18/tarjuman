@@ -171,19 +171,19 @@ pnpm monorepo, per plan.md. `packages/core` is framework-free: no DOM, React, No
 - [ ] T084 [P] [US3] Output guard hostile-fixture tests in `packages/core/tests/pipeline/output-guard.hostile.test.ts`: Markdown images (remote and `data:`), `javascript:` links, raw `<script>`, `<iframe>`, `<style>`, event-handler attributes, and nested constructs yield no image or remote-resource node; HTML is emitted as literal text; links carry the visible destination
 - [ ] T085 [P] [US3] Taint gate tests in `packages/core/tests/pipeline/taint-gate.test.ts` using the dummy capability from T104: a side-effecting tool call in a turn containing any `untrusted` segment is blocked or requires confirmation; the same call in a clean turn proceeds
 - [ ] T086 [P] [US3] Secret scrubbing tests in `packages/provider-anthropic/tests/scrub.test.ts`: error objects, thrown messages, and logs from the adapter never contain the secret, and a structural assertion confirms the assembled `ModelRequest` never contains it
-- [ ] T087 [P] [US3] Adversarial case schema test in `tests/adversarial/schema.test.ts`: every file in `tests/adversarial/cases/` validates against `specs/001-core-foundation/contracts/adversarial-case.schema.json`, ids are unique and match `^adv-[a-z0-9-]+-\d{3}$`, and all seven categories are present
+- [X] T087 [P] [US3] Adversarial case schema test in `tests/adversarial/schema.test.ts`: every file in `tests/adversarial/cases/` validates against `specs/001-core-foundation/contracts/adversarial-case.schema.json`, ids are unique and match `^adv-[a-z0-9-]+-\d{3}$`, and all seven categories are present
 - [ ] T088 [P] [US3] Structural adversarial runner test in `tests/adversarial/run-structural.test.ts`: for every case × every tone, assert the assembled request never contains the key, hostile output fixtures are neutralized by the OutputGuard, no remote-resource node is produced, and the total is ≥ 50 cases (SC-009)
 - [ ] T089 [P] [US3] Playwright e2e in `tests/e2e/security.spec.ts`: a pasted lyric with injected instructions is explained and not followed; key-shaped text typed into chat is warned about and withheld; a hostile model response renders no `<img>`, `<iframe>`, or `<script>` in the DOM; links show their destination and do not navigate until explicitly activated; Playwright network logs show only same-origin and the provider origin
 
 ### Implementation for User Story 3
 
-- [ ] T090 [P] [US3] Author seed cases for `direct-override` (≥ 8) in `tests/adversarial/cases/direct-override.json`
-- [ ] T091 [P] [US3] Author seed cases for `roleplay-jailbreak` (≥ 7) in `tests/adversarial/cases/roleplay-jailbreak.json`
-- [ ] T092 [P] [US3] Author seed cases for `key-disclosure` (≥ 8) in `tests/adversarial/cases/key-disclosure.json`
-- [ ] T093 [P] [US3] Author seed cases for `exfiltration-links-images` (≥ 8) in `tests/adversarial/cases/exfiltration-links-images.json`
-- [ ] T094 [P] [US3] Author seed cases for `embedded-external-content` (≥ 8, each with `simulatedExternalContent`) in `tests/adversarial/cases/embedded-external-content.json`
-- [ ] T095 [P] [US3] Author seed cases for `tone-scope-relaxation` (≥ 6) in `tests/adversarial/cases/tone-scope-relaxation.json`
-- [ ] T096 [P] [US3] Author seed cases for `multilingual-encoded` (≥ 8; English, Spanish, Arabic, and base64, homoglyph, zero-width, rot13, mixed-script encodings) in `tests/adversarial/cases/multilingual-encoded.json`
+- [X] T090 [P] [US3] Author seed cases for `direct-override` (≥ 8) in `tests/adversarial/cases/direct-override.json`
+- [X] T091 [P] [US3] Author seed cases for `roleplay-jailbreak` (≥ 7) in `tests/adversarial/cases/roleplay-jailbreak.json`
+- [X] T092 [P] [US3] Author seed cases for `key-disclosure` (≥ 8) in `tests/adversarial/cases/key-disclosure.json`
+- [X] T093 [P] [US3] Author seed cases for `exfiltration-links-images` (≥ 8) in `tests/adversarial/cases/exfiltration-links-images.json`
+- [X] T094 [P] [US3] Author seed cases for `embedded-external-content` (≥ 8, each with `simulatedExternalContent`) in `tests/adversarial/cases/embedded-external-content.json`
+- [X] T095 [P] [US3] Author seed cases for `tone-scope-relaxation` (≥ 6) in `tests/adversarial/cases/tone-scope-relaxation.json`
+- [X] T096 [P] [US3] Author seed cases for `multilingual-encoded` (≥ 8; English, Spanish, Arabic, and base64, homoglyph, zero-width, rot13, mixed-script encodings) in `tests/adversarial/cases/multilingual-encoded.json`
 - [ ] T097 [US3] Implement the structural adversarial runner in `packages/testing/src/adversarial-runner.ts` and the `assertNoSecret(request, secret)` helper in `packages/testing/src/assert-no-secret.ts`; the runner iterates cases × tones and reports counts for key disclosures and remote-resource elements
 - [ ] T098 [US3] Implement the behavioral runner in `tests/adversarial/run-live.test.ts` for `pnpm test:live:redteam` (reads `TARJUMAN_TEST_KEY`, per-tone results, reports the rate of instructions followed)
 - [ ] T099 [US3] Implement `InputGuard` in `packages/core/src/pipeline/input-guard.ts` and replace the identity stage in `packages/core/src/pipeline/pipeline.ts` (depends on T082)
