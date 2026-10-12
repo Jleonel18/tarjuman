@@ -8,10 +8,12 @@ import type {
   StreamEvent,
   ValidationResult,
 } from "@tarjuman/core";
+import { unsealSecret } from "@tarjuman/core/adapter";
 import type { MessageCreateParamsStreaming } from "@anthropic-ai/sdk/resources/messages";
 import { createClient, type AnthropicProviderOptions } from "./client";
 import { mapProviderError } from "./errors";
 import { ANTHROPIC_MODELS } from "./models";
+import { SecretStreamFilter } from "./scrub";
 import { validateCredential } from "./validate-credential";
 
 const STOP_REASONS: Record<string, StopReason> = {
@@ -64,6 +66,9 @@ export class AnthropicProvider implements ProviderPort {
     // Latest value wins for every field; nothing is summed (research R4).
     const usage: Usage = { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0 };
     let stopReason: StopReason | undefined;
+    // Defense in depth: the key is never in the prompt, but if it ever came back in the text it
+    // would be redacted before it reaches the UI or storage.
+    const filter = new SecretStreamFilter(unsealSecret(secret));
 
     try {
       const events = await createClient(secret, this.#options).messages.create(toParams(req), {
@@ -73,7 +78,8 @@ export class AnthropicProvider implements ProviderPort {
         if (event.type === "message_start") {
           mergeUsage(usage, event.message.usage);
         } else if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-          yield { type: "text", delta: event.delta.text };
+          const safe = filter.push(event.delta.text);
+          if (safe !== "") yield { type: "text", delta: safe };
         } else if (event.type === "message_delta") {
           mergeUsage(usage, event.usage);
           const reason = event.delta.stop_reason;
@@ -81,6 +87,8 @@ export class AnthropicProvider implements ProviderPort {
         }
       }
     } catch (error) {
+      const rest = filter.flush();
+      if (rest !== "") yield { type: "text", delta: rest };
       if (signal.aborted) {
         yield { type: "stop", reason: "aborted" };
       } else {
@@ -90,6 +98,9 @@ export class AnthropicProvider implements ProviderPort {
     } finally {
       signal.removeEventListener("abort", onAbort);
     }
+
+    const rest = filter.flush();
+    if (rest !== "") yield { type: "text", delta: rest };
 
     if (signal.aborted) {
       yield { type: "stop", reason: "aborted" };
