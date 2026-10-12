@@ -38,6 +38,8 @@ export type {
 export { ContextAssembler } from "./pipeline/context-assembler";
 export type { AssembleInput, AssembledContext } from "./pipeline/context-assembler";
 export { renderSafeBlocks, OutputGuard } from "./pipeline/output-guard";
+export { checkTaint } from "./pipeline/taint-gate";
+export type { TaintCheck, TaintDecision } from "./pipeline/taint-gate";
 export { ProviderCredentialValidator } from "./pipeline/credential-validation";
 export type { CredentialValidator } from "./pipeline/credential-validation";
 // Explicitly exported, so this class takes the place of the `Pipeline` interface in `types.ts`.
