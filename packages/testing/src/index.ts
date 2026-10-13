@@ -6,3 +6,5 @@ export * from "./guardrail-cases";
 export * from "./guardrail-harness";
 export * from "./record-fixtures";
 export * from "./hash";
+export * from "./assert-no-secret";
+export * from "./adversarial-runner";

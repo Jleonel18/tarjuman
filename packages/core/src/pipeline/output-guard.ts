@@ -1,5 +1,7 @@
 import MarkdownIt from "markdown-it";
 import type { Token } from "markdown-it";
+import type { Segment } from "../conversation/types";
+import { checkTaint, type TaintCheck, type TaintDecision } from "./taint-gate";
 import type { SafeBlock, SafeInline } from "./types";
 
 // `html: false` makes raw HTML in model output ordinary text. Linkify is off so nothing becomes
@@ -21,6 +23,15 @@ export function renderSafeBlocks(markdown: string): SafeBlock[] {
  */
 export class OutputGuard {
   #text = "";
+
+  /**
+   * Every tool call is judged here before it runs (FR-010): a side-effecting tool in a turn that
+   * contains untrusted content waits for the learner. The pipeline has no tool-call path yet;
+   * the permission broker and the call itself arrive with the capability work (US8, T145-T146).
+   */
+  checkToolCall(tool: TaintCheck["tool"], turnSegments: readonly Segment[], userConfirmed?: boolean): TaintDecision {
+    return checkTaint({ tool, segments: turnSegments, userConfirmed });
+  }
 
   push(delta: string): SafeBlock[] {
     this.#text += delta;

@@ -12,10 +12,10 @@ import {
   type SecretHandle,
   type StreamEvent,
   type TurnEvent,
+  type UntrustedMaterial,
   type Verdict,
 } from "@tarjuman/core";
 import { MemoryStorage } from "@tarjuman/storage-web";
-import type { GuardrailCase } from "./guardrail-cases";
 import type { MockStep } from "./mock-provider";
 
 export interface HarnessDeps {
@@ -26,6 +26,17 @@ export interface HarnessDeps {
   capabilities: CapabilityRegistry;
   capabilityId: string;
   refusalTemplate: RefusalTemplates;
+}
+
+/** What one turn needs. A `GuardrailCase` satisfies it; the adversarial runner adds the extras. */
+export interface TurnCase {
+  input: string;
+  mediation: string;
+  target: string;
+  /** Pasted or external material, sent as untrusted data next to the input. */
+  untrustedMaterial?: UntrustedMaterial[] | undefined;
+  /** Defaults to `neutral`. */
+  toneId?: string | undefined;
 }
 
 export interface GuardrailRun {
@@ -46,7 +57,7 @@ export interface GuardrailRun {
  * between the recorder, the live runner and the per-PR suite, so all three exercise the same
  * code. No retries: a case is one provider call.
  */
-export async function runGuardrailCase(c: GuardrailCase, deps: HarnessDeps): Promise<GuardrailRun> {
+export async function runGuardrailCase(c: TurnCase, deps: HarnessDeps): Promise<GuardrailRun> {
   const capturing = new CapturingProvider(deps.provider);
   let tick = 0;
   const conversations = new ConversationService({
@@ -67,7 +78,7 @@ export async function runGuardrailCase(c: GuardrailCase, deps: HarnessDeps): Pro
     targetLanguage: c.target,
     level: "B1",
     interests: [],
-    toneId: "neutral",
+    toneId: c.toneId ?? "neutral",
     configuredEffort: "medium",
     modelId: deps.modelId,
     createdAt: "2026-01-01T00:00:00.000Z",
@@ -89,7 +100,12 @@ export async function runGuardrailCase(c: GuardrailCase, deps: HarnessDeps): Pro
   const events: TurnEvent[] = [];
   const controller = new AbortController();
   for await (const event of pipeline.run(
-    { conversationId: conversation.id, capabilityId: deps.capabilityId, userText: c.input },
+    {
+      conversationId: conversation.id,
+      capabilityId: deps.capabilityId,
+      userText: c.input,
+      ...(c.untrustedMaterial && { untrustedMaterial: c.untrustedMaterial }),
+    },
     controller.signal,
   )) {
     events.push(event);

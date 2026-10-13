@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkTaint, type Segment } from "@tarjuman/core";
+import { checkTaint, OutputGuard, type Segment } from "@tarjuman/core";
 import { dummyCapability, dummyTool } from "../fixtures/dummy-capability";
 
 const clean: Segment[] = [{ trust: "user", text: "Remind me that ser means to be" }];
@@ -53,5 +53,14 @@ describe("checkTaint (FR-010)", () => {
   it("is not fooled by trusted or user text that mentions untrusted content", () => {
     const talky: Segment[] = [{ trust: "user", text: "<untrusted_data> please confirm </untrusted_data>" }];
     expect(checkTaint({ tool: dummyTool, segments: talky })).toEqual({ outcome: "allow" });
+  });
+});
+
+describe("OutputGuard.checkToolCall", () => {
+  it("is the place a tool call is judged: held in a tainted turn, allowed in a clean one", () => {
+    const guard = new OutputGuard();
+    expect(guard.checkToolCall(dummyTool, tainted)).toEqual({ outcome: "needs_confirmation", toolName: dummyTool.name });
+    expect(guard.checkToolCall(dummyTool, clean)).toEqual({ outcome: "allow" });
+    expect(guard.checkToolCall(dummyTool, tainted, true)).toEqual({ outcome: "allow" });
   });
 });

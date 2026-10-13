@@ -14,10 +14,11 @@
     "lint:arch": "depcruise packages apps tests --config .dependency-cruiser.cjs",
     "lint:i18n": "tsx scripts/lint-i18n.ts",
     "lint:rules": "tsx scripts/check-rule-versions.ts",
+    "check:bundle-origins": "tsx scripts/check-bundle-origins.ts",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "record:guardrails": "tsx scripts/record-guardrails.ts",
-    "test:redteam": "vitest run --project adversarial",
+    "test:redteam": "vitest run --project adversarial && tsx scripts/redteam-summary.ts",
     "test:live:guardrails": "TARJUMAN_LIVE=1 vitest run --project guardrails-live",
     "test:live:redteam": "TARJUMAN_LIVE=1 vitest run --project adversarial-live",
     "test:live:ollama": "TARJUMAN_LIVE=1 vitest run --project provider-live"
