@@ -2,15 +2,15 @@
   "steps": [
     {
       "type": "text",
-      "delta": "CL"
+      "delta": "CONS"
     },
     {
       "type": "text",
-      "delta": "AR"
+      "delta": "ID"
     },
     {
       "type": "text",
-      "delta": "IFY"
+      "delta": "ERA"
     },
     {
       "type": "text",
@@ -18,39 +18,55 @@
     },
     {
       "type": "text",
-      "delta": " ¿"
+      "delta": " the"
     },
     {
       "type": "text",
-      "delta": "Pod"
+      "delta": " request"
     },
     {
       "type": "text",
-      "delta": "r"
+      "delta": " is"
     },
     {
       "type": "text",
-      "delta": "ías"
+      "delta": " within"
     },
     {
       "type": "text",
-      "delta": " proporcion"
+      "delta": " scope"
     },
     {
       "type": "text",
-      "delta": "arme"
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "Por"
+    },
+    {
+      "type": "text",
+      "delta": " favor"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " proporción"
+    },
+    {
+      "type": "text",
+      "delta": "ame"
     },
     {
       "type": "text",
       "delta": " el"
-    },
-    {
-      "type": "text",
-      "delta": " texto"
-    },
-    {
-      "type": "text",
-      "delta": " del"
     },
     {
       "type": "text",
@@ -66,7 +82,7 @@
     },
     {
       "type": "text",
-      "delta": " quieres"
+      "delta": " deseas"
     },
     {
       "type": "text",
@@ -74,7 +90,83 @@
     },
     {
       "type": "text",
-      "delta": "?"
+      "delta": " al"
+    },
+    {
+      "type": "text",
+      "delta": " japonés"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": " Una"
+    },
+    {
+      "type": "text",
+      "delta": " vez"
+    },
+    {
+      "type": "text",
+      "delta": " que"
+    },
+    {
+      "type": "text",
+      "delta": " lo"
+    },
+    {
+      "type": "text",
+      "delta": " vea"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " puedo"
+    },
+    {
+      "type": "text",
+      "delta": " explicar"
+    },
+    {
+      "type": "text",
+      "delta": "te"
+    },
+    {
+      "type": "text",
+      "delta": " la"
+    },
+    {
+      "type": "text",
+      "delta": " traducción"
+    },
+    {
+      "type": "text",
+      "delta": " y"
+    },
+    {
+      "type": "text",
+      "delta": " cómo"
+    },
+    {
+      "type": "text",
+      "delta": " está"
+    },
+    {
+      "type": "text",
+      "delta": " constru"
+    },
+    {
+      "type": "text",
+      "delta": "ida"
+    },
+    {
+      "type": "text",
+      "delta": "."
     },
     {
       "type": "text",
@@ -83,7 +175,7 @@
     {
       "type": "usage",
       "inputTokens": 1039,
-      "outputTokens": 21
+      "outputTokens": 44
     },
     {
       "type": "stop",

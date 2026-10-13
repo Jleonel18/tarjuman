@@ -2,15 +2,15 @@
   "steps": [
     {
       "type": "text",
-      "delta": "EX"
+      "delta": "RE"
     },
     {
       "type": "text",
-      "delta": "PLAN"
+      "delta": "VI"
     },
     {
       "type": "text",
-      "delta": "ATION"
+      "delta": "SE"
     },
     {
       "type": "text",
@@ -18,11 +18,43 @@
     },
     {
       "type": "text",
+      "delta": " the"
+    },
+    {
+      "type": "text",
+      "delta": " request"
+    },
+    {
+      "type": "text",
+      "delta": " is"
+    },
+    {
+      "type": "text",
+      "delta": " within"
+    },
+    {
+      "type": "text",
+      "delta": " scope"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
       "delta": "\n\n"
     },
     {
       "type": "text",
-      "delta": "Let"
+      "delta": "Okay"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " let"
     },
     {
       "type": "text",
@@ -34,11 +66,7 @@
     },
     {
       "type": "text",
-      "delta": " break"
-    },
-    {
-      "type": "text",
-      "delta": " down"
+      "delta": " explore"
     },
     {
       "type": "text",
@@ -102,122 +130,6 @@
     },
     {
       "type": "text",
-      "delta": " There"
-    },
-    {
-      "type": "text",
-      "delta": " are"
-    },
-    {
-      "type": "text",
-      "delta": " several"
-    },
-    {
-      "type": "text",
-      "delta": " ways"
-    },
-    {
-      "type": "text",
-      "delta": " to"
-    },
-    {
-      "type": "text",
-      "delta": " express"
-    },
-    {
-      "type": "text",
-      "delta": " this"
-    },
-    {
-      "type": "text",
-      "delta": " politely"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " but"
-    },
-    {
-      "type": "text",
-      "delta": " the"
-    },
-    {
-      "type": "text",
-      "delta": " most"
-    },
-    {
-      "type": "text",
-      "delta": " common"
-    },
-    {
-      "type": "text",
-      "delta": " and"
-    },
-    {
-      "type": "text",
-      "delta": " natural"
-    },
-    {
-      "type": "text",
-      "delta": " is"
-    },
-    {
-      "type": "text",
-      "delta": " using"
-    },
-    {
-      "type": "text",
-      "delta": " the"
-    },
-    {
-      "type": "text",
-      "delta": " conditional"
-    },
-    {
-      "type": "text",
-      "delta": " tense"
-    },
-    {
-      "type": "text",
-      "delta": " with"
-    },
-    {
-      "type": "text",
-      "delta": " \""
-    },
-    {
-      "type": "text",
-      "delta": "vou"
-    },
-    {
-      "type": "text",
-      "delta": "loir"
-    },
-    {
-      "type": "text",
-      "delta": "\""
-    },
-    {
-      "type": "text",
-      "delta": " ("
-    },
-    {
-      "type": "text",
-      "delta": "to"
-    },
-    {
-      "type": "text",
-      "delta": " want"
-    },
-    {
-      "type": "text",
-      "delta": ")."
-    },
-    {
-      "type": "text",
       "delta": "\n\n"
     },
     {
@@ -234,11 +146,143 @@
     },
     {
       "type": "text",
+      "delta": " a"
+    },
+    {
+      "type": "text",
+      "delta": " good"
+    },
+    {
+      "type": "text",
+      "delta": " way"
+    },
+    {
+      "type": "text",
+      "delta": " to"
+    },
+    {
+      "type": "text",
+      "delta": " express"
+    },
+    {
+      "type": "text",
+      "delta": " this"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " along"
+    },
+    {
+      "type": "text",
+      "delta": " with"
+    },
+    {
+      "type": "text",
+      "delta": " an"
+    },
+    {
+      "type": "text",
+      "delta": " explanation"
+    },
+    {
+      "type": "text",
+      "delta": " of"
+    },
+    {
+      "type": "text",
       "delta": " the"
     },
     {
       "type": "text",
-      "delta": " breakdown"
+      "delta": " grammar"
+    },
+    {
+      "type": "text",
+      "delta": " involved"
+    },
+    {
+      "type": "text",
+      "delta": ":"
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "**"
+    },
+    {
+      "type": "text",
+      "delta": "\""
+    },
+    {
+      "type": "text",
+      "delta": "J"
+    },
+    {
+      "type": "text",
+      "delta": "'"
+    },
+    {
+      "type": "text",
+      "delta": "aim"
+    },
+    {
+      "type": "text",
+      "delta": "erais"
+    },
+    {
+      "type": "text",
+      "delta": " reporter"
+    },
+    {
+      "type": "text",
+      "delta": " notre"
+    },
+    {
+      "type": "text",
+      "delta": " réunion"
+    },
+    {
+      "type": "text",
+      "delta": ".\""
+    },
+    {
+      "type": "text",
+      "delta": "**"
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "Let"
+    },
+    {
+      "type": "text",
+      "delta": "'"
+    },
+    {
+      "type": "text",
+      "delta": "s"
+    },
+    {
+      "type": "text",
+      "delta": " break"
+    },
+    {
+      "type": "text",
+      "delta": " this"
+    },
+    {
+      "type": "text",
+      "delta": " down"
     },
     {
       "type": "text",
@@ -262,27 +306,91 @@
     },
     {
       "type": "text",
-      "delta": "Je"
+      "delta": "\""
     },
     {
       "type": "text",
-      "delta": " voud"
+      "delta": "J"
     },
     {
       "type": "text",
-      "delta": "rais"
+      "delta": "'"
     },
     {
       "type": "text",
-      "delta": "**"
+      "delta": "aim"
     },
     {
       "type": "text",
-      "delta": " –"
+      "delta": "erais"
+    },
+    {
+      "type": "text",
+      "delta": "\""
+    },
+    {
+      "type": "text",
+      "delta": "**:"
     },
     {
       "type": "text",
       "delta": " This"
+    },
+    {
+      "type": "text",
+      "delta": " is"
+    },
+    {
+      "type": "text",
+      "delta": " the"
+    },
+    {
+      "type": "text",
+      "delta": " conditional"
+    },
+    {
+      "type": "text",
+      "delta": " form"
+    },
+    {
+      "type": "text",
+      "delta": " of"
+    },
+    {
+      "type": "text",
+      "delta": " \""
+    },
+    {
+      "type": "text",
+      "delta": "aim"
+    },
+    {
+      "type": "text",
+      "delta": "er"
+    },
+    {
+      "type": "text",
+      "delta": "\""
+    },
+    {
+      "type": "text",
+      "delta": " ("
+    },
+    {
+      "type": "text",
+      "delta": "to"
+    },
+    {
+      "type": "text",
+      "delta": " like"
+    },
+    {
+      "type": "text",
+      "delta": ")."
+    },
+    {
+      "type": "text",
+      "delta": " It"
     },
     {
       "type": "text",
@@ -314,15 +422,39 @@
     },
     {
       "type": "text",
-      "delta": " It"
+      "delta": "  "
     },
     {
       "type": "text",
-      "delta": "’"
+      "delta": "The"
     },
     {
       "type": "text",
-      "delta": "s"
+      "delta": " conditional"
+    },
+    {
+      "type": "text",
+      "delta": " tense"
+    },
+    {
+      "type": "text",
+      "delta": " is"
+    },
+    {
+      "type": "text",
+      "delta": " used"
+    },
+    {
+      "type": "text",
+      "delta": " here"
+    },
+    {
+      "type": "text",
+      "delta": " to"
+    },
+    {
+      "type": "text",
+      "delta": " make"
     },
     {
       "type": "text",
@@ -334,7 +466,67 @@
     },
     {
       "type": "text",
-      "delta": " way"
+      "delta": " request"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "*"
+    },
+    {
+      "type": "text",
+      "delta": "   "
+    },
+    {
+      "type": "text",
+      "delta": "**"
+    },
+    {
+      "type": "text",
+      "delta": "\""
+    },
+    {
+      "type": "text",
+      "delta": "reporter"
+    },
+    {
+      "type": "text",
+      "delta": "\""
+    },
+    {
+      "type": "text",
+      "delta": "**:"
+    },
+    {
+      "type": "text",
+      "delta": " This"
+    },
+    {
+      "type": "text",
+      "delta": " is"
+    },
+    {
+      "type": "text",
+      "delta": " the"
+    },
+    {
+      "type": "text",
+      "delta": " infin"
+    },
+    {
+      "type": "text",
+      "delta": "itive"
+    },
+    {
+      "type": "text",
+      "delta": " form"
     },
     {
       "type": "text",
@@ -342,7 +534,75 @@
     },
     {
       "type": "text",
-      "delta": " expressing"
+      "delta": " the"
+    },
+    {
+      "type": "text",
+      "delta": " verb"
+    },
+    {
+      "type": "text",
+      "delta": " \""
+    },
+    {
+      "type": "text",
+      "delta": "reporter"
+    },
+    {
+      "type": "text",
+      "delta": "\""
+    },
+    {
+      "type": "text",
+      "delta": " ("
+    },
+    {
+      "type": "text",
+      "delta": "to"
+    },
+    {
+      "type": "text",
+      "delta": " reschedule"
+    },
+    {
+      "type": "text",
+      "delta": ")."
+    },
+    {
+      "type": "text",
+      "delta": " In"
+    },
+    {
+      "type": "text",
+      "delta": " this"
+    },
+    {
+      "type": "text",
+      "delta": " context"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " it"
+    },
+    {
+      "type": "text",
+      "delta": "’"
+    },
+    {
+      "type": "text",
+      "delta": "s"
+    },
+    {
+      "type": "text",
+      "delta": " functioning"
+    },
+    {
+      "type": "text",
+      "delta": " as"
     },
     {
       "type": "text",
@@ -350,11 +610,571 @@
     },
     {
       "type": "text",
-      "delta": " desire"
+      "delta": " main"
+    },
+    {
+      "type": "text",
+      "delta": " verb"
     },
     {
       "type": "text",
       "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "*"
+    },
+    {
+      "type": "text",
+      "delta": "   "
+    },
+    {
+      "type": "text",
+      "delta": "**"
+    },
+    {
+      "type": "text",
+      "delta": "\""
+    },
+    {
+      "type": "text",
+      "delta": "not"
+    },
+    {
+      "type": "text",
+      "delta": "re"
+    },
+    {
+      "type": "text",
+      "delta": " réunion"
+    },
+    {
+      "type": "text",
+      "delta": "\""
+    },
+    {
+      "type": "text",
+      "delta": "**:"
+    },
+    {
+      "type": "text",
+      "delta": " This"
+    },
+    {
+      "type": "text",
+      "delta": " means"
+    },
+    {
+      "type": "text",
+      "delta": " “"
+    },
+    {
+      "type": "text",
+      "delta": "our"
+    },
+    {
+      "type": "text",
+      "delta": " meeting"
+    },
+    {
+      "type": "text",
+      "delta": "”."
+    },
+    {
+      "type": "text",
+      "delta": "  "
+    },
+    {
+      "type": "text",
+      "delta": "“"
+    },
+    {
+      "type": "text",
+      "delta": "Not"
+    },
+    {
+      "type": "text",
+      "delta": "re"
+    },
+    {
+      "type": "text",
+      "delta": "”"
+    },
+    {
+      "type": "text",
+      "delta": " is"
+    },
+    {
+      "type": "text",
+      "delta": " the"
+    },
+    {
+      "type": "text",
+      "delta": " possess"
+    },
+    {
+      "type": "text",
+      "delta": "ive"
+    },
+    {
+      "type": "text",
+      "delta": " adjective"
+    },
+    {
+      "type": "text",
+      "delta": " agreeing"
+    },
+    {
+      "type": "text",
+      "delta": " in"
+    },
+    {
+      "type": "text",
+      "delta": " gender"
+    },
+    {
+      "type": "text",
+      "delta": " and"
+    },
+    {
+      "type": "text",
+      "delta": " number"
+    },
+    {
+      "type": "text",
+      "delta": " with"
+    },
+    {
+      "type": "text",
+      "delta": " “"
+    },
+    {
+      "type": "text",
+      "delta": "ré"
+    },
+    {
+      "type": "text",
+      "delta": "union"
+    },
+    {
+      "type": "text",
+      "delta": ".”"
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "**"
+    },
+    {
+      "type": "text",
+      "delta": "Why"
+    },
+    {
+      "type": "text",
+      "delta": " that"
+    },
+    {
+      "type": "text",
+      "delta": " word"
+    },
+    {
+      "type": "text",
+      "delta": " order"
+    },
+    {
+      "type": "text",
+      "delta": "?"
+    },
+    {
+      "type": "text",
+      "delta": "**"
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "In"
+    },
+    {
+      "type": "text",
+      "delta": " French"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " we"
+    },
+    {
+      "type": "text",
+      "delta": " generally"
+    },
+    {
+      "type": "text",
+      "delta": " follow"
+    },
+    {
+      "type": "text",
+      "delta": " a"
+    },
+    {
+      "type": "text",
+      "delta": " Subject"
+    },
+    {
+      "type": "text",
+      "delta": "-"
+    },
+    {
+      "type": "text",
+      "delta": "Verb"
+    },
+    {
+      "type": "text",
+      "delta": "-"
+    },
+    {
+      "type": "text",
+      "delta": "Object"
+    },
+    {
+      "type": "text",
+      "delta": " ("
+    },
+    {
+      "type": "text",
+      "delta": "S"
+    },
+    {
+      "type": "text",
+      "delta": "VO"
+    },
+    {
+      "type": "text",
+      "delta": ")"
+    },
+    {
+      "type": "text",
+      "delta": " structure"
+    },
+    {
+      "type": "text",
+      "delta": " like"
+    },
+    {
+      "type": "text",
+      "delta": " English"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": " However"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " when"
+    },
+    {
+      "type": "text",
+      "delta": " making"
+    },
+    {
+      "type": "text",
+      "delta": " requests"
+    },
+    {
+      "type": "text",
+      "delta": " or"
+    },
+    {
+      "type": "text",
+      "delta": " expressing"
+    },
+    {
+      "type": "text",
+      "delta": " desires"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " we"
+    },
+    {
+      "type": "text",
+      "delta": " often"
+    },
+    {
+      "type": "text",
+      "delta": " invert"
+    },
+    {
+      "type": "text",
+      "delta": " the"
+    },
+    {
+      "type": "text",
+      "delta": " subject"
+    },
+    {
+      "type": "text",
+      "delta": " (\""
+    },
+    {
+      "type": "text",
+      "delta": "j"
+    },
+    {
+      "type": "text",
+      "delta": "'"
+    },
+    {
+      "type": "text",
+      "delta": "\")"
+    },
+    {
+      "type": "text",
+      "delta": " and"
+    },
+    {
+      "type": "text",
+      "delta": " the"
+    },
+    {
+      "type": "text",
+      "delta": " verb"
+    },
+    {
+      "type": "text",
+      "delta": " auxiliary"
+    },
+    {
+      "type": "text",
+      "delta": " (“"
+    },
+    {
+      "type": "text",
+      "delta": "aim"
+    },
+    {
+      "type": "text",
+      "delta": "erais"
+    },
+    {
+      "type": "text",
+      "delta": "”)."
+    },
+    {
+      "type": "text",
+      "delta": " This"
+    },
+    {
+      "type": "text",
+      "delta": " is"
+    },
+    {
+      "type": "text",
+      "delta": " a"
+    },
+    {
+      "type": "text",
+      "delta": " very"
+    },
+    {
+      "type": "text",
+      "delta": " common"
+    },
+    {
+      "type": "text",
+      "delta": " pattern"
+    },
+    {
+      "type": "text",
+      "delta": " in"
+    },
+    {
+      "type": "text",
+      "delta": " polite"
+    },
+    {
+      "type": "text",
+      "delta": " speech"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": "  "
+    },
+    {
+      "type": "text",
+      "delta": "Also"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " placing"
+    },
+    {
+      "type": "text",
+      "delta": " \""
+    },
+    {
+      "type": "text",
+      "delta": "not"
+    },
+    {
+      "type": "text",
+      "delta": "re"
+    },
+    {
+      "type": "text",
+      "delta": " réunion"
+    },
+    {
+      "type": "text",
+      "delta": "\""
+    },
+    {
+      "type": "text",
+      "delta": " after"
+    },
+    {
+      "type": "text",
+      "delta": " ‘"
+    },
+    {
+      "type": "text",
+      "delta": "reporter"
+    },
+    {
+      "type": "text",
+      "delta": "’"
+    },
+    {
+      "type": "text",
+      "delta": " sounds"
+    },
+    {
+      "type": "text",
+      "delta": " more"
+    },
+    {
+      "type": "text",
+      "delta": " natural"
+    },
+    {
+      "type": "text",
+      "delta": " than"
+    },
+    {
+      "type": "text",
+      "delta": " putting"
+    },
+    {
+      "type": "text",
+      "delta": " it"
+    },
+    {
+      "type": "text",
+      "delta": " first"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "**"
+    },
+    {
+      "type": "text",
+      "delta": "Vocabulary"
+    },
+    {
+      "type": "text",
+      "delta": ":**"
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "*"
+    },
+    {
+      "type": "text",
+      "delta": "   "
+    },
+    {
+      "type": "text",
+      "delta": "**"
+    },
+    {
+      "type": "text",
+      "delta": "ré"
+    },
+    {
+      "type": "text",
+      "delta": "un"
+    },
+    {
+      "type": "text",
+      "delta": "ir"
+    },
+    {
+      "type": "text",
+      "delta": "**"
+    },
+    {
+      "type": "text",
+      "delta": " ("
+    },
+    {
+      "type": "text",
+      "delta": "verb"
+    },
+    {
+      "type": "text",
+      "delta": "):"
+    },
+    {
+      "type": "text",
+      "delta": " to"
+    },
+    {
+      "type": "text",
+      "delta": " meet"
     },
     {
       "type": "text",
@@ -378,35 +1198,23 @@
     },
     {
       "type": "text",
-      "delta": " notre"
-    },
-    {
-      "type": "text",
-      "delta": " réunion"
-    },
-    {
-      "type": "text",
       "delta": "**"
     },
     {
       "type": "text",
-      "delta": " –"
+      "delta": " ("
     },
     {
       "type": "text",
-      "delta": " This"
+      "delta": "verb"
     },
     {
       "type": "text",
-      "delta": " means"
+      "delta": "):"
     },
     {
       "type": "text",
-      "delta": " \""
-    },
-    {
-      "type": "text",
-      "delta": "to"
+      "delta": " to"
     },
     {
       "type": "text",
@@ -414,291 +1222,15 @@
     },
     {
       "type": "text",
-      "delta": " our"
-    },
-    {
-      "type": "text",
-      "delta": " meeting"
-    },
-    {
-      "type": "text",
-      "delta": "\"."
-    },
-    {
-      "type": "text",
-      "delta": "  "
-    },
-    {
-      "type": "text",
-      "delta": "\""
-    },
-    {
-      "type": "text",
-      "delta": "Reporter"
-    },
-    {
-      "type": "text",
-      "delta": "\""
-    },
-    {
-      "type": "text",
-      "delta": " is"
-    },
-    {
-      "type": "text",
-      "delta": " an"
-    },
-    {
-      "type": "text",
-      "delta": " infin"
-    },
-    {
-      "type": "text",
-      "delta": "itive"
-    },
-    {
-      "type": "text",
-      "delta": " verb"
-    },
-    {
-      "type": "text",
       "delta": " ("
     },
     {
       "type": "text",
-      "delta": "the"
+      "delta": "as"
     },
     {
       "type": "text",
-      "delta": " basic"
-    },
-    {
-      "type": "text",
-      "delta": " form"
-    },
-    {
-      "type": "text",
-      "delta": " for"
-    },
-    {
-      "type": "text",
-      "delta": " actions"
-    },
-    {
-      "type": "text",
-      "delta": ")."
-    },
-    {
-      "type": "text",
-      "delta": "\n"
-    },
-    {
-      "type": "text",
-      "delta": "*"
-    },
-    {
-      "type": "text",
-      "delta": "   "
-    },
-    {
-      "type": "text",
-      "delta": "**"
-    },
-    {
-      "type": "text",
-      "delta": "Pourquoi"
-    },
-    {
-      "type": "text",
-      "delta": " cette"
-    },
-    {
-      "type": "text",
-      "delta": " ord"
-    },
-    {
-      "type": "text",
-      "delta": "onn"
-    },
-    {
-      "type": "text",
-      "delta": "ance"
-    },
-    {
-      "type": "text",
-      "delta": "?"
-    },
-    {
-      "type": "text",
-      "delta": "**"
-    },
-    {
-      "type": "text",
-      "delta": " –"
-    },
-    {
-      "type": "text",
-      "delta": " This"
-    },
-    {
-      "type": "text",
-      "delta": " translates"
-    },
-    {
-      "type": "text",
-      "delta": " literally"
-    },
-    {
-      "type": "text",
-      "delta": " to"
-    },
-    {
-      "type": "text",
-      "delta": " “"
-    },
-    {
-      "type": "text",
-      "delta": "Why"
-    },
-    {
-      "type": "text",
-      "delta": " this"
-    },
-    {
-      "type": "text",
-      "delta": " order"
-    },
-    {
-      "type": "text",
-      "delta": "?”"
-    },
-    {
-      "type": "text",
-      "delta": " But"
-    },
-    {
-      "type": "text",
-      "delta": " in"
-    },
-    {
-      "type": "text",
-      "delta": " the"
-    },
-    {
-      "type": "text",
-      "delta": " context"
-    },
-    {
-      "type": "text",
-      "delta": " of"
-    },
-    {
-      "type": "text",
-      "delta": " asking"
-    },
-    {
-      "type": "text",
-      "delta": " why"
-    },
-    {
-      "type": "text",
-      "delta": " a"
-    },
-    {
-      "type": "text",
-      "delta": " word"
-    },
-    {
-      "type": "text",
-      "delta": " order"
-    },
-    {
-      "type": "text",
-      "delta": " is"
-    },
-    {
-      "type": "text",
-      "delta": " used"
-    },
-    {
-      "type": "text",
-      "delta": " it"
-    },
-    {
-      "type": "text",
-      "delta": " can"
-    },
-    {
-      "type": "text",
-      "delta": " be"
-    },
-    {
-      "type": "text",
-      "delta": " understood"
-    },
-    {
-      "type": "text",
-      "delta": " as"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " “"
-    },
-    {
-      "type": "text",
-      "delta": "Why"
-    },
-    {
-      "type": "text",
-      "delta": " does"
-    },
-    {
-      "type": "text",
-      "delta": " the"
-    },
-    {
-      "type": "text",
-      "delta": " word"
-    },
-    {
-      "type": "text",
-      "delta": " order"
-    },
-    {
-      "type": "text",
-      "delta": " work"
-    },
-    {
-      "type": "text",
-      "delta": " like"
-    },
-    {
-      "type": "text",
-      "delta": " this"
-    },
-    {
-      "type": "text",
-      "delta": "?”."
-    },
-    {
-      "type": "text",
-      "delta": "\n\n"
-    },
-    {
-      "type": "text",
-      "delta": "Now"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " let"
+      "delta": " we"
     },
     {
       "type": "text",
@@ -706,323 +1238,15 @@
     },
     {
       "type": "text",
-      "delta": "s"
+      "delta": "ve"
     },
     {
       "type": "text",
-      "delta": " look"
+      "delta": " seen"
     },
     {
       "type": "text",
-      "delta": " at"
-    },
-    {
-      "type": "text",
-      "delta": " the"
-    },
-    {
-      "type": "text",
-      "delta": " word"
-    },
-    {
-      "type": "text",
-      "delta": " order"
-    },
-    {
-      "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": " The"
-    },
-    {
-      "type": "text",
-      "delta": " structure"
-    },
-    {
-      "type": "text",
-      "delta": " \""
-    },
-    {
-      "type": "text",
-      "delta": "Je"
-    },
-    {
-      "type": "text",
-      "delta": " voud"
-    },
-    {
-      "type": "text",
-      "delta": "rais"
-    },
-    {
-      "type": "text",
-      "delta": " +"
-    },
-    {
-      "type": "text",
-      "delta": " infin"
-    },
-    {
-      "type": "text",
-      "delta": "itive"
-    },
-    {
-      "type": "text",
-      "delta": " verb"
-    },
-    {
-      "type": "text",
-      "delta": "\""
-    },
-    {
-      "type": "text",
-      "delta": " is"
-    },
-    {
-      "type": "text",
-      "delta": " very"
-    },
-    {
-      "type": "text",
-      "delta": " common"
-    },
-    {
-      "type": "text",
-      "delta": " for"
-    },
-    {
-      "type": "text",
-      "delta": " expressing"
-    },
-    {
-      "type": "text",
-      "delta": " desires"
-    },
-    {
-      "type": "text",
-      "delta": " or"
-    },
-    {
-      "type": "text",
-      "delta": " requests"
-    },
-    {
-      "type": "text",
-      "delta": " politely"
-    },
-    {
-      "type": "text",
-      "delta": " in"
-    },
-    {
-      "type": "text",
-      "delta": " French"
-    },
-    {
-      "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": " It"
-    },
-    {
-      "type": "text",
-      "delta": "’"
-    },
-    {
-      "type": "text",
-      "delta": "s"
-    },
-    {
-      "type": "text",
-      "delta": " more"
-    },
-    {
-      "type": "text",
-      "delta": " formal"
-    },
-    {
-      "type": "text",
-      "delta": " and"
-    },
-    {
-      "type": "text",
-      "delta": " softer"
-    },
-    {
-      "type": "text",
-      "delta": " than"
-    },
-    {
-      "type": "text",
-      "delta": " other"
-    },
-    {
-      "type": "text",
-      "delta": " ways"
-    },
-    {
-      "type": "text",
-      "delta": " of"
-    },
-    {
-      "type": "text",
-      "delta": " saying"
-    },
-    {
-      "type": "text",
-      "delta": " it"
-    },
-    {
-      "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": "\n\n"
-    },
-    {
-      "type": "text",
-      "delta": "Example"
-    },
-    {
-      "type": "text",
-      "delta": ":"
-    },
-    {
-      "type": "text",
-      "delta": "\n\n"
-    },
-    {
-      "type": "text",
-      "delta": "*"
-    },
-    {
-      "type": "text",
-      "delta": "   "
-    },
-    {
-      "type": "text",
-      "delta": "“"
-    },
-    {
-      "type": "text",
-      "delta": "Je"
-    },
-    {
-      "type": "text",
-      "delta": " voud"
-    },
-    {
-      "type": "text",
-      "delta": "rais"
-    },
-    {
-      "type": "text",
-      "delta": " manger"
-    },
-    {
-      "type": "text",
-      "delta": " une"
-    },
-    {
-      "type": "text",
-      "delta": " glace"
-    },
-    {
-      "type": "text",
-      "delta": ".”"
-    },
-    {
-      "type": "text",
-      "delta": " –"
-    },
-    {
-      "type": "text",
-      "delta": " “"
-    },
-    {
-      "type": "text",
-      "delta": "I"
-    },
-    {
-      "type": "text",
-      "delta": " would"
-    },
-    {
-      "type": "text",
-      "delta": " like"
-    },
-    {
-      "type": "text",
-      "delta": " to"
-    },
-    {
-      "type": "text",
-      "delta": " eat"
-    },
-    {
-      "type": "text",
-      "delta": " an"
-    },
-    {
-      "type": "text",
-      "delta": " ice"
-    },
-    {
-      "type": "text",
-      "delta": " cream"
-    },
-    {
-      "type": "text",
-      "delta": ".”"
-    },
-    {
-      "type": "text",
-      "delta": " ("
-    },
-    {
-      "type": "text",
-      "delta": "Literal"
-    },
-    {
-      "type": "text",
-      "delta": " translation"
-    },
-    {
-      "type": "text",
-      "delta": ":"
-    },
-    {
-      "type": "text",
-      "delta": " I"
-    },
-    {
-      "type": "text",
-      "delta": " want"
-    },
-    {
-      "type": "text",
-      "delta": " to"
-    },
-    {
-      "type": "text",
-      "delta": " eat"
-    },
-    {
-      "type": "text",
-      "delta": " an"
-    },
-    {
-      "type": "text",
-      "delta": " ice"
-    },
-    {
-      "type": "text",
-      "delta": " cream"
+      "delta": " above"
     },
     {
       "type": "text",
@@ -1042,67 +1266,19 @@
     },
     {
       "type": "text",
-      "delta": "“"
+      "delta": "**"
     },
     {
       "type": "text",
-      "delta": "Je"
+      "delta": "aim"
     },
     {
       "type": "text",
-      "delta": " voud"
+      "delta": "er"
     },
     {
       "type": "text",
-      "delta": "rais"
-    },
-    {
-      "type": "text",
-      "delta": " partir"
-    },
-    {
-      "type": "text",
-      "delta": " demain"
-    },
-    {
-      "type": "text",
-      "delta": ".”"
-    },
-    {
-      "type": "text",
-      "delta": " –"
-    },
-    {
-      "type": "text",
-      "delta": " “"
-    },
-    {
-      "type": "text",
-      "delta": "I"
-    },
-    {
-      "type": "text",
-      "delta": " would"
-    },
-    {
-      "type": "text",
-      "delta": " like"
-    },
-    {
-      "type": "text",
-      "delta": " to"
-    },
-    {
-      "type": "text",
-      "delta": " leave"
-    },
-    {
-      "type": "text",
-      "delta": " tomorrow"
-    },
-    {
-      "type": "text",
-      "delta": ".”"
+      "delta": "**"
     },
     {
       "type": "text",
@@ -1110,23 +1286,11 @@
     },
     {
       "type": "text",
-      "delta": "Literal"
+      "delta": "verb"
     },
     {
       "type": "text",
-      "delta": " translation"
-    },
-    {
-      "type": "text",
-      "delta": ":"
-    },
-    {
-      "type": "text",
-      "delta": " I"
-    },
-    {
-      "type": "text",
-      "delta": " want"
+      "delta": "):"
     },
     {
       "type": "text",
@@ -1134,23 +1298,47 @@
     },
     {
       "type": "text",
-      "delta": " leave"
+      "delta": " like"
     },
     {
       "type": "text",
-      "delta": " tomorrow"
+      "delta": "\n\n"
     },
     {
       "type": "text",
-      "delta": ".)"
+      "delta": "Do"
     },
     {
       "type": "text",
-      "delta": "\n\n\n"
+      "delta": " you"
     },
     {
       "type": "text",
-      "delta": "Would"
+      "delta": " find"
+    },
+    {
+      "type": "text",
+      "delta": " this"
+    },
+    {
+      "type": "text",
+      "delta": " explanation"
+    },
+    {
+      "type": "text",
+      "delta": " helpful"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " or"
+    },
+    {
+      "type": "text",
+      "delta": " would"
     },
     {
       "type": "text",
@@ -1170,59 +1358,7 @@
     },
     {
       "type": "text",
-      "delta": " provide"
-    },
-    {
-      "type": "text",
-      "delta": " some"
-    },
-    {
-      "type": "text",
-      "delta": " alternative"
-    },
-    {
-      "type": "text",
-      "delta": " ways"
-    },
-    {
-      "type": "text",
-      "delta": " of"
-    },
-    {
-      "type": "text",
-      "delta": " saying"
-    },
-    {
-      "type": "text",
-      "delta": " this"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " perhaps"
-    },
-    {
-      "type": "text",
-      "delta": " more"
-    },
-    {
-      "type": "text",
-      "delta": " informal"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " or"
-    },
-    {
-      "type": "text",
-      "delta": " focus"
+      "delta": " elaborate"
     },
     {
       "type": "text",
@@ -1230,11 +1366,15 @@
     },
     {
       "type": "text",
-      "delta": " the"
+      "delta": " any"
     },
     {
       "type": "text",
-      "delta": " nuances"
+      "delta": " particular"
+    },
+    {
+      "type": "text",
+      "delta": " aspect"
     },
     {
       "type": "text",
@@ -1242,28 +1382,20 @@
     },
     {
       "type": "text",
-      "delta": " using"
+      "delta": " the"
     },
     {
       "type": "text",
-      "delta": " \""
+      "delta": " sentence"
     },
     {
       "type": "text",
-      "delta": "voud"
-    },
-    {
-      "type": "text",
-      "delta": "rais"
-    },
-    {
-      "type": "text",
-      "delta": "\"?"
+      "delta": "?"
     },
     {
       "type": "usage",
       "inputTokens": 1057,
-      "outputTokens": 316
+      "outputTokens": 349
     },
     {
       "type": "stop",

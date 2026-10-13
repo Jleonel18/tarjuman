@@ -86,19 +86,19 @@
     },
     {
       "type": "text",
-      "delta": " including"
+      "delta": " its"
     },
     {
       "type": "text",
-      "delta": " vocabulary"
+      "delta": " part"
     },
     {
       "type": "text",
-      "delta": " and"
+      "delta": " of"
     },
     {
       "type": "text",
-      "delta": " grammar"
+      "delta": " speech"
     },
     {
       "type": "text",
@@ -106,19 +106,39 @@
     },
     {
       "type": "text",
+      "delta": " and"
+    },
+    {
+      "type": "text",
+      "delta": " give"
+    },
+    {
+      "type": "text",
+      "delta": " some"
+    },
+    {
+      "type": "text",
+      "delta": " example"
+    },
+    {
+      "type": "text",
+      "delta": " sentences"
+    },
+    {
+      "type": "text",
       "delta": " to"
     },
     {
       "type": "text",
-      "delta": " help"
+      "delta": " illustrate"
     },
     {
       "type": "text",
-      "delta": " you"
+      "delta": " its"
     },
     {
       "type": "text",
-      "delta": " learn"
+      "delta": " usage"
     },
     {
       "type": "text",
@@ -131,7 +151,7 @@
     {
       "type": "usage",
       "inputTokens": 1039,
-      "outputTokens": 33
+      "outputTokens": 38
     },
     {
       "type": "stop",

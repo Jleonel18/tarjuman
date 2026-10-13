@@ -10,7 +10,7 @@
     },
     {
       "type": "text",
-      "delta": "\n\n"
+      "delta": "\n"
     },
     {
       "type": "text",
@@ -46,42 +46,6 @@
     },
     {
       "type": "text",
-      "delta": " aide"
-    },
-    {
-      "type": "text",
-      "delta": " les"
-    },
-    {
-      "type": "text",
-      "delta": " gens"
-    },
-    {
-      "type": "text",
-      "delta": " à"
-    },
-    {
-      "type": "text",
-      "delta": " apprendre"
-    },
-    {
-      "type": "text",
-      "delta": " des"
-    },
-    {
-      "type": "text",
-      "delta": " langues"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " et"
-    },
-    {
-      "type": "text",
       "delta": " ne"
     },
     {
@@ -90,43 +54,31 @@
     },
     {
       "type": "text",
-      "delta": " pas"
+      "delta": " aider"
     },
     {
       "type": "text",
-      "delta": " écrire"
+      "delta": " qu"
     },
     {
       "type": "text",
-      "delta": " de"
+      "delta": "’"
     },
     {
       "type": "text",
-      "delta": " scripts"
+      "delta": "à"
     },
     {
       "type": "text",
-      "delta": " Python"
+      "delta": " apprendre"
     },
     {
       "type": "text",
-      "delta": " ou"
+      "delta": " le"
     },
     {
       "type": "text",
-      "delta": " d"
-    },
-    {
-      "type": "text",
-      "delta": "'"
-    },
-    {
-      "type": "text",
-      "delta": "autres"
-    },
-    {
-      "type": "text",
-      "delta": " programmes"
+      "delta": " japonais"
     },
     {
       "type": "text",
@@ -142,23 +94,11 @@
     },
     {
       "type": "text",
-      "delta": " cependant"
-    },
-    {
-      "type": "text",
       "delta": " vous"
     },
     {
       "type": "text",
-      "delta": " aider"
-    },
-    {
-      "type": "text",
-      "delta": " à"
-    },
-    {
-      "type": "text",
-      "delta": " apprendre"
+      "delta": " expliquer"
     },
     {
       "type": "text",
@@ -174,15 +114,11 @@
     },
     {
       "type": "text",
-      "delta": " des"
+      "delta": " une"
     },
     {
       "type": "text",
-      "delta": " list"
-    },
-    {
-      "type": "text",
-      "delta": "es"
+      "delta": " liste"
     },
     {
       "type": "text",
@@ -190,19 +126,7 @@
     },
     {
       "type": "text",
-      "delta": " japonais"
-    },
-    {
-      "type": "text",
-      "delta": " !"
-    },
-    {
-      "type": "text",
-      "delta": " Par"
-    },
-    {
-      "type": "text",
-      "delta": " exemple"
+      "delta": " Python"
     },
     {
       "type": "text",
@@ -210,7 +134,15 @@
     },
     {
       "type": "text",
+      "delta": " mais"
+    },
+    {
+      "type": "text",
       "delta": " je"
+    },
+    {
+      "type": "text",
+      "delta": " ne"
     },
     {
       "type": "text",
@@ -218,11 +150,47 @@
     },
     {
       "type": "text",
+      "delta": " pas"
+    },
+    {
+      "type": "text",
+      "delta": " écrire"
+    },
+    {
+      "type": "text",
+      "delta": " de"
+    },
+    {
+      "type": "text",
+      "delta": " code"
+    },
+    {
+      "type": "text",
+      "delta": " pour"
+    },
+    {
+      "type": "text",
       "delta": " vous"
     },
     {
       "type": "text",
-      "delta": " expliquer"
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": " Voici"
+    },
+    {
+      "type": "text",
+      "delta": " quelques"
+    },
+    {
+      "type": "text",
+      "delta": " exemples"
+    },
+    {
+      "type": "text",
+      "delta": " de"
     },
     {
       "type": "text",
@@ -230,7 +198,83 @@
     },
     {
       "type": "text",
-      "delta": " fonction"
+      "delta": " façon"
+    },
+    {
+      "type": "text",
+      "delta": " dont"
+    },
+    {
+      "type": "text",
+      "delta": " on"
+    },
+    {
+      "type": "text",
+      "delta": " peut"
+    },
+    {
+      "type": "text",
+      "delta": " tri"
+    },
+    {
+      "type": "text",
+      "delta": "er"
+    },
+    {
+      "type": "text",
+      "delta": " une"
+    },
+    {
+      "type": "text",
+      "delta": " liste"
+    },
+    {
+      "type": "text",
+      "delta": " en"
+    },
+    {
+      "type": "text",
+      "delta": " Python"
+    },
+    {
+      "type": "text",
+      "delta": " "
+    },
+    {
+      "type": "text",
+      "delta": ":"
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "*"
+    },
+    {
+      "type": "text",
+      "delta": "   "
+    },
+    {
+      "type": "text",
+      "delta": "Util"
+    },
+    {
+      "type": "text",
+      "delta": "isation"
+    },
+    {
+      "type": "text",
+      "delta": " de"
+    },
+    {
+      "type": "text",
+      "delta": " la"
+    },
+    {
+      "type": "text",
+      "delta": " méthode"
     },
     {
       "type": "text",
@@ -246,36 +290,188 @@
     },
     {
       "type": "text",
-      "delta": " en"
+      "delta": " "
     },
     {
       "type": "text",
-      "delta": " japonais"
+      "delta": ":"
     },
     {
       "type": "text",
-      "delta": " avec"
+      "delta": " Cette"
     },
     {
       "type": "text",
-      "delta": " des"
+      "delta": " méthode"
     },
     {
       "type": "text",
-      "delta": " exemples"
+      "delta": " tri"
     },
     {
       "type": "text",
-      "delta": "."
+      "delta": "e"
+    },
+    {
+      "type": "text",
+      "delta": " la"
+    },
+    {
+      "type": "text",
+      "delta": " liste"
+    },
+    {
+      "type": "text",
+      "delta": " directement"
+    },
+    {
+      "type": "text",
+      "delta": " et"
+    },
+    {
+      "type": "text",
+      "delta": " retourne"
+    },
+    {
+      "type": "text",
+      "delta": " `"
+    },
+    {
+      "type": "text",
+      "delta": "None"
+    },
+    {
+      "type": "text",
+      "delta": "`."
     },
     {
       "type": "text",
       "delta": "\n"
     },
     {
+      "type": "text",
+      "delta": "*"
+    },
+    {
+      "type": "text",
+      "delta": "   "
+    },
+    {
+      "type": "text",
+      "delta": "Util"
+    },
+    {
+      "type": "text",
+      "delta": "isation"
+    },
+    {
+      "type": "text",
+      "delta": " de"
+    },
+    {
+      "type": "text",
+      "delta": " la"
+    },
+    {
+      "type": "text",
+      "delta": " fonction"
+    },
+    {
+      "type": "text",
+      "delta": " `"
+    },
+    {
+      "type": "text",
+      "delta": "sorted"
+    },
+    {
+      "type": "text",
+      "delta": "()`"
+    },
+    {
+      "type": "text",
+      "delta": " "
+    },
+    {
+      "type": "text",
+      "delta": ":"
+    },
+    {
+      "type": "text",
+      "delta": " Cette"
+    },
+    {
+      "type": "text",
+      "delta": " fonction"
+    },
+    {
+      "type": "text",
+      "delta": " ren"
+    },
+    {
+      "type": "text",
+      "delta": "voie"
+    },
+    {
+      "type": "text",
+      "delta": " une"
+    },
+    {
+      "type": "text",
+      "delta": " nouvelle"
+    },
+    {
+      "type": "text",
+      "delta": " liste"
+    },
+    {
+      "type": "text",
+      "delta": " tri"
+    },
+    {
+      "type": "text",
+      "delta": "ée"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " sans"
+    },
+    {
+      "type": "text",
+      "delta": " modifier"
+    },
+    {
+      "type": "text",
+      "delta": " la"
+    },
+    {
+      "type": "text",
+      "delta": " liste"
+    },
+    {
+      "type": "text",
+      "delta": " d"
+    },
+    {
+      "type": "text",
+      "delta": "'"
+    },
+    {
+      "type": "text",
+      "delta": "origine"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
       "type": "usage",
       "inputTokens": 1064,
-      "outputTokens": 69
+      "outputTokens": 121
     },
     {
       "type": "stop",

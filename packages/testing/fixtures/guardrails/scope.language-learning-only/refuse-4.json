@@ -10,11 +10,15 @@
     },
     {
       "type": "text",
-      "delta": "\n"
+      "delta": ":"
     },
     {
       "type": "text",
-      "delta": "Tar"
+      "delta": " The"
+    },
+    {
+      "type": "text",
+      "delta": " Tar"
     },
     {
       "type": "text",
@@ -42,22 +46,6 @@
     },
     {
       "type": "text",
-      "delta": " through"
-    },
-    {
-      "type": "text",
-      "delta": " explanations"
-    },
-    {
-      "type": "text",
-      "delta": " and"
-    },
-    {
-      "type": "text",
-      "delta": " examples"
-    },
-    {
-      "type": "text",
       "delta": ","
     },
     {
@@ -66,15 +54,19 @@
     },
     {
       "type": "text",
-      "delta": " does"
+      "delta": " cannot"
     },
     {
       "type": "text",
-      "delta": " nothing"
+      "delta": " fulfil"
     },
     {
       "type": "text",
-      "delta": " else"
+      "delta": " this"
+    },
+    {
+      "type": "text",
+      "delta": " request"
     },
     {
       "type": "text",
@@ -82,11 +74,15 @@
     },
     {
       "type": "text",
-      "delta": " Would"
+      "delta": " Perhaps"
     },
     {
       "type": "text",
       "delta": " you"
+    },
+    {
+      "type": "text",
+      "delta": " would"
     },
     {
       "type": "text",
@@ -102,47 +98,35 @@
     },
     {
       "type": "text",
-      "delta": " translate"
-    },
-    {
-      "type": "text",
-      "delta": " a"
-    },
-    {
-      "type": "text",
-      "delta": " sentence"
-    },
-    {
-      "type": "text",
-      "delta": " from"
-    },
-    {
-      "type": "text",
-      "delta": " Arabic"
-    },
-    {
-      "type": "text",
-      "delta": " into"
-    },
-    {
-      "type": "text",
-      "delta": " Japanese"
-    },
-    {
-      "type": "text",
-      "delta": " and"
-    },
-    {
-      "type": "text",
       "delta": " explain"
     },
     {
       "type": "text",
-      "delta": " its"
+      "delta": " the"
+    },
+    {
+      "type": "text",
+      "delta": " basic"
     },
     {
       "type": "text",
       "delta": " structure"
+    },
+    {
+      "type": "text",
+      "delta": " of"
+    },
+    {
+      "type": "text",
+      "delta": " an"
+    },
+    {
+      "type": "text",
+      "delta": " HTML"
+    },
+    {
+      "type": "text",
+      "delta": " document"
     },
     {
       "type": "text",
@@ -151,7 +135,7 @@
     {
       "type": "usage",
       "inputTokens": 1057,
-      "outputTokens": 38
+      "outputTokens": 34
     },
     {
       "type": "stop",

@@ -2,11 +2,7 @@
   "steps": [
     {
       "type": "text",
-      "delta": "APPRO"
-    },
-    {
-      "type": "text",
-      "delta": "VE"
+      "delta": "ACCEPT"
     },
     {
       "type": "text",
@@ -14,7 +10,63 @@
     },
     {
       "type": "text",
-      "delta": "ウェブ"
+      "delta": "The"
+    },
+    {
+      "type": "text",
+      "delta": " most"
+    },
+    {
+      "type": "text",
+      "delta": " common"
+    },
+    {
+      "type": "text",
+      "delta": " way"
+    },
+    {
+      "type": "text",
+      "delta": " to"
+    },
+    {
+      "type": "text",
+      "delta": " say"
+    },
+    {
+      "type": "text",
+      "delta": " \""
+    },
+    {
+      "type": "text",
+      "delta": "web"
+    },
+    {
+      "type": "text",
+      "delta": " page"
+    },
+    {
+      "type": "text",
+      "delta": "\""
+    },
+    {
+      "type": "text",
+      "delta": " in"
+    },
+    {
+      "type": "text",
+      "delta": " Japanese"
+    },
+    {
+      "type": "text",
+      "delta": " is"
+    },
+    {
+      "type": "text",
+      "delta": " ウェ"
+    },
+    {
+      "type": "text",
+      "delta": "ブ"
     },
     {
       "type": "text",
@@ -22,91 +74,35 @@
     },
     {
       "type": "text",
-      "delta": "は"
-    },
-    {
-      "type": "text",
-      "delta": "日本語"
-    },
-    {
-      "type": "text",
-      "delta": "で"
-    },
-    {
-      "type": "text",
-      "delta": "「"
-    },
-    {
-      "type": "text",
-      "delta": "ウェブ"
-    },
-    {
-      "type": "text",
-      "delta": "サイト"
-    },
-    {
-      "type": "text",
-      "delta": "」"
-    },
-    {
-      "type": "text",
       "delta": " ("
     },
     {
       "type": "text",
-      "delta": "webs"
+      "delta": "w"
     },
     {
       "type": "text",
-      "delta": "aito"
+      "delta": "ē"
     },
     {
       "type": "text",
-      "delta": ")"
+      "delta": "bub"
     },
     {
       "type": "text",
-      "delta": " と"
+      "delta": " p"
     },
     {
       "type": "text",
-      "delta": "言"
+      "delta": "ē"
     },
     {
       "type": "text",
-      "delta": "います"
+      "delta": "ji"
     },
     {
       "type": "text",
-      "delta": "。"
-    },
-    {
-      "type": "text",
-      "delta": "これは"
-    },
-    {
-      "type": "text",
-      "delta": "名"
-    },
-    {
-      "type": "text",
-      "delta": "詞"
-    },
-    {
-      "type": "text",
-      "delta": "の"
-    },
-    {
-      "type": "text",
-      "delta": "形"
-    },
-    {
-      "type": "text",
-      "delta": "です"
-    },
-    {
-      "type": "text",
-      "delta": "。"
+      "delta": ")."
     },
     {
       "type": "text",
@@ -126,35 +122,11 @@
     },
     {
       "type": "text",
-      "delta": "ウェブ"
+      "delta": "Vocabulary"
     },
     {
       "type": "text",
-      "delta": "サイト"
-    },
-    {
-      "type": "text",
-      "delta": " ("
-    },
-    {
-      "type": "text",
-      "delta": "webs"
-    },
-    {
-      "type": "text",
-      "delta": "aito"
-    },
-    {
-      "type": "text",
-      "delta": ")**"
-    },
-    {
-      "type": "text",
-      "delta": " -"
-    },
-    {
-      "type": "text",
-      "delta": " website"
+      "delta": ":**"
     },
     {
       "type": "text",
@@ -174,11 +146,207 @@
     },
     {
       "type": "text",
-      "delta": "例"
+      "delta": "ウェブ"
     },
     {
       "type": "text",
-      "delta": "："
+      "delta": " ("
+    },
+    {
+      "type": "text",
+      "delta": "w"
+    },
+    {
+      "type": "text",
+      "delta": "ē"
+    },
+    {
+      "type": "text",
+      "delta": "bu"
+    },
+    {
+      "type": "text",
+      "delta": ")"
+    },
+    {
+      "type": "text",
+      "delta": " -"
+    },
+    {
+      "type": "text",
+      "delta": " web"
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "    "
+    },
+    {
+      "type": "text",
+      "delta": "*"
+    },
+    {
+      "type": "text",
+      "delta": "   "
+    },
+    {
+      "type": "text",
+      "delta": "ページ"
+    },
+    {
+      "type": "text",
+      "delta": " ("
+    },
+    {
+      "type": "text",
+      "delta": "p"
+    },
+    {
+      "type": "text",
+      "delta": "ē"
+    },
+    {
+      "type": "text",
+      "delta": "ji"
+    },
+    {
+      "type": "text",
+      "delta": ")"
+    },
+    {
+      "type": "text",
+      "delta": " -"
+    },
+    {
+      "type": "text",
+      "delta": " page"
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "    "
+    },
+    {
+      "type": "text",
+      "delta": "*"
+    },
+    {
+      "type": "text",
+      "delta": "   "
+    },
+    {
+      "type": "text",
+      "delta": "意味"
+    },
+    {
+      "type": "text",
+      "delta": ":"
+    },
+    {
+      "type": "text",
+      "delta": " These"
+    },
+    {
+      "type": "text",
+      "delta": " words"
+    },
+    {
+      "type": "text",
+      "delta": " are"
+    },
+    {
+      "type": "text",
+      "delta": " very"
+    },
+    {
+      "type": "text",
+      "delta": " similar"
+    },
+    {
+      "type": "text",
+      "delta": " to"
+    },
+    {
+      "type": "text",
+      "delta": " their"
+    },
+    {
+      "type": "text",
+      "delta": " English"
+    },
+    {
+      "type": "text",
+      "delta": " counterparts"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": " "
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "    "
+    },
+    {
+      "type": "text",
+      "delta": "*"
+    },
+    {
+      "type": "text",
+      "delta": "   "
+    },
+    {
+      "type": "text",
+      "delta": "例文"
+    },
+    {
+      "type": "text",
+      "delta": " ("
+    },
+    {
+      "type": "text",
+      "delta": "げ"
+    },
+    {
+      "type": "text",
+      "delta": "ん"
+    },
+    {
+      "type": "text",
+      "delta": "ぶん"
+    },
+    {
+      "type": "text",
+      "delta": "):"
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "        "
+    },
+    {
+      "type": "text",
+      "delta": "*"
+    },
+    {
+      "type": "text",
+      "delta": "   "
     },
     {
       "type": "text",
@@ -190,15 +358,11 @@
     },
     {
       "type": "text",
-      "delta": "サイト"
+      "delta": "ページ"
     },
     {
       "type": "text",
       "delta": "は"
-    },
-    {
-      "type": "text",
-      "delta": "とても"
     },
     {
       "type": "text",
@@ -222,23 +386,31 @@
     },
     {
       "type": "text",
-      "delta": " webs"
+      "delta": " w"
     },
     {
       "type": "text",
-      "delta": "aito"
+      "delta": "ē"
+    },
+    {
+      "type": "text",
+      "delta": "bub"
+    },
+    {
+      "type": "text",
+      "delta": " p"
+    },
+    {
+      "type": "text",
+      "delta": "ē"
+    },
+    {
+      "type": "text",
+      "delta": "ji"
     },
     {
       "type": "text",
       "delta": " wa"
-    },
-    {
-      "type": "text",
-      "delta": " tot"
-    },
-    {
-      "type": "text",
-      "delta": "emo"
     },
     {
       "type": "text",
@@ -262,7 +434,7 @@
     },
     {
       "type": "text",
-      "delta": " -"
+      "delta": " –"
     },
     {
       "type": "text",
@@ -270,15 +442,15 @@
     },
     {
       "type": "text",
-      "delta": " website"
+      "delta": " web"
+    },
+    {
+      "type": "text",
+      "delta": " page"
     },
     {
       "type": "text",
       "delta": " is"
-    },
-    {
-      "type": "text",
-      "delta": " very"
     },
     {
       "type": "text",
@@ -294,7 +466,7 @@
     },
     {
       "type": "text",
-      "delta": "    "
+      "delta": "        "
     },
     {
       "type": "text",
@@ -306,35 +478,27 @@
     },
     {
       "type": "text",
-      "delta": "例"
-    },
-    {
-      "type": "text",
-      "delta": "："
-    },
-    {
-      "type": "text",
-      "delta": "新しい"
-    },
-    {
-      "type": "text",
       "delta": "ウェブ"
     },
     {
       "type": "text",
-      "delta": "サイト"
+      "delta": "ページの"
     },
     {
       "type": "text",
-      "delta": "を見"
+      "delta": "URL"
     },
     {
       "type": "text",
-      "delta": "つけ"
+      "delta": "を"
     },
     {
       "type": "text",
-      "delta": "ました"
+      "delta": "教えて"
+    },
+    {
+      "type": "text",
+      "delta": "ください"
     },
     {
       "type": "text",
@@ -342,27 +506,47 @@
     },
     {
       "type": "text",
-      "delta": "At"
+      "delta": "W"
     },
     {
       "type": "text",
-      "delta": "ar"
+      "delta": "ē"
     },
     {
       "type": "text",
-      "delta": "ash"
+      "delta": "bub"
     },
     {
       "type": "text",
-      "delta": "ii"
+      "delta": " p"
     },
     {
       "type": "text",
-      "delta": " webs"
+      "delta": "ē"
     },
     {
       "type": "text",
-      "delta": "aito"
+      "delta": "ji"
+    },
+    {
+      "type": "text",
+      "delta": " no"
+    },
+    {
+      "type": "text",
+      "delta": " Y"
+    },
+    {
+      "type": "text",
+      "delta": "ū"
+    },
+    {
+      "type": "text",
+      "delta": "AR"
+    },
+    {
+      "type": "text",
+      "delta": "U"
     },
     {
       "type": "text",
@@ -370,23 +554,23 @@
     },
     {
       "type": "text",
-      "delta": " m"
+      "delta": " osh"
     },
     {
       "type": "text",
-      "delta": "its"
+      "delta": "iete"
     },
     {
       "type": "text",
-      "delta": "um"
+      "delta": " k"
     },
     {
       "type": "text",
-      "delta": "em"
+      "delta": "udas"
     },
     {
       "type": "text",
-      "delta": "ashita"
+      "delta": "ai"
     },
     {
       "type": "text",
@@ -394,27 +578,43 @@
     },
     {
       "type": "text",
-      "delta": " -"
+      "delta": " –"
     },
     {
       "type": "text",
-      "delta": " I"
+      "delta": " Please"
     },
     {
       "type": "text",
-      "delta": " found"
+      "delta": " tell"
     },
     {
       "type": "text",
-      "delta": " a"
+      "delta": " me"
     },
     {
       "type": "text",
-      "delta": " new"
+      "delta": " the"
     },
     {
       "type": "text",
-      "delta": " website"
+      "delta": " URL"
+    },
+    {
+      "type": "text",
+      "delta": " of"
+    },
+    {
+      "type": "text",
+      "delta": " the"
+    },
+    {
+      "type": "text",
+      "delta": " web"
+    },
+    {
+      "type": "text",
+      "delta": " page"
     },
     {
       "type": "text",
@@ -426,15 +626,23 @@
     },
     {
       "type": "text",
-      "delta": "「"
+      "delta": "The"
     },
     {
       "type": "text",
-      "delta": "ページ"
+      "delta": " word"
     },
     {
       "type": "text",
-      "delta": "」"
+      "delta": " \""
+    },
+    {
+      "type": "text",
+      "delta": "ウェブ"
+    },
+    {
+      "type": "text",
+      "delta": "\""
     },
     {
       "type": "text",
@@ -442,11 +650,15 @@
     },
     {
       "type": "text",
-      "delta": "e"
+      "delta": "w"
     },
     {
       "type": "text",
-      "delta": "ji"
+      "delta": "ē"
+    },
+    {
+      "type": "text",
+      "delta": "bu"
     },
     {
       "type": "text",
@@ -454,96 +666,96 @@
     },
     {
       "type": "text",
-      "delta": " という"
+      "delta": " is"
     },
     {
       "type": "text",
-      "delta": "単"
+      "delta": " a"
     },
     {
       "type": "text",
-      "delta": "語"
+      "delta": " loan"
     },
     {
       "type": "text",
-      "delta": "もあります"
+      "delta": "word"
     },
     {
       "type": "text",
-      "delta": "が"
+      "delta": " from"
     },
     {
       "type": "text",
-      "delta": "、"
+      "delta": " English"
     },
     {
       "type": "text",
-      "delta": "ウェブ"
+      "delta": "."
     },
     {
       "type": "text",
-      "delta": "サイト"
+      "delta": " It"
     },
     {
       "type": "text",
-      "delta": "全体"
+      "delta": "’"
     },
     {
       "type": "text",
-      "delta": "を"
+      "delta": "s"
     },
     {
       "type": "text",
-      "delta": "指"
+      "delta": " very"
     },
     {
       "type": "text",
-      "delta": "す"
+      "delta": " frequently"
     },
     {
       "type": "text",
-      "delta": "場合は"
+      "delta": " used"
     },
     {
       "type": "text",
-      "delta": "「"
+      "delta": " in"
     },
     {
       "type": "text",
-      "delta": "ウェブ"
+      "delta": " Japanese"
     },
     {
       "type": "text",
-      "delta": "サイト"
+      "delta": " when"
     },
     {
       "type": "text",
-      "delta": "」"
+      "delta": " discussing"
     },
     {
       "type": "text",
-      "delta": "を使う"
+      "delta": " the"
     },
     {
       "type": "text",
-      "delta": "方が"
+      "delta": " internet"
     },
     {
       "type": "text",
-      "delta": "一般的"
+      "delta": " or"
     },
     {
       "type": "text",
-      "delta": "です"
+      "delta": " websites"
     },
     {
       "type": "text",
-      "delta": "。"
+      "delta": "."
     },
     {
       "type": "usage",
       "inputTokens": 1046,
-      "outputTokens": 136
+      "outputTokens": 189
     },
     {
       "type": "stop",

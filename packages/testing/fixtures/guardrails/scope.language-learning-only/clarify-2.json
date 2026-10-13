@@ -38,19 +38,11 @@
     },
     {
       "type": "text",
-      "delta": " comprendre"
+      "delta": " travailler"
     },
     {
       "type": "text",
-      "delta": " et"
-    },
-    {
-      "type": "text",
-      "delta": " à"
-    },
-    {
-      "type": "text",
-      "delta": " améliorer"
+      "delta": " sur"
     },
     {
       "type": "text",
@@ -70,15 +62,7 @@
     },
     {
       "type": "text",
-      "delta": " commencer"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " pourriez"
+      "delta": "riez"
     },
     {
       "type": "text",
@@ -94,7 +78,15 @@
     },
     {
       "type": "text",
-      "delta": " donner"
+      "delta": " dire"
+    },
+    {
+      "type": "text",
+      "delta": " quel"
+    },
+    {
+      "type": "text",
+      "delta": " est"
     },
     {
       "type": "text",
@@ -114,7 +106,43 @@
     },
     {
       "type": "text",
-      "delta": " ?"
+      "delta": " et"
+    },
+    {
+      "type": "text",
+      "delta": " ce"
+    },
+    {
+      "type": "text",
+      "delta": " que"
+    },
+    {
+      "type": "text",
+      "delta": " vous"
+    },
+    {
+      "type": "text",
+      "delta": " souhaitez"
+    },
+    {
+      "type": "text",
+      "delta": " faire"
+    },
+    {
+      "type": "text",
+      "delta": " avec"
+    },
+    {
+      "type": "text",
+      "delta": " lui"
+    },
+    {
+      "type": "text",
+      "delta": " "
+    },
+    {
+      "type": "text",
+      "delta": "?"
     },
     {
       "type": "text",
@@ -123,7 +151,7 @@
     {
       "type": "usage",
       "inputTokens": 1059,
-      "outputTokens": 31
+      "outputTokens": 39
     },
     {
       "type": "stop",

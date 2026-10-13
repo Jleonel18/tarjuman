@@ -18,15 +18,15 @@
     },
     {
       "type": "text",
-      "delta": " «"
+      "delta": " \""
     },
     {
       "type": "text",
-      "delta": " j"
+      "delta": "j"
     },
     {
       "type": "text",
-      "delta": "’"
+      "delta": "'"
     },
     {
       "type": "text",
@@ -42,87 +42,11 @@
     },
     {
       "type": "text",
-      "delta": " »"
+      "delta": "\""
     },
     {
       "type": "text",
-      "delta": " utilise"
-    },
-    {
-      "type": "text",
-      "delta": " l"
-    },
-    {
-      "type": "text",
-      "delta": "’"
-    },
-    {
-      "type": "text",
-      "delta": "aux"
-    },
-    {
-      "type": "text",
-      "delta": "ilia"
-    },
-    {
-      "type": "text",
-      "delta": "ire"
-    },
-    {
-      "type": "text",
-      "delta": " avoir"
-    },
-    {
-      "type": "text",
-      "delta": " avec"
-    },
-    {
-      "type": "text",
-      "delta": " le"
-    },
-    {
-      "type": "text",
-      "delta": " participe"
-    },
-    {
-      "type": "text",
-      "delta": " passé"
-    },
-    {
-      "type": "text",
-      "delta": " pour"
-    },
-    {
-      "type": "text",
-      "delta": " former"
-    },
-    {
-      "type": "text",
-      "delta": " un"
-    },
-    {
-      "type": "text",
-      "delta": " temps"
-    },
-    {
-      "type": "text",
-      "delta": " composé"
-    },
-    {
-      "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": " C"
-    },
-    {
-      "type": "text",
-      "delta": "'"
-    },
-    {
-      "type": "text",
-      "delta": "est"
+      "delta": " est"
     },
     {
       "type": "text",
@@ -130,19 +54,11 @@
     },
     {
       "type": "text",
-      "delta": " construction"
+      "delta": " expression"
     },
     {
       "type": "text",
-      "delta": " très"
-    },
-    {
-      "type": "text",
-      "delta": " cour"
-    },
-    {
-      "type": "text",
-      "delta": "ante"
+      "delta": " spécifique"
     },
     {
       "type": "text",
@@ -154,135 +70,27 @@
     },
     {
       "type": "text",
-      "delta": " pour"
+      "delta": " due"
     },
     {
       "type": "text",
-      "delta": " expr"
+      "delta": " à"
     },
     {
       "type": "text",
-      "delta": "imer"
+      "delta": " la"
     },
     {
       "type": "text",
-      "delta": " une"
+      "delta": " façon"
     },
     {
       "type": "text",
-      "delta": " action"
-    },
-    {
-      "type": "text",
-      "delta": " ache"
-    },
-    {
-      "type": "text",
-      "delta": "vée"
-    },
-    {
-      "type": "text",
-      "delta": " dans"
+      "delta": " dont"
     },
     {
       "type": "text",
       "delta": " le"
-    },
-    {
-      "type": "text",
-      "delta": " passé"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " mais"
-    },
-    {
-      "type": "text",
-      "delta": " qui"
-    },
-    {
-      "type": "text",
-      "delta": " a"
-    },
-    {
-      "type": "text",
-      "delta": " une"
-    },
-    {
-      "type": "text",
-      "delta": " certaine"
-    },
-    {
-      "type": "text",
-      "delta": " relation"
-    },
-    {
-      "type": "text",
-      "delta": " avec"
-    },
-    {
-      "type": "text",
-      "delta": " le"
-    },
-    {
-      "type": "text",
-      "delta": " moment"
-    },
-    {
-      "type": "text",
-      "delta": " présent"
-    },
-    {
-      "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": "\n\n"
-    },
-    {
-      "type": "text",
-      "delta": "Voici"
-    },
-    {
-      "type": "text",
-      "delta": " comment"
-    },
-    {
-      "type": "text",
-      "delta": " cela"
-    },
-    {
-      "type": "text",
-      "delta": " fonctionne"
-    },
-    {
-      "type": "text",
-      "delta": " :"
-    },
-    {
-      "type": "text",
-      "delta": "\n"
-    },
-    {
-      "type": "text",
-      "delta": "*"
-    },
-    {
-      "type": "text",
-      "delta": "   "
-    },
-    {
-      "type": "text",
-      "delta": "**"
-    },
-    {
-      "type": "text",
-      "delta": "Le"
     },
     {
       "type": "text",
@@ -294,19 +102,19 @@
     },
     {
       "type": "text",
-      "delta": " «"
+      "delta": " \""
     },
     {
       "type": "text",
-      "delta": " manger"
+      "delta": "m"
     },
     {
       "type": "text",
-      "delta": " »"
+      "delta": "anger"
     },
     {
       "type": "text",
-      "delta": "**"
+      "delta": "\""
     },
     {
       "type": "text",
@@ -314,71 +122,11 @@
     },
     {
       "type": "text",
-      "delta": " un"
+      "delta": " utilisé"
     },
     {
       "type": "text",
-      "delta": " ver"
-    },
-    {
-      "type": "text",
-      "delta": "be"
-    },
-    {
-      "type": "text",
-      "delta": " irrég"
-    },
-    {
-      "type": "text",
-      "delta": "ulier"
-    },
-    {
-      "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": "\n"
-    },
-    {
-      "type": "text",
-      "delta": "*"
-    },
-    {
-      "type": "text",
-      "delta": "   "
-    },
-    {
-      "type": "text",
-      "delta": "Pour"
-    },
-    {
-      "type": "text",
-      "delta": " former"
-    },
-    {
-      "type": "text",
-      "delta": " le"
-    },
-    {
-      "type": "text",
-      "delta": " temps"
-    },
-    {
-      "type": "text",
-      "delta": " composé"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " on"
-    },
-    {
-      "type": "text",
-      "delta": " utilise"
+      "delta": " avec"
     },
     {
       "type": "text",
@@ -410,7 +158,491 @@
     },
     {
       "type": "text",
+      "delta": "\"."
+    },
+    {
+      "type": "text",
+      "delta": " C"
+    },
+    {
+      "type": "text",
+      "delta": "'"
+    },
+    {
+      "type": "text",
+      "delta": "est"
+    },
+    {
+      "type": "text",
+      "delta": " une"
+    },
+    {
+      "type": "text",
+      "delta": " règle"
+    },
+    {
+      "type": "text",
+      "delta": " de"
+    },
+    {
+      "type": "text",
+      "delta": " gram"
+    },
+    {
+      "type": "text",
+      "delta": "maire"
+    },
+    {
+      "type": "text",
+      "delta": " très"
+    },
+    {
+      "type": "text",
+      "delta": " cour"
+    },
+    {
+      "type": "text",
+      "delta": "ante"
+    },
+    {
+      "type": "text",
+      "delta": " et"
+    },
+    {
+      "type": "text",
+      "delta": " souvent"
+    },
+    {
+      "type": "text",
+      "delta": " source"
+    },
+    {
+      "type": "text",
+      "delta": " de"
+    },
+    {
+      "type": "text",
+      "delta": " confusion"
+    },
+    {
+      "type": "text",
+      "delta": " pour"
+    },
+    {
+      "type": "text",
+      "delta": " les"
+    },
+    {
+      "type": "text",
+      "delta": " appren"
+    },
+    {
+      "type": "text",
+      "delta": "ants"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "Voici"
+    },
+    {
+      "type": "text",
+      "delta": " l"
+    },
+    {
+      "type": "text",
+      "delta": "'"
+    },
+    {
+      "type": "text",
+      "delta": "ex"
+    },
+    {
+      "type": "text",
+      "delta": "plication"
+    },
+    {
+      "type": "text",
+      "delta": " :"
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "En"
+    },
+    {
+      "type": "text",
+      "delta": " français"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " on"
+    },
+    {
+      "type": "text",
+      "delta": " utilise"
+    },
+    {
+      "type": "text",
+      "delta": " des"
+    },
+    {
+      "type": "text",
+      "delta": " constructions"
+    },
+    {
+      "type": "text",
+      "delta": " dites"
+    },
+    {
+      "type": "text",
+      "delta": " \""
+    },
+    {
+      "type": "text",
+      "delta": "pass"
+    },
+    {
+      "type": "text",
+      "delta": "é"
+    },
+    {
+      "type": "text",
+      "delta": " composé"
+    },
+    {
+      "type": "text",
       "delta": "\""
+    },
+    {
+      "type": "text",
+      "delta": " pour"
+    },
+    {
+      "type": "text",
+      "delta": " parler"
+    },
+    {
+      "type": "text",
+      "delta": " d"
+    },
+    {
+      "type": "text",
+      "delta": "'"
+    },
+    {
+      "type": "text",
+      "delta": "actions"
+    },
+    {
+      "type": "text",
+      "delta": " termin"
+    },
+    {
+      "type": "text",
+      "delta": "ées"
+    },
+    {
+      "type": "text",
+      "delta": " dans"
+    },
+    {
+      "type": "text",
+      "delta": " le"
+    },
+    {
+      "type": "text",
+      "delta": " passé"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": " Le"
+    },
+    {
+      "type": "text",
+      "delta": " passé"
+    },
+    {
+      "type": "text",
+      "delta": " composé"
+    },
+    {
+      "type": "text",
+      "delta": " se"
+    },
+    {
+      "type": "text",
+      "delta": " forme"
+    },
+    {
+      "type": "text",
+      "delta": " avec"
+    },
+    {
+      "type": "text",
+      "delta": " un"
+    },
+    {
+      "type": "text",
+      "delta": " ver"
+    },
+    {
+      "type": "text",
+      "delta": "be"
+    },
+    {
+      "type": "text",
+      "delta": " auxilia"
+    },
+    {
+      "type": "text",
+      "delta": "ire"
+    },
+    {
+      "type": "text",
+      "delta": " (\""
+    },
+    {
+      "type": "text",
+      "delta": "avoir"
+    },
+    {
+      "type": "text",
+      "delta": "\""
+    },
+    {
+      "type": "text",
+      "delta": " ou"
+    },
+    {
+      "type": "text",
+      "delta": " \""
+    },
+    {
+      "type": "text",
+      "delta": "être"
+    },
+    {
+      "type": "text",
+      "delta": "\")"
+    },
+    {
+      "type": "text",
+      "delta": " suivi"
+    },
+    {
+      "type": "text",
+      "delta": " du"
+    },
+    {
+      "type": "text",
+      "delta": " participe"
+    },
+    {
+      "type": "text",
+      "delta": " passé"
+    },
+    {
+      "type": "text",
+      "delta": " du"
+    },
+    {
+      "type": "text",
+      "delta": " ver"
+    },
+    {
+      "type": "text",
+      "delta": "be"
+    },
+    {
+      "type": "text",
+      "delta": " principal"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": "  "
+    },
+    {
+      "type": "text",
+      "delta": "Dans"
+    },
+    {
+      "type": "text",
+      "delta": " ce"
+    },
+    {
+      "type": "text",
+      "delta": " cas"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " le"
+    },
+    {
+      "type": "text",
+      "delta": " ver"
+    },
+    {
+      "type": "text",
+      "delta": "be"
+    },
+    {
+      "type": "text",
+      "delta": " principal"
+    },
+    {
+      "type": "text",
+      "delta": " est"
+    },
+    {
+      "type": "text",
+      "delta": " \""
+    },
+    {
+      "type": "text",
+      "delta": "m"
+    },
+    {
+      "type": "text",
+      "delta": "anger"
+    },
+    {
+      "type": "text",
+      "delta": "\","
+    },
+    {
+      "type": "text",
+      "delta": " et"
+    },
+    {
+      "type": "text",
+      "delta": " son"
+    },
+    {
+      "type": "text",
+      "delta": " participe"
+    },
+    {
+      "type": "text",
+      "delta": " passé"
+    },
+    {
+      "type": "text",
+      "delta": " est"
+    },
+    {
+      "type": "text",
+      "delta": " \""
+    },
+    {
+      "type": "text",
+      "delta": "mang"
+    },
+    {
+      "type": "text",
+      "delta": "é"
+    },
+    {
+      "type": "text",
+      "delta": "\"."
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "La"
+    },
+    {
+      "type": "text",
+      "delta": " gram"
+    },
+    {
+      "type": "text",
+      "delta": "maire"
+    },
+    {
+      "type": "text",
+      "delta": " française"
+    },
+    {
+      "type": "text",
+      "delta": " exige"
+    },
+    {
+      "type": "text",
+      "delta": " que"
+    },
+    {
+      "type": "text",
+      "delta": " l"
+    },
+    {
+      "type": "text",
+      "delta": "'"
+    },
+    {
+      "type": "text",
+      "delta": "aux"
+    },
+    {
+      "type": "text",
+      "delta": "ilia"
+    },
+    {
+      "type": "text",
+      "delta": "ire"
+    },
+    {
+      "type": "text",
+      "delta": " \""
+    },
+    {
+      "type": "text",
+      "delta": "avoir"
+    },
+    {
+      "type": "text",
+      "delta": "\""
+    },
+    {
+      "type": "text",
+      "delta": " soit"
+    },
+    {
+      "type": "text",
+      "delta": " conjug"
+    },
+    {
+      "type": "text",
+      "delta": "ué"
     },
     {
       "type": "text",
@@ -442,7 +674,47 @@
     },
     {
       "type": "text",
-      "delta": " (\""
+      "delta": " ("
+    },
+    {
+      "type": "text",
+      "delta": "ici"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " \""
+    },
+    {
+      "type": "text",
+      "delta": "ai"
+    },
+    {
+      "type": "text",
+      "delta": "\")."
+    },
+    {
+      "type": "text",
+      "delta": " Donc"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " on"
+    },
+    {
+      "type": "text",
+      "delta": " dit"
+    },
+    {
+      "type": "text",
+      "delta": " \""
     },
     {
       "type": "text",
@@ -458,86 +730,6 @@
     },
     {
       "type": "text",
-      "delta": "\")."
-    },
-    {
-      "type": "text",
-      "delta": "\n"
-    },
-    {
-      "type": "text",
-      "delta": "*"
-    },
-    {
-      "type": "text",
-      "delta": "   "
-    },
-    {
-      "type": "text",
-      "delta": "On"
-    },
-    {
-      "type": "text",
-      "delta": " ajoute"
-    },
-    {
-      "type": "text",
-      "delta": " ensuite"
-    },
-    {
-      "type": "text",
-      "delta": " le"
-    },
-    {
-      "type": "text",
-      "delta": " participe"
-    },
-    {
-      "type": "text",
-      "delta": " passé"
-    },
-    {
-      "type": "text",
-      "delta": " du"
-    },
-    {
-      "type": "text",
-      "delta": " ver"
-    },
-    {
-      "type": "text",
-      "delta": "be"
-    },
-    {
-      "type": "text",
-      "delta": " (\""
-    },
-    {
-      "type": "text",
-      "delta": "mang"
-    },
-    {
-      "type": "text",
-      "delta": "é"
-    },
-    {
-      "type": "text",
-      "delta": "\")."
-    },
-    {
-      "type": "text",
-      "delta": "\n\n"
-    },
-    {
-      "type": "text",
-      "delta": "«"
-    },
-    {
-      "type": "text",
-      "delta": " Je"
-    },
-    {
-      "type": "text",
       "delta": " mang"
     },
     {
@@ -546,7 +738,39 @@
     },
     {
       "type": "text",
-      "delta": " »"
+      "delta": "\""
+    },
+    {
+      "type": "text",
+      "delta": " pour"
+    },
+    {
+      "type": "text",
+      "delta": " indiquer"
+    },
+    {
+      "type": "text",
+      "delta": " que"
+    },
+    {
+      "type": "text",
+      "delta": " l"
+    },
+    {
+      "type": "text",
+      "delta": "’"
+    },
+    {
+      "type": "text",
+      "delta": "action"
+    },
+    {
+      "type": "text",
+      "delta": " de"
+    },
+    {
+      "type": "text",
+      "delta": " manger"
     },
     {
       "type": "text",
@@ -554,63 +778,27 @@
     },
     {
       "type": "text",
-      "delta": " incorrect"
+      "delta": " terminée"
     },
     {
       "type": "text",
-      "delta": " car"
+      "delta": " et"
     },
     {
       "type": "text",
-      "delta": " il"
+      "delta": " que"
     },
     {
       "type": "text",
-      "delta": " ne"
+      "delta": " le"
     },
     {
       "type": "text",
-      "delta": " respect"
+      "delta": " loc"
     },
     {
       "type": "text",
-      "delta": "e"
-    },
-    {
-      "type": "text",
-      "delta": " pas"
-    },
-    {
-      "type": "text",
-      "delta": " cette"
-    },
-    {
-      "type": "text",
-      "delta": " structure"
-    },
-    {
-      "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": " Le"
-    },
-    {
-      "type": "text",
-      "delta": " temps"
-    },
-    {
-      "type": "text",
-      "delta": " composé"
-    },
-    {
-      "type": "text",
-      "delta": " exige"
-    },
-    {
-      "type": "text",
-      "delta": " toujours"
+      "delta": "uteur"
     },
     {
       "type": "text",
@@ -622,19 +810,151 @@
     },
     {
       "type": "text",
-      "delta": "aux"
+      "delta": "a"
     },
     {
       "type": "text",
-      "delta": "ilia"
+      "delta": " v"
     },
     {
       "type": "text",
-      "delta": "ire"
+      "delta": "éc"
     },
     {
       "type": "text",
-      "delta": " avoir"
+      "delta": "ue"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "Contra"
+    },
+    {
+      "type": "text",
+      "delta": "irement"
+    },
+    {
+      "type": "text",
+      "delta": " à"
+    },
+    {
+      "type": "text",
+      "delta": " d"
+    },
+    {
+      "type": "text",
+      "delta": "'"
+    },
+    {
+      "type": "text",
+      "delta": "autres"
+    },
+    {
+      "type": "text",
+      "delta": " langues"
+    },
+    {
+      "type": "text",
+      "delta": " où"
+    },
+    {
+      "type": "text",
+      "delta": " le"
+    },
+    {
+      "type": "text",
+      "delta": " participe"
+    },
+    {
+      "type": "text",
+      "delta": " peut"
+    },
+    {
+      "type": "text",
+      "delta": " être"
+    },
+    {
+      "type": "text",
+      "delta": " utilisé"
+    },
+    {
+      "type": "text",
+      "delta": " seul"
+    },
+    {
+      "type": "text",
+      "delta": " pour"
+    },
+    {
+      "type": "text",
+      "delta": " former"
+    },
+    {
+      "type": "text",
+      "delta": " le"
+    },
+    {
+      "type": "text",
+      "delta": " passé"
+    },
+    {
+      "type": "text",
+      "delta": " composé"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " ce"
+    },
+    {
+      "type": "text",
+      "delta": " n"
+    },
+    {
+      "type": "text",
+      "delta": "'"
+    },
+    {
+      "type": "text",
+      "delta": "est"
+    },
+    {
+      "type": "text",
+      "delta": " pas"
+    },
+    {
+      "type": "text",
+      "delta": " possible"
+    },
+    {
+      "type": "text",
+      "delta": " en"
+    },
+    {
+      "type": "text",
+      "delta": " français"
+    },
+    {
+      "type": "text",
+      "delta": " dans"
+    },
+    {
+      "type": "text",
+      "delta": " cette"
+    },
+    {
+      "type": "text",
+      "delta": " situation"
     },
     {
       "type": "text",
@@ -674,11 +994,7 @@
     },
     {
       "type": "text",
-      "delta": "’"
-    },
-    {
-      "type": "text",
-      "delta": "**"
+      "delta": "'"
     },
     {
       "type": "text",
@@ -691,10 +1007,6 @@
     {
       "type": "text",
       "delta": "é"
-    },
-    {
-      "type": "text",
-      "delta": "**"
     },
     {
       "type": "text",
@@ -718,15 +1030,11 @@
     },
     {
       "type": "text",
-      "delta": "Je"
+      "delta": "I"
     },
     {
       "type": "text",
-      "delta": " have"
-    },
-    {
-      "type": "text",
-      "delta": " eaten"
+      "delta": " ate"
     },
     {
       "type": "text",
@@ -742,95 +1050,19 @@
     },
     {
       "type": "text",
-      "delta": " –"
+      "delta": " -"
     },
     {
       "type": "text",
-      "delta": " Ceci"
+      "delta": "  "
     },
     {
       "type": "text",
-      "delta": " décrit"
+      "delta": "\""
     },
     {
       "type": "text",
-      "delta": " une"
-    },
-    {
-      "type": "text",
-      "delta": " action"
-    },
-    {
-      "type": "text",
-      "delta": " pass"
-    },
-    {
-      "type": "text",
-      "delta": "ée"
-    },
-    {
-      "type": "text",
-      "delta": " ("
-    },
-    {
-      "type": "text",
-      "delta": "m"
-    },
-    {
-      "type": "text",
-      "delta": "anger"
-    },
-    {
-      "type": "text",
-      "delta": ")"
-    },
-    {
-      "type": "text",
-      "delta": " qui"
-    },
-    {
-      "type": "text",
-      "delta": " a"
-    },
-    {
-      "type": "text",
-      "delta": " eu"
-    },
-    {
-      "type": "text",
-      "delta": " un"
-    },
-    {
-      "type": "text",
-      "delta": " effet"
-    },
-    {
-      "type": "text",
-      "delta": " continu"
-    },
-    {
-      "type": "text",
-      "delta": " jusqu"
-    },
-    {
-      "type": "text",
-      "delta": "'"
-    },
-    {
-      "type": "text",
-      "delta": "au"
-    },
-    {
-      "type": "text",
-      "delta": " présent"
-    },
-    {
-      "type": "text",
-      "delta": " ("
-    },
-    {
-      "type": "text",
-      "delta": "j"
+      "delta": "J"
     },
     {
       "type": "text",
@@ -842,35 +1074,55 @@
     },
     {
       "type": "text",
-      "delta": " encore"
+      "delta": "\""
     },
     {
       "type": "text",
-      "delta": " une"
+      "delta": " est"
     },
     {
       "type": "text",
-      "delta": " pom"
+      "delta": " la"
     },
     {
       "type": "text",
-      "delta": "me"
+      "delta": " forme"
     },
     {
       "type": "text",
-      "delta": " dans"
+      "delta": " correct"
     },
     {
       "type": "text",
-      "delta": " mon"
+      "delta": "e"
     },
     {
       "type": "text",
-      "delta": " ventre"
+      "delta": " de"
     },
     {
       "type": "text",
-      "delta": "!)."
+      "delta": " \""
+    },
+    {
+      "type": "text",
+      "delta": "avoir"
+    },
+    {
+      "type": "text",
+      "delta": "\""
+    },
+    {
+      "type": "text",
+      "delta": " au"
+    },
+    {
+      "type": "text",
+      "delta": " présent"
+    },
+    {
+      "type": "text",
+      "delta": "."
     },
     {
       "type": "text",
@@ -886,15 +1138,7 @@
     },
     {
       "type": "text",
-      "delta": "Il"
-    },
-    {
-      "type": "text",
-      "delta": " **"
-    },
-    {
-      "type": "text",
-      "delta": "a"
+      "delta": "Je"
     },
     {
       "type": "text",
@@ -906,15 +1150,15 @@
     },
     {
       "type": "text",
-      "delta": "**"
+      "delta": " une"
     },
     {
       "type": "text",
-      "delta": " son"
+      "delta": " pom"
     },
     {
       "type": "text",
-      "delta": " déjeuner"
+      "delta": "me"
     },
     {
       "type": "text",
@@ -922,31 +1166,79 @@
     },
     {
       "type": "text",
-      "delta": " ("
+      "delta": "  "
     },
     {
       "type": "text",
-      "delta": "He"
+      "delta": "-"
     },
     {
       "type": "text",
-      "delta": " has"
+      "delta": " Cette"
     },
     {
       "type": "text",
-      "delta": " eaten"
+      "delta": " phrase"
     },
     {
       "type": "text",
-      "delta": " his"
+      "delta": " serait"
     },
     {
       "type": "text",
-      "delta": " lunch"
+      "delta": " incorrect"
     },
     {
       "type": "text",
-      "delta": ".)"
+      "delta": "e"
+    },
+    {
+      "type": "text",
+      "delta": " et"
+    },
+    {
+      "type": "text",
+      "delta": " ne"
+    },
+    {
+      "type": "text",
+      "delta": " fer"
+    },
+    {
+      "type": "text",
+      "delta": "ait"
+    },
+    {
+      "type": "text",
+      "delta": " pas"
+    },
+    {
+      "type": "text",
+      "delta": " comprendre"
+    },
+    {
+      "type": "text",
+      "delta": " l"
+    },
+    {
+      "type": "text",
+      "delta": "’"
+    },
+    {
+      "type": "text",
+      "delta": "action"
+    },
+    {
+      "type": "text",
+      "delta": " de"
+    },
+    {
+      "type": "text",
+      "delta": " manger"
+    },
+    {
+      "type": "text",
+      "delta": "."
     },
     {
       "type": "text",
@@ -958,11 +1250,11 @@
     },
     {
       "type": "text",
-      "delta": " approfond"
+      "delta": " rés"
     },
     {
       "type": "text",
-      "delta": "ir"
+      "delta": "umer"
     },
     {
       "type": "text",
@@ -970,31 +1262,103 @@
     },
     {
       "type": "text",
+      "delta": " c"
+    },
+    {
+      "type": "text",
+      "delta": "'"
+    },
+    {
+      "type": "text",
+      "delta": "est"
+    },
+    {
+      "type": "text",
+      "delta": " une"
+    },
+    {
+      "type": "text",
+      "delta": " question"
+    },
+    {
+      "type": "text",
+      "delta": " de"
+    },
+    {
+      "type": "text",
+      "delta": " conjug"
+    },
+    {
+      "type": "text",
+      "delta": "aison"
+    },
+    {
+      "type": "text",
+      "delta": " des"
+    },
+    {
+      "type": "text",
+      "delta": " ver"
+    },
+    {
+      "type": "text",
+      "delta": "bes"
+    },
+    {
+      "type": "text",
+      "delta": " auxilia"
+    },
+    {
+      "type": "text",
+      "delta": "ires"
+    },
+    {
+      "type": "text",
+      "delta": " en"
+    },
+    {
+      "type": "text",
+      "delta": " français"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "Est"
+    },
+    {
+      "type": "text",
+      "delta": "-"
+    },
+    {
+      "type": "text",
+      "delta": "ce"
+    },
+    {
+      "type": "text",
+      "delta": " que"
+    },
+    {
+      "type": "text",
       "delta": " vous"
     },
     {
       "type": "text",
-      "delta": " pouvez"
+      "delta": " aim"
     },
     {
       "type": "text",
-      "delta": " me"
+      "delta": "erie"
     },
     {
       "type": "text",
-      "delta": " demander"
-    },
-    {
-      "type": "text",
-      "delta": " si"
-    },
-    {
-      "type": "text",
-      "delta": " vous"
-    },
-    {
-      "type": "text",
-      "delta": " souhaitez"
+      "delta": "z"
     },
     {
       "type": "text",
@@ -1010,75 +1374,15 @@
     },
     {
       "type": "text",
-      "delta": " explique"
+      "delta": " donne"
     },
     {
       "type": "text",
-      "delta": " plus"
+      "delta": " quelques"
     },
     {
       "type": "text",
-      "delta": " précisément"
-    },
-    {
-      "type": "text",
-      "delta": " comment"
-    },
-    {
-      "type": "text",
-      "delta": " les"
-    },
-    {
-      "type": "text",
-      "delta": " temps"
-    },
-    {
-      "type": "text",
-      "delta": " composés"
-    },
-    {
-      "type": "text",
-      "delta": " sont"
-    },
-    {
-      "type": "text",
-      "delta": " form"
-    },
-    {
-      "type": "text",
-      "delta": "és"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " ou"
-    },
-    {
-      "type": "text",
-      "delta": " si"
-    },
-    {
-      "type": "text",
-      "delta": " vous"
-    },
-    {
-      "type": "text",
-      "delta": " voulez"
-    },
-    {
-      "type": "text",
-      "delta": " d"
-    },
-    {
-      "type": "text",
-      "delta": "’"
-    },
-    {
-      "type": "text",
-      "delta": "autres"
+      "delta": " autres"
     },
     {
       "type": "text",
@@ -1086,12 +1390,36 @@
     },
     {
       "type": "text",
-      "delta": "."
+      "delta": " pour"
+    },
+    {
+      "type": "text",
+      "delta": " illust"
+    },
+    {
+      "type": "text",
+      "delta": "rer"
+    },
+    {
+      "type": "text",
+      "delta": " cette"
+    },
+    {
+      "type": "text",
+      "delta": " règle"
+    },
+    {
+      "type": "text",
+      "delta": " ?"
+    },
+    {
+      "type": "text",
+      "delta": "\n"
     },
     {
       "type": "usage",
       "inputTokens": 1071,
-      "outputTokens": 273
+      "outputTokens": 355
     },
     {
       "type": "stop",

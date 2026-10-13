@@ -14,7 +14,15 @@
     },
     {
       "type": "text",
-      "delta": " Could"
+      "delta": " What"
+    },
+    {
+      "type": "text",
+      "delta": " exactly"
+    },
+    {
+      "type": "text",
+      "delta": " would"
     },
     {
       "type": "text",
@@ -22,31 +30,23 @@
     },
     {
       "type": "text",
-      "delta": " please"
+      "delta": " like"
     },
     {
       "type": "text",
-      "delta": " provide"
+      "delta": " to"
     },
     {
       "type": "text",
-      "delta": " the"
+      "delta": " do"
     },
     {
       "type": "text",
-      "delta": " English"
+      "delta": " with"
     },
     {
       "type": "text",
-      "delta": " text"
-    },
-    {
-      "type": "text",
-      "delta": " of"
-    },
-    {
-      "type": "text",
-      "delta": " the"
+      "delta": " your"
     },
     {
       "type": "text",
@@ -58,11 +58,15 @@
     },
     {
       "type": "text",
-      "delta": " you"
+      "delta": "?"
     },
     {
       "type": "text",
-      "delta": " would"
+      "delta": " Would"
+    },
+    {
+      "type": "text",
+      "delta": " you"
     },
     {
       "type": "text",
@@ -70,11 +74,67 @@
     },
     {
       "type": "text",
-      "delta": " assistance"
+      "delta": " a"
     },
     {
       "type": "text",
-      "delta": " with"
+      "delta": " translation"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " or"
+    },
+    {
+      "type": "text",
+      "delta": " perhaps"
+    },
+    {
+      "type": "text",
+      "delta": " help"
+    },
+    {
+      "type": "text",
+      "delta": " understanding"
+    },
+    {
+      "type": "text",
+      "delta": " the"
+    },
+    {
+      "type": "text",
+      "delta": " structure"
+    },
+    {
+      "type": "text",
+      "delta": " of"
+    },
+    {
+      "type": "text",
+      "delta": " a"
+    },
+    {
+      "type": "text",
+      "delta": " typical"
+    },
+    {
+      "type": "text",
+      "delta": " business"
+    },
+    {
+      "type": "text",
+      "delta": " email"
+    },
+    {
+      "type": "text",
+      "delta": " in"
+    },
+    {
+      "type": "text",
+      "delta": " Japanese"
     },
     {
       "type": "text",
@@ -83,7 +143,7 @@
     {
       "type": "usage",
       "inputTokens": 1041,
-      "outputTokens": 21
+      "outputTokens": 36
     },
     {
       "type": "stop",

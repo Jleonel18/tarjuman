@@ -26,11 +26,11 @@
     },
     {
       "type": "text",
-      "delta": " parte"
+      "delta": " aspectos"
     },
     {
       "type": "text",
-      "delta": " específica"
+      "delta": " específicos"
     },
     {
       "type": "text",
@@ -54,7 +54,75 @@
     },
     {
       "type": "text",
-      "delta": " necesitas"
+      "delta": " te"
+    },
+    {
+      "type": "text",
+      "delta": " gustaría"
+    },
+    {
+      "type": "text",
+      "delta": " que"
+    },
+    {
+      "type": "text",
+      "delta": " revis"
+    },
+    {
+      "type": "text",
+      "delta": "emos"
+    },
+    {
+      "type": "text",
+      "delta": " o"
+    },
+    {
+      "type": "text",
+      "delta": " trad"
+    },
+    {
+      "type": "text",
+      "delta": "uz"
+    },
+    {
+      "type": "text",
+      "delta": "c"
+    },
+    {
+      "type": "text",
+      "delta": "amos"
+    },
+    {
+      "type": "text",
+      "delta": "?"
+    },
+    {
+      "type": "text",
+      "delta": " Por"
+    },
+    {
+      "type": "text",
+      "delta": " ejemplo"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " ¿"
+    },
+    {
+      "type": "text",
+      "delta": "ne"
+    },
+    {
+      "type": "text",
+      "delta": "ces"
+    },
+    {
+      "type": "text",
+      "delta": "itas"
     },
     {
       "type": "text",
@@ -66,7 +134,55 @@
     },
     {
       "type": "text",
-      "delta": " traducir"
+      "delta": " redact"
+    },
+    {
+      "type": "text",
+      "delta": "ar"
+    },
+    {
+      "type": "text",
+      "delta": " una"
+    },
+    {
+      "type": "text",
+      "delta": " sección"
+    },
+    {
+      "type": "text",
+      "delta": " específica"
+    },
+    {
+      "type": "text",
+      "delta": " ("
+    },
+    {
+      "type": "text",
+      "delta": "como"
+    },
+    {
+      "type": "text",
+      "delta": " \""
+    },
+    {
+      "type": "text",
+      "delta": "Exper"
+    },
+    {
+      "type": "text",
+      "delta": "iencia"
+    },
+    {
+      "type": "text",
+      "delta": " Labor"
+    },
+    {
+      "type": "text",
+      "delta": "al"
+    },
+    {
+      "type": "text",
+      "delta": "\")"
     },
     {
       "type": "text",
@@ -74,7 +190,39 @@
     },
     {
       "type": "text",
-      "delta": " entender"
+      "delta": " quieres"
+    },
+    {
+      "type": "text",
+      "delta": " traducir"
+    },
+    {
+      "type": "text",
+      "delta": " todo"
+    },
+    {
+      "type": "text",
+      "delta": " el"
+    },
+    {
+      "type": "text",
+      "delta": " curr"
+    },
+    {
+      "type": "text",
+      "delta": "ícul"
+    },
+    {
+      "type": "text",
+      "delta": "um"
+    },
+    {
+      "type": "text",
+      "delta": " al"
+    },
+    {
+      "type": "text",
+      "delta": " japonés"
     },
     {
       "type": "text",
@@ -87,7 +235,7 @@
     {
       "type": "usage",
       "inputTokens": 1043,
-      "outputTokens": 22
+      "outputTokens": 59
     },
     {
       "type": "stop",

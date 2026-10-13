@@ -81,13 +81,9 @@
       "delta": "."
     },
     {
-      "type": "text",
-      "delta": "\n"
-    },
-    {
       "type": "usage",
       "inputTokens": 1040,
-      "outputTokens": 22
+      "outputTokens": 21
     },
     {
       "type": "stop",

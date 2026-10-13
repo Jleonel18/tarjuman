@@ -2,11 +2,39 @@
   "steps": [
     {
       "type": "text",
-      "delta": "ACE"
+      "delta": "ANAL"
     },
     {
       "type": "text",
-      "delta": "PT"
+      "delta": "ICE"
+    },
+    {
+      "type": "text",
+      "delta": ":"
+    },
+    {
+      "type": "text",
+      "delta": " the"
+    },
+    {
+      "type": "text",
+      "delta": " request"
+    },
+    {
+      "type": "text",
+      "delta": " is"
+    },
+    {
+      "type": "text",
+      "delta": " within"
+    },
+    {
+      "type": "text",
+      "delta": " scope"
+    },
+    {
+      "type": "text",
+      "delta": "."
     },
     {
       "type": "text",
@@ -15,6 +43,18 @@
     {
       "type": "text",
       "delta": "La"
+    },
+    {
+      "type": "text",
+      "delta": " traducción"
+    },
+    {
+      "type": "text",
+      "delta": " de"
+    },
+    {
+      "type": "text",
+      "delta": " la"
     },
     {
       "type": "text",
@@ -54,18 +94,6 @@
     },
     {
       "type": "text",
-      "delta": " se"
-    },
-    {
-      "type": "text",
-      "delta": " puede"
-    },
-    {
-      "type": "text",
-      "delta": " traducir"
-    },
-    {
-      "type": "text",
       "delta": " al"
     },
     {
@@ -74,123 +102,11 @@
     },
     {
       "type": "text",
-      "delta": " de"
-    },
-    {
-      "type": "text",
-      "delta": " varias"
-    },
-    {
-      "type": "text",
-      "delta": " maneras"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " dependiendo"
-    },
-    {
-      "type": "text",
-      "delta": " del"
-    },
-    {
-      "type": "text",
-      "delta": " énfasis"
-    },
-    {
-      "type": "text",
-      "delta": " que"
-    },
-    {
-      "type": "text",
-      "delta": " quieras"
-    },
-    {
-      "type": "text",
-      "delta": " darle"
-    },
-    {
-      "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": " Aquí"
-    },
-    {
-      "type": "text",
-      "delta": " te"
-    },
-    {
-      "type": "text",
-      "delta": " presento"
-    },
-    {
-      "type": "text",
-      "delta": " una"
-    },
-    {
-      "type": "text",
-      "delta": " traducción"
-    },
-    {
-      "type": "text",
-      "delta": " común"
-    },
-    {
-      "type": "text",
-      "delta": " y"
-    },
-    {
-      "type": "text",
-      "delta": " la"
-    },
-    {
-      "type": "text",
-      "delta": " explicación"
-    },
-    {
-      "type": "text",
-      "delta": " de"
-    },
-    {
-      "type": "text",
-      "delta": " su"
-    },
-    {
-      "type": "text",
-      "delta": " construcción"
+      "delta": " es"
     },
     {
       "type": "text",
       "delta": ":"
-    },
-    {
-      "type": "text",
-      "delta": "\n\n"
-    },
-    {
-      "type": "text",
-      "delta": "**"
-    },
-    {
-      "type": "text",
-      "delta": "Tr"
-    },
-    {
-      "type": "text",
-      "delta": "adu"
-    },
-    {
-      "type": "text",
-      "delta": "cción"
-    },
-    {
-      "type": "text",
-      "delta": ":**"
     },
     {
       "type": "text",
@@ -215,6 +131,10 @@
     {
       "type": "text",
       "delta": "します"
+    },
+    {
+      "type": "text",
+      "delta": "。"
     },
     {
       "type": "text",
@@ -254,7 +174,71 @@
     },
     {
       "type": "text",
-      "delta": ")"
+      "delta": ".)"
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "Ahora"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " vamos"
+    },
+    {
+      "type": "text",
+      "delta": " a"
+    },
+    {
+      "type": "text",
+      "delta": " analizar"
+    },
+    {
+      "type": "text",
+      "delta": " cómo"
+    },
+    {
+      "type": "text",
+      "delta": " está"
+    },
+    {
+      "type": "text",
+      "delta": " constru"
+    },
+    {
+      "type": "text",
+      "delta": "ida"
+    },
+    {
+      "type": "text",
+      "delta": " esta"
+    },
+    {
+      "type": "text",
+      "delta": " frase"
+    },
+    {
+      "type": "text",
+      "delta": " y"
+    },
+    {
+      "type": "text",
+      "delta": " sus"
+    },
+    {
+      "type": "text",
+      "delta": " componentes"
+    },
+    {
+      "type": "text",
+      "delta": ":"
     },
     {
       "type": "text",
@@ -298,11 +282,211 @@
     },
     {
       "type": "text",
-      "delta": " Tren"
+      "delta": " Sign"
+    },
+    {
+      "type": "text",
+      "delta": "ifica"
+    },
+    {
+      "type": "text",
+      "delta": " “"
+    },
+    {
+      "type": "text",
+      "delta": "tren"
+    },
+    {
+      "type": "text",
+      "delta": "”."
+    },
+    {
+      "type": "text",
+      "delta": " Es"
+    },
+    {
+      "type": "text",
+      "delta": " un"
+    },
+    {
+      "type": "text",
+      "delta": " sust"
+    },
+    {
+      "type": "text",
+      "delta": "ant"
+    },
+    {
+      "type": "text",
+      "delta": "ivo"
+    },
+    {
+      "type": "text",
+      "delta": " en"
+    },
+    {
+      "type": "text",
+      "delta": " japonés"
+    },
+    {
+      "type": "text",
+      "delta": "."
     },
     {
       "type": "text",
       "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "    "
+    },
+    {
+      "type": "text",
+      "delta": "*"
+    },
+    {
+      "type": "text",
+      "delta": "   "
+    },
+    {
+      "type": "text",
+      "delta": "Ej"
+    },
+    {
+      "type": "text",
+      "delta": "emplo"
+    },
+    {
+      "type": "text",
+      "delta": ":"
+    },
+    {
+      "type": "text",
+      "delta": " "
+    },
+    {
+      "type": "text",
+      "delta": "私は"
+    },
+    {
+      "type": "text",
+      "delta": "電車"
+    },
+    {
+      "type": "text",
+      "delta": "に乗"
+    },
+    {
+      "type": "text",
+      "delta": "ります"
+    },
+    {
+      "type": "text",
+      "delta": "。("
+    },
+    {
+      "type": "text",
+      "delta": "Wat"
+    },
+    {
+      "type": "text",
+      "delta": "ashi"
+    },
+    {
+      "type": "text",
+      "delta": " wa"
+    },
+    {
+      "type": "text",
+      "delta": " dens"
+    },
+    {
+      "type": "text",
+      "delta": "ha"
+    },
+    {
+      "type": "text",
+      "delta": " ni"
+    },
+    {
+      "type": "text",
+      "delta": " nor"
+    },
+    {
+      "type": "text",
+      "delta": "imas"
+    },
+    {
+      "type": "text",
+      "delta": "u"
+    },
+    {
+      "type": "text",
+      "delta": ".)"
+    },
+    {
+      "type": "text",
+      "delta": " –"
+    },
+    {
+      "type": "text",
+      "delta": " \""
+    },
+    {
+      "type": "text",
+      "delta": "Yo"
+    },
+    {
+      "type": "text",
+      "delta": " tomo"
+    },
+    {
+      "type": "text",
+      "delta": " el"
+    },
+    {
+      "type": "text",
+      "delta": " tren"
+    },
+    {
+      "type": "text",
+      "delta": ".\""
+    },
+    {
+      "type": "text",
+      "delta": " ("
+    },
+    {
+      "type": "text",
+      "delta": "Translation"
+    },
+    {
+      "type": "text",
+      "delta": ":"
+    },
+    {
+      "type": "text",
+      "delta": " I"
+    },
+    {
+      "type": "text",
+      "delta": " take"
+    },
+    {
+      "type": "text",
+      "delta": " the"
+    },
+    {
+      "type": "text",
+      "delta": " train"
+    },
+    {
+      "type": "text",
+      "delta": ".)"
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
     },
     {
       "type": "text",
@@ -338,23 +522,19 @@
     },
     {
       "type": "text",
-      "delta": "  "
+      "delta": " Esta"
     },
     {
       "type": "text",
-      "delta": "Part"
-    },
-    {
-      "type": "text",
-      "delta": "ícula"
-    },
-    {
-      "type": "text",
-      "delta": " que"
+      "delta": " partícula"
     },
     {
       "type": "text",
       "delta": " indica"
+    },
+    {
+      "type": "text",
+      "delta": " el"
     },
     {
       "type": "text",
@@ -366,7 +546,27 @@
     },
     {
       "type": "text",
+      "delta": " el"
+    },
+    {
+      "type": "text",
       "delta": " instrumento"
+    },
+    {
+      "type": "text",
+      "delta": " utilizado"
+    },
+    {
+      "type": "text",
+      "delta": " para"
+    },
+    {
+      "type": "text",
+      "delta": " hacer"
+    },
+    {
+      "type": "text",
+      "delta": " algo"
     },
     {
       "type": "text",
@@ -390,7 +590,7 @@
     },
     {
       "type": "text",
-      "delta": " \""
+      "delta": " “"
     },
     {
       "type": "text",
@@ -398,7 +598,31 @@
     },
     {
       "type": "text",
-      "delta": "\""
+      "delta": "”"
+    },
+    {
+      "type": "text",
+      "delta": " o"
+    },
+    {
+      "type": "text",
+      "delta": " “"
+    },
+    {
+      "type": "text",
+      "delta": "por"
+    },
+    {
+      "type": "text",
+      "delta": " medio"
+    },
+    {
+      "type": "text",
+      "delta": " de"
+    },
+    {
+      "type": "text",
+      "delta": "”"
     },
     {
       "type": "text",
@@ -415,6 +639,210 @@
     {
       "type": "text",
       "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "    "
+    },
+    {
+      "type": "text",
+      "delta": "*"
+    },
+    {
+      "type": "text",
+      "delta": "   "
+    },
+    {
+      "type": "text",
+      "delta": "Ej"
+    },
+    {
+      "type": "text",
+      "delta": "emplo"
+    },
+    {
+      "type": "text",
+      "delta": ":"
+    },
+    {
+      "type": "text",
+      "delta": " "
+    },
+    {
+      "type": "text",
+      "delta": "私は"
+    },
+    {
+      "type": "text",
+      "delta": "自転車"
+    },
+    {
+      "type": "text",
+      "delta": "で"
+    },
+    {
+      "type": "text",
+      "delta": "学校"
+    },
+    {
+      "type": "text",
+      "delta": "へ"
+    },
+    {
+      "type": "text",
+      "delta": "行"
+    },
+    {
+      "type": "text",
+      "delta": "きます"
+    },
+    {
+      "type": "text",
+      "delta": "。("
+    },
+    {
+      "type": "text",
+      "delta": "Wat"
+    },
+    {
+      "type": "text",
+      "delta": "ashi"
+    },
+    {
+      "type": "text",
+      "delta": " wa"
+    },
+    {
+      "type": "text",
+      "delta": " jit"
+    },
+    {
+      "type": "text",
+      "delta": "ens"
+    },
+    {
+      "type": "text",
+      "delta": "ha"
+    },
+    {
+      "type": "text",
+      "delta": " de"
+    },
+    {
+      "type": "text",
+      "delta": " g"
+    },
+    {
+      "type": "text",
+      "delta": "akk"
+    },
+    {
+      "type": "text",
+      "delta": "ou"
+    },
+    {
+      "type": "text",
+      "delta": " e"
+    },
+    {
+      "type": "text",
+      "delta": " ik"
+    },
+    {
+      "type": "text",
+      "delta": "imas"
+    },
+    {
+      "type": "text",
+      "delta": "u"
+    },
+    {
+      "type": "text",
+      "delta": ".)"
+    },
+    {
+      "type": "text",
+      "delta": " –"
+    },
+    {
+      "type": "text",
+      "delta": " \""
+    },
+    {
+      "type": "text",
+      "delta": "Yo"
+    },
+    {
+      "type": "text",
+      "delta": " voy"
+    },
+    {
+      "type": "text",
+      "delta": " a"
+    },
+    {
+      "type": "text",
+      "delta": " la"
+    },
+    {
+      "type": "text",
+      "delta": " escuela"
+    },
+    {
+      "type": "text",
+      "delta": " en"
+    },
+    {
+      "type": "text",
+      "delta": " bicicleta"
+    },
+    {
+      "type": "text",
+      "delta": ".\""
+    },
+    {
+      "type": "text",
+      "delta": " ("
+    },
+    {
+      "type": "text",
+      "delta": "Translation"
+    },
+    {
+      "type": "text",
+      "delta": ":"
+    },
+    {
+      "type": "text",
+      "delta": " I"
+    },
+    {
+      "type": "text",
+      "delta": " go"
+    },
+    {
+      "type": "text",
+      "delta": " to"
+    },
+    {
+      "type": "text",
+      "delta": " school"
+    },
+    {
+      "type": "text",
+      "delta": " by"
+    },
+    {
+      "type": "text",
+      "delta": " bicycle"
+    },
+    {
+      "type": "text",
+      "delta": ".)"
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
     },
     {
       "type": "text",
@@ -474,7 +902,47 @@
     },
     {
       "type": "text",
-      "delta": " Lleg"
+      "delta": "  "
+    },
+    {
+      "type": "text",
+      "delta": "Esta"
+    },
+    {
+      "type": "text",
+      "delta": " es"
+    },
+    {
+      "type": "text",
+      "delta": " la"
+    },
+    {
+      "type": "text",
+      "delta": " forma"
+    },
+    {
+      "type": "text",
+      "delta": " verbal"
+    },
+    {
+      "type": "text",
+      "delta": " que"
+    },
+    {
+      "type": "text",
+      "delta": " significa"
+    },
+    {
+      "type": "text",
+      "delta": " “"
+    },
+    {
+      "type": "text",
+      "delta": "l"
+    },
+    {
+      "type": "text",
+      "delta": "leg"
     },
     {
       "type": "text",
@@ -486,614 +954,6 @@
     },
     {
       "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": " Esta"
-    },
-    {
-      "type": "text",
-      "delta": " es"
-    },
-    {
-      "type": "text",
-      "delta": " la"
-    },
-    {
-      "type": "text",
-      "delta": " forma"
-    },
-    {
-      "type": "text",
-      "delta": " de"
-    },
-    {
-      "type": "text",
-      "delta": " dar"
-    },
-    {
-      "type": "text",
-      "delta": " por"
-    },
-    {
-      "type": "text",
-      "delta": " sentado"
-    },
-    {
-      "type": "text",
-      "delta": " que"
-    },
-    {
-      "type": "text",
-      "delta": " vas"
-    },
-    {
-      "type": "text",
-      "delta": " a"
-    },
-    {
-      "type": "text",
-      "delta": " llegar"
-    },
-    {
-      "type": "text",
-      "delta": " tard"
-    },
-    {
-      "type": "text",
-      "delta": "í"
-    },
-    {
-      "type": "text",
-      "delta": "amente"
-    },
-    {
-      "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": "\n\n"
-    },
-    {
-      "type": "text",
-      "delta": "**"
-    },
-    {
-      "type": "text",
-      "delta": "Ex"
-    },
-    {
-      "type": "text",
-      "delta": "plic"
-    },
-    {
-      "type": "text",
-      "delta": "ación"
-    },
-    {
-      "type": "text",
-      "delta": " de"
-    },
-    {
-      "type": "text",
-      "delta": " la"
-    },
-    {
-      "type": "text",
-      "delta": " construcción"
-    },
-    {
-      "type": "text",
-      "delta": ":**"
-    },
-    {
-      "type": "text",
-      "delta": "\n\n"
-    },
-    {
-      "type": "text",
-      "delta": "La"
-    },
-    {
-      "type": "text",
-      "delta": " estructura"
-    },
-    {
-      "type": "text",
-      "delta": " básica"
-    },
-    {
-      "type": "text",
-      "delta": " es"
-    },
-    {
-      "type": "text",
-      "delta": ":"
-    },
-    {
-      "type": "text",
-      "delta": "  "
-    },
-    {
-      "type": "text",
-      "delta": "["
-    },
-    {
-      "type": "text",
-      "delta": "Med"
-    },
-    {
-      "type": "text",
-      "delta": "io"
-    },
-    {
-      "type": "text",
-      "delta": "]"
-    },
-    {
-      "type": "text",
-      "delta": " +"
-    },
-    {
-      "type": "text",
-      "delta": " で"
-    },
-    {
-      "type": "text",
-      "delta": " +"
-    },
-    {
-      "type": "text",
-      "delta": " ["
-    },
-    {
-      "type": "text",
-      "delta": "Resultado"
-    },
-    {
-      "type": "text",
-      "delta": "/"
-    },
-    {
-      "type": "text",
-      "delta": "Acc"
-    },
-    {
-      "type": "text",
-      "delta": "ión"
-    },
-    {
-      "type": "text",
-      "delta": "]"
-    },
-    {
-      "type": "text",
-      "delta": "\n\n"
-    },
-    {
-      "type": "text",
-      "delta": "Esta"
-    },
-    {
-      "type": "text",
-      "delta": " estructura"
-    },
-    {
-      "type": "text",
-      "delta": " se"
-    },
-    {
-      "type": "text",
-      "delta": " usa"
-    },
-    {
-      "type": "text",
-      "delta": " frecu"
-    },
-    {
-      "type": "text",
-      "delta": "entemente"
-    },
-    {
-      "type": "text",
-      "delta": " cuando"
-    },
-    {
-      "type": "text",
-      "delta": " indic"
-    },
-    {
-      "type": "text",
-      "delta": "amos"
-    },
-    {
-      "type": "text",
-      "delta": " con"
-    },
-    {
-      "type": "text",
-      "delta": " qué"
-    },
-    {
-      "type": "text",
-      "delta": " medio"
-    },
-    {
-      "type": "text",
-      "delta": " o"
-    },
-    {
-      "type": "text",
-      "delta": " instrumento"
-    },
-    {
-      "type": "text",
-      "delta": " realiz"
-    },
-    {
-      "type": "text",
-      "delta": "aremos"
-    },
-    {
-      "type": "text",
-      "delta": " una"
-    },
-    {
-      "type": "text",
-      "delta": " acción"
-    },
-    {
-      "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": " Es"
-    },
-    {
-      "type": "text",
-      "delta": " una"
-    },
-    {
-      "type": "text",
-      "delta": " construcción"
-    },
-    {
-      "type": "text",
-      "delta": " bastante"
-    },
-    {
-      "type": "text",
-      "delta": " común"
-    },
-    {
-      "type": "text",
-      "delta": " en"
-    },
-    {
-      "type": "text",
-      "delta": " japonés"
-    },
-    {
-      "type": "text",
-      "delta": " al"
-    },
-    {
-      "type": "text",
-      "delta": " hablar"
-    },
-    {
-      "type": "text",
-      "delta": " de"
-    },
-    {
-      "type": "text",
-      "delta": " cómo"
-    },
-    {
-      "type": "text",
-      "delta": " hacemos"
-    },
-    {
-      "type": "text",
-      "delta": " las"
-    },
-    {
-      "type": "text",
-      "delta": " cosas"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " como"
-    },
-    {
-      "type": "text",
-      "delta": " \""
-    },
-    {
-      "type": "text",
-      "delta": "voy"
-    },
-    {
-      "type": "text",
-      "delta": " a"
-    },
-    {
-      "type": "text",
-      "delta": " hacer"
-    },
-    {
-      "type": "text",
-      "delta": " algo"
-    },
-    {
-      "type": "text",
-      "delta": " con"
-    },
-    {
-      "type": "text",
-      "delta": " esto"
-    },
-    {
-      "type": "text",
-      "delta": "\"."
-    },
-    {
-      "type": "text",
-      "delta": "\n\n"
-    },
-    {
-      "type": "text",
-      "delta": "**"
-    },
-    {
-      "type": "text",
-      "delta": "Otro"
-    },
-    {
-      "type": "text",
-      "delta": " ejemplo"
-    },
-    {
-      "type": "text",
-      "delta": " ("
-    },
-    {
-      "type": "text",
-      "delta": "menos"
-    },
-    {
-      "type": "text",
-      "delta": " común"
-    },
-    {
-      "type": "text",
-      "delta": " pero"
-    },
-    {
-      "type": "text",
-      "delta": " posible"
-    },
-    {
-      "type": "text",
-      "delta": "):"
-    },
-    {
-      "type": "text",
-      "delta": "**"
-    },
-    {
-      "type": "text",
-      "delta": " "
-    },
-    {
-      "type": "text",
-      "delta": "私は"
-    },
-    {
-      "type": "text",
-      "delta": "電車"
-    },
-    {
-      "type": "text",
-      "delta": "で"
-    },
-    {
-      "type": "text",
-      "delta": "遅"
-    },
-    {
-      "type": "text",
-      "delta": "れます"
-    },
-    {
-      "type": "text",
-      "delta": " ("
-    },
-    {
-      "type": "text",
-      "delta": "Wat"
-    },
-    {
-      "type": "text",
-      "delta": "ashi"
-    },
-    {
-      "type": "text",
-      "delta": " wa"
-    },
-    {
-      "type": "text",
-      "delta": " dens"
-    },
-    {
-      "type": "text",
-      "delta": "ha"
-    },
-    {
-      "type": "text",
-      "delta": " de"
-    },
-    {
-      "type": "text",
-      "delta": " ok"
-    },
-    {
-      "type": "text",
-      "delta": "ure"
-    },
-    {
-      "type": "text",
-      "delta": "mas"
-    },
-    {
-      "type": "text",
-      "delta": "u"
-    },
-    {
-      "type": "text",
-      "delta": ")"
-    },
-    {
-      "type": "text",
-      "delta": "\n\n"
-    },
-    {
-      "type": "text",
-      "delta": "*"
-    },
-    {
-      "type": "text",
-      "delta": "   "
-    },
-    {
-      "type": "text",
-      "delta": "**"
-    },
-    {
-      "type": "text",
-      "delta": "私"
-    },
-    {
-      "type": "text",
-      "delta": " ("
-    },
-    {
-      "type": "text",
-      "delta": "wat"
-    },
-    {
-      "type": "text",
-      "delta": "ashi"
-    },
-    {
-      "type": "text",
-      "delta": "):"
-    },
-    {
-      "type": "text",
-      "delta": "**"
-    },
-    {
-      "type": "text",
-      "delta": " Yo"
-    },
-    {
-      "type": "text",
-      "delta": "\n"
-    },
-    {
-      "type": "text",
-      "delta": "*"
-    },
-    {
-      "type": "text",
-      "delta": "   "
-    },
-    {
-      "type": "text",
-      "delta": "**"
-    },
-    {
-      "type": "text",
-      "delta": "は"
-    },
-    {
-      "type": "text",
-      "delta": " ("
-    },
-    {
-      "type": "text",
-      "delta": "wa"
-    },
-    {
-      "type": "text",
-      "delta": "):"
-    },
-    {
-      "type": "text",
-      "delta": "**"
-    },
-    {
-      "type": "text",
-      "delta": " Part"
-    },
-    {
-      "type": "text",
-      "delta": "ícula"
-    },
-    {
-      "type": "text",
-      "delta": " que"
-    },
-    {
-      "type": "text",
-      "delta": " marca"
-    },
-    {
-      "type": "text",
-      "delta": " el"
-    },
-    {
-      "type": "text",
-      "delta": " tema"
-    },
-    {
-      "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": " En"
-    },
-    {
-      "type": "text",
-      "delta": " este"
-    },
-    {
-      "type": "text",
-      "delta": " caso"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " “"
-    },
-    {
-      "type": "text",
-      "delta": "yo"
-    },
-    {
-      "type": "text",
       "delta": "”."
     },
     {
@@ -1102,6 +962,10 @@
     },
     {
       "type": "text",
+      "delta": "    "
+    },
+    {
+      "type": "text",
       "delta": "*"
     },
     {
@@ -1110,111 +974,19 @@
     },
     {
       "type": "text",
-      "delta": "**"
+      "delta": "*"
     },
     {
       "type": "text",
-      "delta": "遅"
+      "delta": "Ch"
     },
     {
       "type": "text",
-      "delta": "れます"
+      "delta": "ik"
     },
     {
       "type": "text",
-      "delta": " ("
-    },
-    {
-      "type": "text",
-      "delta": "ok"
-    },
-    {
-      "type": "text",
-      "delta": "ure"
-    },
-    {
-      "type": "text",
-      "delta": "mas"
-    },
-    {
-      "type": "text",
-      "delta": "u"
-    },
-    {
-      "type": "text",
-      "delta": "):"
-    },
-    {
-      "type": "text",
-      "delta": "**"
-    },
-    {
-      "type": "text",
-      "delta": " Lleg"
-    },
-    {
-      "type": "text",
-      "delta": "aré"
-    },
-    {
-      "type": "text",
-      "delta": " tarde"
-    },
-    {
-      "type": "text",
-      "delta": " ("
-    },
-    {
-      "type": "text",
-      "delta": "forma"
-    },
-    {
-      "type": "text",
-      "delta": " más"
-    },
-    {
-      "type": "text",
-      "delta": " informal"
-    },
-    {
-      "type": "text",
-      "delta": " e"
-    },
-    {
-      "type": "text",
-      "delta": " implica"
-    },
-    {
-      "type": "text",
-      "delta": " más"
-    },
-    {
-      "type": "text",
-      "delta": " la"
-    },
-    {
-      "type": "text",
-      "delta": " posibilidad"
-    },
-    {
-      "type": "text",
-      "delta": " de"
-    },
-    {
-      "type": "text",
-      "delta": " llegar"
-    },
-    {
-      "type": "text",
-      "delta": " tarde"
-    },
-    {
-      "type": "text",
-      "delta": ")."
-    },
-    {
-      "type": "text",
-      "delta": "\n\n"
+      "delta": "oku"
     },
     {
       "type": "text",
@@ -1222,107 +994,91 @@
     },
     {
       "type": "text",
-      "delta": "En"
+      "delta": " ("
     },
     {
       "type": "text",
-      "delta": " este"
+      "delta": "遅"
     },
     {
       "type": "text",
-      "delta": " ejemplo"
+      "delta": "刻"
     },
     {
       "type": "text",
-      "delta": ","
+      "delta": ")"
     },
     {
       "type": "text",
-      "delta": " “"
+      "delta": " –"
     },
     {
       "type": "text",
-      "delta": "ok"
+      "delta": " significa"
     },
     {
       "type": "text",
-      "delta": "ure"
+      "delta": " \""
     },
     {
       "type": "text",
-      "delta": "mas"
+      "delta": "t"
     },
     {
       "type": "text",
-      "delta": "u"
+      "delta": "ard"
     },
     {
       "type": "text",
-      "delta": "”"
+      "delta": "anza"
     },
     {
       "type": "text",
-      "delta": " es"
+      "delta": "\""
     },
     {
       "type": "text",
-      "delta": " una"
+      "delta": " o"
     },
     {
       "type": "text",
-      "delta": " forma"
+      "delta": " \""
     },
     {
       "type": "text",
-      "delta": " más"
+      "delta": "re"
     },
     {
       "type": "text",
-      "delta": " coloqu"
+      "delta": "tras"
     },
     {
       "type": "text",
-      "delta": "ial"
+      "delta": "o"
     },
     {
       "type": "text",
-      "delta": " de"
+      "delta": "\"."
     },
     {
       "type": "text",
-      "delta": " indicar"
+      "delta": "\n"
     },
     {
       "type": "text",
-      "delta": " que"
+      "delta": "    "
     },
     {
       "type": "text",
-      "delta": " algo"
+      "delta": "*"
     },
     {
       "type": "text",
-      "delta": " va"
+      "delta": "   "
     },
     {
       "type": "text",
-      "delta": " a"
-    },
-    {
-      "type": "text",
-      "delta": " suceder"
-    },
-    {
-      "type": "text",
-      "delta": ".*"
-    },
-    {
-      "type": "text",
-      "delta": "  "
-    },
-    {
-      "type": "text",
-      "delta": "“"
+      "delta": "*"
     },
     {
       "type": "text",
@@ -1338,7 +1094,23 @@
     },
     {
       "type": "text",
-      "delta": "”"
+      "delta": "*"
+    },
+    {
+      "type": "text",
+      "delta": " ("
+    },
+    {
+      "type": "text",
+      "delta": "します"
+    },
+    {
+      "type": "text",
+      "delta": ")"
+    },
+    {
+      "type": "text",
+      "delta": " –"
     },
     {
       "type": "text",
@@ -1346,23 +1118,63 @@
     },
     {
       "type": "text",
-      "delta": " más"
+      "delta": " una"
     },
     {
       "type": "text",
-      "delta": " formal"
+      "delta": " forma"
     },
     {
       "type": "text",
-      "delta": " y"
+      "delta": " cort"
     },
     {
       "type": "text",
-      "delta": " se"
+      "delta": "és"
     },
     {
       "type": "text",
-      "delta": " utiliza"
+      "delta": " del"
+    },
+    {
+      "type": "text",
+      "delta": " verbo"
+    },
+    {
+      "type": "text",
+      "delta": " \""
+    },
+    {
+      "type": "text",
+      "delta": "h"
+    },
+    {
+      "type": "text",
+      "delta": "acer"
+    },
+    {
+      "type": "text",
+      "delta": "\""
+    },
+    {
+      "type": "text",
+      "delta": " o"
+    },
+    {
+      "type": "text",
+      "delta": " \""
+    },
+    {
+      "type": "text",
+      "delta": "real"
+    },
+    {
+      "type": "text",
+      "delta": "izar"
+    },
+    {
+      "type": "text",
+      "delta": "\","
     },
     {
       "type": "text",
@@ -1370,7 +1182,391 @@
     },
     {
       "type": "text",
-      "delta": " situaciones"
+      "delta": " este"
+    },
+    {
+      "type": "text",
+      "delta": " caso"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " indicar"
+    },
+    {
+      "type": "text",
+      "delta": " el"
+    },
+    {
+      "type": "text",
+      "delta": " acto"
+    },
+    {
+      "type": "text",
+      "delta": " de"
+    },
+    {
+      "type": "text",
+      "delta": " llegar"
+    },
+    {
+      "type": "text",
+      "delta": " tarde"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": "  "
+    },
+    {
+      "type": "text",
+      "delta": "Es"
+    },
+    {
+      "type": "text",
+      "delta": " una"
+    },
+    {
+      "type": "text",
+      "delta": " forma"
+    },
+    {
+      "type": "text",
+      "delta": " muy"
+    },
+    {
+      "type": "text",
+      "delta": " común"
+    },
+    {
+      "type": "text",
+      "delta": " y"
+    },
+    {
+      "type": "text",
+      "delta": " educ"
+    },
+    {
+      "type": "text",
+      "delta": "ada"
+    },
+    {
+      "type": "text",
+      "delta": " para"
+    },
+    {
+      "type": "text",
+      "delta": " expresar"
+    },
+    {
+      "type": "text",
+      "delta": " acciones"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": "\n"
+    },
+    {
+      "type": "text",
+      "delta": "    "
+    },
+    {
+      "type": "text",
+      "delta": "*"
+    },
+    {
+      "type": "text",
+      "delta": "   "
+    },
+    {
+      "type": "text",
+      "delta": "Ej"
+    },
+    {
+      "type": "text",
+      "delta": "emplo"
+    },
+    {
+      "type": "text",
+      "delta": ":"
+    },
+    {
+      "type": "text",
+      "delta": " "
+    },
+    {
+      "type": "text",
+      "delta": "私は"
+    },
+    {
+      "type": "text",
+      "delta": "遅"
+    },
+    {
+      "type": "text",
+      "delta": "刻"
+    },
+    {
+      "type": "text",
+      "delta": "します"
+    },
+    {
+      "type": "text",
+      "delta": "。("
+    },
+    {
+      "type": "text",
+      "delta": "Wat"
+    },
+    {
+      "type": "text",
+      "delta": "ashi"
+    },
+    {
+      "type": "text",
+      "delta": " wa"
+    },
+    {
+      "type": "text",
+      "delta": " chik"
+    },
+    {
+      "type": "text",
+      "delta": "oku"
+    },
+    {
+      "type": "text",
+      "delta": " sh"
+    },
+    {
+      "type": "text",
+      "delta": "imas"
+    },
+    {
+      "type": "text",
+      "delta": "u"
+    },
+    {
+      "type": "text",
+      "delta": ".)"
+    },
+    {
+      "type": "text",
+      "delta": " –"
+    },
+    {
+      "type": "text",
+      "delta": " “"
+    },
+    {
+      "type": "text",
+      "delta": "Yo"
+    },
+    {
+      "type": "text",
+      "delta": " lle"
+    },
+    {
+      "type": "text",
+      "delta": "go"
+    },
+    {
+      "type": "text",
+      "delta": " tarde"
+    },
+    {
+      "type": "text",
+      "delta": ".”"
+    },
+    {
+      "type": "text",
+      "delta": " ("
+    },
+    {
+      "type": "text",
+      "delta": "Translation"
+    },
+    {
+      "type": "text",
+      "delta": ":"
+    },
+    {
+      "type": "text",
+      "delta": " I"
+    },
+    {
+      "type": "text",
+      "delta": "'"
+    },
+    {
+      "type": "text",
+      "delta": "m"
+    },
+    {
+      "type": "text",
+      "delta": " late"
+    },
+    {
+      "type": "text",
+      "delta": ".)"
+    },
+    {
+      "type": "text",
+      "delta": "\n\n"
+    },
+    {
+      "type": "text",
+      "delta": "**"
+    },
+    {
+      "type": "text",
+      "delta": "En"
+    },
+    {
+      "type": "text",
+      "delta": " resumen"
+    },
+    {
+      "type": "text",
+      "delta": ":**"
+    },
+    {
+      "type": "text",
+      "delta": " La"
+    },
+    {
+      "type": "text",
+      "delta": " estructura"
+    },
+    {
+      "type": "text",
+      "delta": " general"
+    },
+    {
+      "type": "text",
+      "delta": " es"
+    },
+    {
+      "type": "text",
+      "delta": " sujeto"
+    },
+    {
+      "type": "text",
+      "delta": " +"
+    },
+    {
+      "type": "text",
+      "delta": " medio"
+    },
+    {
+      "type": "text",
+      "delta": " +"
+    },
+    {
+      "type": "text",
+      "delta": " verbo"
+    },
+    {
+      "type": "text",
+      "delta": "."
+    },
+    {
+      "type": "text",
+      "delta": "  "
+    },
+    {
+      "type": "text",
+      "delta": "\""
+    },
+    {
+      "type": "text",
+      "delta": "L"
+    },
+    {
+      "type": "text",
+      "delta": "lego"
+    },
+    {
+      "type": "text",
+      "delta": " tarde"
+    },
+    {
+      "type": "text",
+      "delta": " por"
+    },
+    {
+      "type": "text",
+      "delta": " el"
+    },
+    {
+      "type": "text",
+      "delta": " tren"
+    },
+    {
+      "type": "text",
+      "delta": "\""
+    },
+    {
+      "type": "text",
+      "delta": " se"
+    },
+    {
+      "type": "text",
+      "delta": " traduce"
+    },
+    {
+      "type": "text",
+      "delta": " como"
+    },
+    {
+      "type": "text",
+      "delta": " \""
+    },
+    {
+      "type": "text",
+      "delta": "Us"
+    },
+    {
+      "type": "text",
+      "delta": "ando"
+    },
+    {
+      "type": "text",
+      "delta": " el"
+    },
+    {
+      "type": "text",
+      "delta": " tren"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " llegado"
+    },
+    {
+      "type": "text",
+      "delta": " tarde"
+    },
+    {
+      "type": "text",
+      "delta": "”"
+    },
+    {
+      "type": "text",
+      "delta": " o"
     },
     {
       "type": "text",
@@ -1378,15 +1574,47 @@
     },
     {
       "type": "text",
-      "delta": " form"
+      "delta": " naturalmente"
     },
     {
       "type": "text",
-      "delta": "ales"
+      "delta": " “"
     },
     {
       "type": "text",
-      "delta": "."
+      "delta": "Deb"
+    },
+    {
+      "type": "text",
+      "delta": "ido"
+    },
+    {
+      "type": "text",
+      "delta": " al"
+    },
+    {
+      "type": "text",
+      "delta": " tren"
+    },
+    {
+      "type": "text",
+      "delta": ","
+    },
+    {
+      "type": "text",
+      "delta": " lle"
+    },
+    {
+      "type": "text",
+      "delta": "go"
+    },
+    {
+      "type": "text",
+      "delta": " tarde"
+    },
+    {
+      "type": "text",
+      "delta": "”."
     },
     {
       "type": "text",
@@ -1430,15 +1658,15 @@
     },
     {
       "type": "text",
-      "delta": " alguna"
+      "delta": " algún"
     },
     {
       "type": "text",
-      "delta": " parte"
+      "delta": " aspecto"
     },
     {
       "type": "text",
-      "delta": " específica"
+      "delta": " específico"
     },
     {
       "type": "text",
@@ -1446,43 +1674,23 @@
     },
     {
       "type": "text",
-      "delta": " esta"
+      "delta": " la"
     },
     {
       "type": "text",
-      "delta": " traducción"
+      "delta": " frase"
     },
     {
       "type": "text",
-      "delta": " o"
+      "delta": ","
     },
     {
       "type": "text",
-      "delta": " que"
+      "delta": " como"
     },
     {
       "type": "text",
-      "delta": " te"
-    },
-    {
-      "type": "text",
-      "delta": " di"
-    },
-    {
-      "type": "text",
-      "delta": "era"
-    },
-    {
-      "type": "text",
-      "delta": " más"
-    },
-    {
-      "type": "text",
-      "delta": " ejemplos"
-    },
-    {
-      "type": "text",
-      "delta": " con"
+      "delta": " las"
     },
     {
       "type": "text",
@@ -1490,24 +1698,32 @@
     },
     {
       "type": "text",
-      "delta": " mat"
+      "delta": " formas"
     },
     {
       "type": "text",
-      "delta": "ices"
+      "delta": " de"
+    },
+    {
+      "type": "text",
+      "delta": " expresar"
+    },
+    {
+      "type": "text",
+      "delta": " lo"
+    },
+    {
+      "type": "text",
+      "delta": " mismo"
     },
     {
       "type": "text",
       "delta": "?"
     },
     {
-      "type": "text",
-      "delta": "\n"
-    },
-    {
       "type": "usage",
       "inputTokens": 1058,
-      "outputTokens": 377
+      "outputTokens": 431
     },
     {
       "type": "stop",
