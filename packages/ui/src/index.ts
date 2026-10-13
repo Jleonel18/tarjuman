@@ -31,3 +31,7 @@ export { ModelEffortSettings } from "./settings/ModelEffortSettings";
 export type { ModelEffortSettingsProps } from "./settings/ModelEffortSettings";
 export { ToneSelector } from "./settings/ToneSelector";
 export type { ToneSelectorProps } from "./settings/ToneSelector";
+export { LanguageSettings } from "./settings/LanguageSettings";
+export type { LanguageSettingsProps, LanguageValues } from "./settings/LanguageSettings";
+export { languageName } from "./onboarding/languages";
+export { directionRuns, baseDirection } from "./chat/bidi";

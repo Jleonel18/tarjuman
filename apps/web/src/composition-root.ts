@@ -1,6 +1,7 @@
 import languageQa from "@tarjuman/capability-language-qa";
 import {
   CapabilityRegistry,
+  availableUiLocales,
   ConversationService,
   KeyManager,
   Pipeline,
@@ -33,6 +34,8 @@ export interface AppServices {
   credentials: CredentialStore;
   registry: CapabilityRegistry;
   i18n: I18n;
+  /** Interface languages the user can pick. Includes the pseudo-RTL test locale only in dev and test builds. */
+  uiLocales: readonly string[];
   conversations: ConversationService;
   pipeline: Pipeline;
   keys: KeyManager;
@@ -85,6 +88,8 @@ export interface AssembleOptions {
   storageAvailable: boolean;
   sessionSecrets: SessionSecrets;
   i18n: I18n;
+  /** True when the pseudo-RTL test locale is registered. Never true in a normal production build. */
+  includeTestLocales?: boolean;
 }
 
 /** Pure wiring: connects the pieces without reading the environment, so tests build the same graph. */
@@ -130,6 +135,7 @@ export function assembleServices(options: AssembleOptions): AppServices {
     credentials,
     registry,
     i18n,
+    uiLocales: availableUiLocales(options.includeTestLocales === true),
     conversations,
     pipeline,
     keys,
@@ -154,10 +160,15 @@ export async function createAppServices(): Promise<AppServices> {
   );
 
   // The pseudo-RTL locale proves layouts mirror (FR-032). It exists only in dev and in builds made
-  // with VITE_PSEUDO_RTL=1 (the e2e build); a normal production build drops this branch entirely.
-  if (import.meta.env.DEV || import.meta.env.VITE_PSEUDO_RTL === "1") {
+  // with VITE_PSEUDO_LOCALE=1 (the e2e build); a normal production build drops this branch entirely.
+  const includeTestLocales = import.meta.env.DEV || import.meta.env.VITE_PSEUDO_LOCALE === "1";
+  if (includeTestLocales) {
     const { PSEUDO_RTL_LOCALE_TAG, pseudoRtlCatalog } = await import("@tarjuman/testing/pseudo-rtl");
     registerCatalog(i18n, PSEUDO_RTL_LOCALE_TAG, pseudoRtlCatalog(getShippedCatalog("en") ?? {}));
+    // `?locale=ar-XB` starts the app in the test locale, so the first-run screens can be checked too.
+    if (new URLSearchParams(window.location.search).get("locale") === PSEUDO_RTL_LOCALE_TAG) {
+      await i18n.changeLanguage(PSEUDO_RTL_LOCALE_TAG);
+    }
   }
 
   const { provider, modelIds, defaultModelId } = await createProvider();
@@ -169,5 +180,6 @@ export async function createAppServices(): Promise<AppServices> {
     storageAvailable,
     sessionSecrets: defaultSessionSecrets,
     i18n,
+    includeTestLocales,
   });
 }

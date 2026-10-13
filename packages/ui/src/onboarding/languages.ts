@@ -9,6 +9,7 @@ export const OFFERED_LANGUAGES: readonly string[] = [
   "en",
   "es",
   "fr",
+  "he",
   "hi",
   "it",
   "ja",

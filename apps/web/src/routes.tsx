@@ -1,4 +1,4 @@
-import { ChatView, ConversationList, KeyEntry, ModelEffortSettings, Onboarding, StatsPanel, ToneSelector, useTranslation } from "@tarjuman/ui";
+import { ChatView, ConversationList, KeyEntry, LanguageSettings, ModelEffortSettings, Onboarding, StatsPanel, ToneSelector, useTranslation } from "@tarjuman/ui";
 import type { ReactElement } from "react";
 import type { AppController } from "./controller";
 import type { AppServices } from "./composition-root";
@@ -6,7 +6,7 @@ import { useAppStore } from "./store";
 
 export interface RoutesProps {
   controller: AppController;
-  services: Pick<AppServices, "storageAvailable" | "models">;
+  services: Pick<AppServices, "storageAvailable" | "models" | "uiLocales">;
 }
 
 /** First-run guard: onboarding, then key entry, then chat. `boot()` picks the starting screen. */
@@ -20,7 +20,7 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
     case "onboarding":
       return (
         <Onboarding
-          defaultMediationLanguage={i18n.language}
+          defaultMediationLanguage={i18n.language.split("-")[0] ?? i18n.language}
           validate={controller.validateDraft}
           onComplete={(draft) => void controller.completeOnboarding(draft)}
         />
@@ -40,6 +40,9 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
             />
             {state.profile ? (
               <>
+                <button type="button" onClick={() => state.navigate("settings")}>
+                  {t("settings.open")}
+                </button>
                 <StatsPanel
                   records={state.usage}
                   configuredEffort={state.profile.configuredEffort}
@@ -77,7 +80,27 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
         </div>
       );
     case "settings":
-      // Settings arrive with their own user stories (US5 to US7).
-      return <p>{t("common.loading")}</p>;
+      return (
+        <div className="settings-screen">
+          <button type="button" onClick={() => state.navigate("chat")}>
+            <span aria-hidden="true" className="icon-directional">
+              ‹
+            </span>{" "}
+            {t("common.back")}
+          </button>
+          <h2 className="stats__title">{t("common.settings")}</h2>
+          {state.profile ? (
+            <LanguageSettings
+              uiLanguage={i18n.language}
+              mediationLanguage={state.profile.mediationLanguage}
+              targetLanguage={state.profile.targetLanguage}
+              uiLocales={services.uiLocales}
+              disabled={state.streaming}
+              validate={controller.validateLanguages}
+              onChange={(change) => void controller.updateLanguages(change)}
+            />
+          ) : null}
+        </div>
+      );
   }
 }

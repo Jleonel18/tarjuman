@@ -1,6 +1,7 @@
 import type { MessageStatus, SafeBlock } from "@tarjuman/core";
 import type { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
+import { directionRuns } from "./bidi";
 import { SafeBlockRenderer } from "./SafeBlockRenderer";
 
 /**
@@ -22,8 +23,10 @@ export function MessageBubble({ message, onRetry }: MessageBubbleProps): ReactEl
 
   if (message.author === "user") {
     return (
-      <article className="bubble bubble--user" aria-label={t("chat.you")}>
-        <p className="bubble__text">{message.text}</p>
+      <article className="bubble bubble--user" aria-label={t("chat.you")} dir="auto">
+        <p className="bubble__text" dir="auto">
+          {directionRuns(message.text).map((run, i) => (run.isolate ? <bdi key={i}>{run.text}</bdi> : run.text))}
+        </p>
       </article>
     );
   }
@@ -31,6 +34,7 @@ export function MessageBubble({ message, onRetry }: MessageBubbleProps): ReactEl
   return (
     <article
       className={`bubble bubble--assistant bubble--${message.status}`}
+      dir="auto"
       aria-label={t("chat.assistant")}
       aria-busy={message.status === "streaming"}
     >

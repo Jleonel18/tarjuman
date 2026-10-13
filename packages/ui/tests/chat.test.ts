@@ -42,7 +42,7 @@ describe("SafeBlockRenderer", () => {
       { type: "table", header: [[text("h")]], rows: [[[text("c")]]] },
     ];
     const { html } = await render(createElement(SafeBlockRenderer, { blocks }));
-    for (const tag of ["<h3>", "<strong>", "<em>", "<ol>", "<blockquote>", "<pre>", "<table>"]) {
+    for (const tag of ["<h3 dir=\"auto\">", "<strong>", "<em>", "<ol>", "<blockquote>", "<pre>", "<table>"]) {
       expect(html).toContain(tag);
     }
   });

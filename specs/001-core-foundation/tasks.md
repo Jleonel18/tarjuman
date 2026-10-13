@@ -257,17 +257,17 @@ pnpm monorepo, per plan.md. `packages/core` is framework-free: no DOM, React, No
 
 ### Tests for User Story 6 ⚠️
 
-- [ ] T125 [P] [US6] Playwright e2e in `tests/e2e/rtl.spec.ts`: with `ar-XB`, `dir="rtl"` is set and layout mirrors on every screen (onboarding, key entry, chat, conversation list, stats panel, settings, data controls, refusal/notice states) via per-screen screenshot assertions; with Arabic and Hebrew as mediation or target language, mixed-direction messages render each run in its correct direction without garbled punctuation
-- [ ] T126 [P] [US6] Language-settings tests in `packages/core/tests/profile/language-settings.test.ts`: `uiLanguage`, `mediationLanguage`, and `targetLanguage` change independently; changing either of the latter two into equality is rejected
-- [ ] T127 [P] [US6] Catalog completeness test in `tests/architecture/i18n-catalogs.test.ts`: en and es have identical keys, no empty values, no values equal to the key (SC-006), and no JSX string literal in user-visible position outside catalogs
+- [X] T125 [P] [US6] Playwright e2e in `tests/e2e/rtl.spec.ts`: with `ar-XB`, `dir="rtl"` is set and layout mirrors on every screen (onboarding, key entry, chat, conversation list, stats panel, settings, data controls, refusal/notice states) via per-screen screenshot assertions; with Arabic and Hebrew as mediation or target language, mixed-direction messages render each run in its correct direction without garbled punctuation
+- [X] T126 [P] [US6] Language-settings tests in `packages/core/tests/profile/language-settings.test.ts`: `uiLanguage`, `mediationLanguage`, and `targetLanguage` change independently; changing either of the latter two into equality is rejected
+- [X] T127 [P] [US6] Catalog completeness test in `tests/architecture/i18n-catalogs.test.ts`: en and es have identical keys, no empty values, no values equal to the key (SC-006), and no JSX string literal in user-visible position outside catalogs
 
 ### Implementation for User Story 6
 
-- [ ] T128 [P] [US6] Build language settings in `packages/ui/src/settings/LanguageSettings.tsx`: three independent selectors for UI (en, es), mediation, and target; reuse the mediation ≠ target validation from T049; history renders with each conversation's `languageSnapshot`
-- [ ] T129 [P] [US6] Implement bidirectional text handling in `packages/ui/src/chat/bidi.ts` and `MessageBubble.tsx`: `dir="auto"` on each bubble and `<bdi>` around inline foreign-script runs; unit-test with Arabic and Hebrew samples in `packages/ui/tests/bidi.test.ts`
-- [ ] T130 [US6] Audit every stylesheet in `packages/ui/src/**/*.css` and `apps/web/src/**/*.css` for physical properties until `pnpm lint:css` passes; flip directional icons (chevrons, back arrows) under `[dir="rtl"]`
-- [ ] T131 [P] [US6] Register the pseudo-RTL locale `ar-XB` in `apps/web/src/composition-root.ts` only when `import.meta.env.DEV` or `VITE_PSEUDO_LOCALE` is set, so it is never selectable in production builds
-- [ ] T132 [US6] Review the Spanish catalog for completeness and run the app in `es` through the e2e suite to confirm no raw keys display (depends on T066, T078, T118, T123)
+- [X] T128 [P] [US6] Build language settings in `packages/ui/src/settings/LanguageSettings.tsx`: three independent selectors for UI (en, es), mediation, and target; reuse the mediation ≠ target validation from T049; history renders with each conversation's `languageSnapshot`
+- [X] T129 [P] [US6] Implement bidirectional text handling in `packages/ui/src/chat/bidi.ts` and `MessageBubble.tsx`: `dir="auto"` on each bubble and `<bdi>` around inline foreign-script runs; unit-test with Arabic and Hebrew samples in `packages/ui/tests/bidi.test.ts`
+- [X] T130 [US6] Audit every stylesheet in `packages/ui/src/**/*.css` and `apps/web/src/**/*.css` for physical properties until `pnpm lint:css` passes; flip directional icons (chevrons, back arrows) under `[dir="rtl"]`
+- [X] T131 [P] [US6] Register the pseudo-RTL locale `ar-XB` in `apps/web/src/composition-root.ts` only when `import.meta.env.DEV` or `VITE_PSEUDO_LOCALE` is set, so it is never selectable in production builds
+- [X] T132 [US6] Review the Spanish catalog for completeness and run the app in `es` through the e2e suite to confirm no raw keys display (depends on T066, T078, T118, T123)
 
 **Checkpoint**: Stories 1–6 all work independently.
 

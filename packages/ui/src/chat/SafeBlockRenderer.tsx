@@ -1,5 +1,6 @@
 import type { SafeBlock, SafeInline } from "@tarjuman/core";
 import { createElement, type ReactElement, type ReactNode } from "react";
+import { directionRuns } from "./bidi";
 import { InertLink } from "./InertLink";
 
 /**
@@ -15,12 +16,12 @@ export function SafeBlockRenderer({ blocks }: { blocks: readonly SafeBlock[] }):
 function renderBlock(block: SafeBlock, key: number): ReactNode {
   switch (block.type) {
     case "paragraph":
-      return <p key={key}>{renderInlines(block.children)}</p>;
+      return <p key={key} dir="auto">{renderInlines(block.children)}</p>;
     case "heading":
       // The page title is the h1 and the screen sections are h2, so model headings start at h3.
-      return createElement(`h${Math.min(block.level + 2, 6)}`, { key }, renderInlines(block.children));
+      return createElement(`h${Math.min(block.level + 2, 6)}`, { key, dir: "auto" }, renderInlines(block.children));
     case "list": {
-      const items = block.items.map((item, i) => <li key={i}>{item.map((child, j) => renderBlock(child, j))}</li>);
+      const items = block.items.map((item, i) => <li key={i} dir="auto">{item.map((child, j) => renderBlock(child, j))}</li>);
       return block.ordered ? <ol key={key}>{items}</ol> : <ul key={key}>{items}</ul>;
     }
     case "blockquote":
@@ -64,7 +65,7 @@ function renderInlines(nodes: readonly SafeInline[]): ReactNode {
 function renderInline(node: SafeInline, key: number): ReactNode {
   switch (node.type) {
     case "text":
-      return node.text;
+      return <BidiText key={key} text={node.text} />;
     case "emphasis":
       return <em key={key}>{renderInlines(node.children)}</em>;
     case "strong":
@@ -82,4 +83,13 @@ function renderInline(node: SafeInline, key: number): ReactNode {
     default:
       return null;
   }
+}
+
+/** Text with each run of the opposite direction isolated, so mixed-script lines keep their order. */
+function BidiText({ text }: { text: string }): ReactElement {
+  return (
+    <>
+      {directionRuns(text).map((run, i) => (run.isolate ? <bdi key={i}>{run.text}</bdi> : run.text))}
+    </>
+  );
 }

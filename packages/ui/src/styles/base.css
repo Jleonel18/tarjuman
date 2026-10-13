@@ -336,3 +336,15 @@ body {
 .stats meter {
   inline-size: 100%;
 }
+
+/* Settings screen. */
+.settings-screen {
+  display: grid;
+  gap: var(--space-3);
+}
+
+/* A glyph that points the way the text runs flips under right-to-left (FR-032). */
+[dir="rtl"] .icon-directional {
+  display: inline-block;
+  transform: scaleX(-1);
+}

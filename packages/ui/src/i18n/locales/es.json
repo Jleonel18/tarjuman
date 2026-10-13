@@ -115,6 +115,12 @@
   "tone.warm": "Cálido",
   "tone.neutral": "Neutral",
   "tone.formal": "Formal",
+  "settings.open": "Ajustes",
+  "settings.language.label": "Idiomas",
+  "settings.language.title": "Idiomas",
+  "settings.language.hint": "La interfaz, las explicaciones y el idioma que aprendes son ajustes separados.",
+  "settings.language.same": "El idioma de las explicaciones y el idioma que aprendes deben ser distintos.",
+  "conversations.languages": "Explicado en {mediation}, aprendiendo {target}",
   "chat.context.nearly_full": "Esta conversación ha usado el {percent} del contexto del modelo. No se ha cortado nada, pero las conversaciones largas son más lentas, más caras y menos fiables.",
   "chat.context.new": "Empezar una conversación nueva"
 }

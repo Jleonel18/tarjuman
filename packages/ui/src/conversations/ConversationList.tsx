@@ -1,6 +1,7 @@
 import type { Conversation } from "@tarjuman/core";
 import { useState, type ReactElement } from "react";
 import { useTranslation } from "react-i18next";
+import { languageName } from "../onboarding/languages";
 
 export interface ConversationListProps {
   conversations: readonly Conversation[];
@@ -61,6 +62,12 @@ export function ConversationList({
                   >
                     <span>{title}</span>
                     <small>{date.format(new Date(conversation.updatedAt))}</small>
+                    <small>
+                      {t("conversations.languages", {
+                        mediation: languageName(conversation.languageSnapshot.mediation, i18n.language),
+                        target: languageName(conversation.languageSnapshot.target, i18n.language),
+                      })}
+                    </small>
                   </button>
                   <button
                     type="button"

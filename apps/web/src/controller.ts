@@ -6,6 +6,7 @@ import {
   guardInput,
   isShippedUiLocale,
   renderSafeBlocks,
+  TEST_ONLY_LOCALES,
   TONE_PRESETS,
   WITHHELD_MARKER,
   validateProfile,
@@ -18,7 +19,7 @@ import {
   type ProfileInput,
   type ProfileIssue,
 } from "@tarjuman/core";
-import type { ChatMessage, OnboardingDraft } from "@tarjuman/ui";
+import type { ChatMessage, LanguageValues, OnboardingDraft } from "@tarjuman/ui";
 import type { AppServices } from "./composition-root";
 import { useAppStore } from "./store";
 
@@ -72,7 +73,9 @@ export class AppController {
   async boot(): Promise<void> {
     const { storage, credentials, conversations, i18n } = this.#services;
     const profile = await storage.get<LearnerProfile>("profile", "profile");
-    if (profile && isShippedUiLocale(profile.uiLanguage)) await i18n.changeLanguage(profile.uiLanguage);
+    // A test locale chosen at start (`?locale=`) is kept; otherwise the saved interface language wins.
+    const testLocaleActive = (TEST_ONLY_LOCALES as readonly string[]).includes(i18n.language);
+    if (profile && isShippedUiLocale(profile.uiLanguage) && !testLocaleActive) await i18n.changeLanguage(profile.uiLanguage);
     const key = await credentials.describe();
     const list = await conversations.list();
     const latest = list[0] === undefined ? undefined : await conversations.open(list[0].id);
@@ -159,6 +162,48 @@ export class AppController {
         : profile.configuredEffort;
     if (modelId === profile.modelId && configuredEffort === profile.configuredEffort) return;
     const updated: LearnerProfile = { ...profile, modelId, configuredEffort, updatedAt: new Date().toISOString() };
+    await this.#services.storage.put("profile", updated);
+    useAppStore.setState({ profile: updated });
+  };
+
+  /**
+   * The core's verdict on the three language settings as they would become. A test-only interface
+   * locale is not part of a stored profile, so it is checked as the shipped language in use.
+   */
+  validateLanguages = (candidate: LanguageValues): readonly ProfileIssue[] => {
+    const profile = useAppStore.getState().profile;
+    if (!profile) return [];
+    const result = validateProfile(this.#languageInput(profile, candidate), { knownModelIds: this.#services.models.ids });
+    return result.ok ? [] : result.issues;
+  };
+
+  /**
+   * Changes the interface, explanation or target language, each on its own. Nothing is stored when
+   * the core rejects the result (explanation language equal to the target). The interface language
+   * takes effect at once; it applies to the next question, not the running answer, for the others.
+   */
+  updateLanguages = async (change: Partial<LanguageValues>): Promise<void> => {
+    const profile = useAppStore.getState().profile;
+    if (!profile || useAppStore.getState().streaming) return;
+    const candidate: LanguageValues = {
+      uiLanguage: change.uiLanguage ?? this.#services.i18n.language,
+      mediationLanguage: change.mediationLanguage ?? profile.mediationLanguage,
+      targetLanguage: change.targetLanguage ?? profile.targetLanguage,
+    };
+    const result = validateProfile(this.#languageInput(profile, candidate), { knownModelIds: this.#services.models.ids });
+    if (!result.ok) return;
+    if (change.uiLanguage !== undefined && this.#services.uiLocales.includes(change.uiLanguage)) {
+      await this.#services.i18n.changeLanguage(change.uiLanguage);
+    }
+    const { uiLanguage, mediationLanguage, targetLanguage } = result.value;
+    if (
+      uiLanguage === profile.uiLanguage &&
+      mediationLanguage === profile.mediationLanguage &&
+      targetLanguage === profile.targetLanguage
+    ) {
+      return;
+    }
+    const updated: LearnerProfile = { ...profile, uiLanguage, mediationLanguage, targetLanguage, updatedAt: new Date().toISOString() };
     await this.#services.storage.put("profile", updated);
     useAppStore.setState({ profile: updated });
   };
@@ -271,6 +316,19 @@ export class AppController {
 
   #withheldLabel(): string {
     return this.#services.i18n.t("chat.withheld");
+  }
+
+  #languageInput(profile: LearnerProfile, candidate: LanguageValues): ProfileInput {
+    return {
+      level: profile.level,
+      interests: profile.interests,
+      toneId: profile.toneId,
+      configuredEffort: profile.configuredEffort,
+      modelId: profile.modelId,
+      uiLanguage: isShippedUiLocale(candidate.uiLanguage) ? candidate.uiLanguage : profile.uiLanguage,
+      mediationLanguage: candidate.mediationLanguage,
+      targetLanguage: candidate.targetLanguage,
+    };
   }
 
   #profileInput(draft: OnboardingDraft): ProfileInput {

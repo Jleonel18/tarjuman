@@ -11,7 +11,7 @@ export default defineConfig({
   webServer: {
     command: "pnpm --filter @tarjuman/web build && pnpm --filter @tarjuman/web preview --port 5173 --strictPort",
     url: "http://localhost:5173",
-    env: { VITE_PROVIDER: "mock", VITE_PSEUDO_RTL: "1" },
+    env: { VITE_PROVIDER: "mock", VITE_PSEUDO_LOCALE: "1" },
     reuseExistingServer: !process.env["CI"],
     timeout: 120_000,
   },

@@ -328,4 +328,37 @@ describe("usage and model settings (US4)", () => {
     await controller.updateTone("anything-goes");
     expect(state().profile).toMatchObject({ toneId: "warm" });
   });
+
+  it("changes each language on its own and stores the result", async () => {
+    const { controller, storage, services } = await ready();
+    await controller.updateLanguages({ uiLanguage: "es" });
+    expect(services.i18n.language).toBe("es");
+    expect(state().profile).toMatchObject({ uiLanguage: "es", mediationLanguage: "es", targetLanguage: "ja" });
+    await controller.updateLanguages({ targetLanguage: "ar" });
+    await controller.updateLanguages({ mediationLanguage: "en" });
+    expect(await storage.get("profile", "profile")).toMatchObject({
+      uiLanguage: "es",
+      mediationLanguage: "en",
+      targetLanguage: "ar",
+    });
+  });
+
+  it("refuses an explanation language equal to the target and stores nothing", async () => {
+    const { controller, storage } = await ready();
+    const candidate = { uiLanguage: "en", mediationLanguage: "ja", targetLanguage: "ja" };
+    expect(controller.validateLanguages(candidate).map((i) => i.code)).toContain("same_as_mediation");
+    await controller.updateLanguages({ mediationLanguage: "ja" });
+    expect(await storage.get("profile", "profile")).toMatchObject({ mediationLanguage: "es", targetLanguage: "ja" });
+  });
+
+  it("does not store a test-only interface locale", async () => {
+    const { controller, storage } = await ready();
+    await controller.updateLanguages({ uiLanguage: "ar-XB" });
+    expect(await storage.get("profile", "profile")).toMatchObject({ uiLanguage: "en" });
+  });
+
+  it("offers only the shipped interface languages unless test locales are switched on", async () => {
+    const { services } = await world();
+    expect(services.uiLocales).toEqual(["en", "es"]);
+  });
 });

@@ -115,6 +115,12 @@
   "tone.warm": "Warm",
   "tone.neutral": "Neutral",
   "tone.formal": "Formal",
+  "settings.open": "Settings",
+  "settings.language.label": "Languages",
+  "settings.language.title": "Languages",
+  "settings.language.hint": "The interface, the explanations and the language you are learning are separate settings.",
+  "settings.language.same": "The explanation language and the language you are learning must be different.",
+  "conversations.languages": "Explained in {mediation}, learning {target}",
   "chat.context.nearly_full": "This conversation has used {percent} of the model's context. Nothing has been cut, but long conversations get slower, costlier and less reliable.",
   "chat.context.new": "Start a new conversation"
 }
