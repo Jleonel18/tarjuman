@@ -1,4 +1,5 @@
 import {
+  CONFIGURABLE_EFFORTS,
   DEFAULT_EFFORT,
   DEFAULT_TONE_ID,
   DEFAULT_UI_LOCALE,
@@ -8,6 +9,7 @@ import {
   WITHHELD_MARKER,
   validateProfile,
   type CredentialStorageMode,
+  type Effort,
   type EnterKeyOutcome,
   type LearnerProfile,
   type Message,
@@ -73,6 +75,7 @@ export class AppController {
     const key = await credentials.describe();
     const list = await conversations.list();
     const latest = list[0] === undefined ? undefined : await conversations.open(list[0].id);
+    const usage = latest ? await conversations.usageOf(latest.conversation.id) : [];
 
     useAppStore.setState({
       ready: true,
@@ -81,6 +84,7 @@ export class AppController {
       conversations: list,
       activeConversationId: latest?.conversation.id,
       messages: latest ? toChatMessages(latest.messages, this.#withheldLabel()) : [],
+      usage,
       route: profile === undefined ? "onboarding" : key === undefined ? "key" : "chat",
     });
   }
@@ -112,7 +116,7 @@ export class AppController {
 
   newConversation = (): void => {
     if (useAppStore.getState().streaming) return;
-    useAppStore.setState({ activeConversationId: undefined, messages: [], error: undefined });
+    useAppStore.setState({ activeConversationId: undefined, messages: [], usage: [], error: undefined });
   };
 
   openConversation = async (id: string): Promise<void> => {
@@ -122,6 +126,7 @@ export class AppController {
     useAppStore.setState({
       activeConversationId: id,
       messages: toChatMessages(opened.messages, this.#withheldLabel()),
+      usage: await this.#services.conversations.usageOf(id),
       error: undefined,
     });
   };
@@ -132,8 +137,29 @@ export class AppController {
     const wasActive = useAppStore.getState().activeConversationId === id;
     useAppStore.setState({
       conversations: await this.#services.conversations.list(),
-      ...(wasActive && { activeConversationId: undefined, messages: [], error: undefined }),
+      ...(wasActive && { activeConversationId: undefined, messages: [], usage: [], error: undefined }),
     });
+  };
+
+  /**
+   * Changes the model or the effort for the next question. Unknown models and effort levels the
+   * app does not offer are ignored, so a stale or forged value cannot reach the profile.
+   */
+  updateModelSettings = async (change: { modelId?: string; effort?: Effort }): Promise<void> => {
+    const profile = useAppStore.getState().profile;
+    if (!profile || useAppStore.getState().streaming) return;
+    const modelId =
+      change.modelId !== undefined && this.#services.models.ids.includes(change.modelId)
+        ? change.modelId
+        : profile.modelId;
+    const configuredEffort =
+      change.effort !== undefined && CONFIGURABLE_EFFORTS.includes(change.effort)
+        ? change.effort
+        : profile.configuredEffort;
+    if (modelId === profile.modelId && configuredEffort === profile.configuredEffort) return;
+    const updated: LearnerProfile = { ...profile, modelId, configuredEffort, updatedAt: new Date().toISOString() };
+    await this.#services.storage.put("profile", updated);
+    useAppStore.setState({ profile: updated });
   };
 
   dismissNotice = (): void => {
@@ -165,7 +191,7 @@ export class AppController {
           languageSnapshot: { mediation: profile.mediationLanguage, target: profile.targetLanguage },
         });
         conversationId = created.id;
-        useAppStore.setState({ activeConversationId: conversationId });
+        useAppStore.setState({ activeConversationId: conversationId, usage: [] });
       }
       const shown = useAppStore.getState().messages;
       useAppStore.setState({
@@ -225,7 +251,10 @@ export class AppController {
     const opened = conversationId === undefined ? undefined : await conversations.open(conversationId);
     useAppStore.setState({
       conversations: list,
-      ...(opened && { messages: toChatMessages(opened.messages, this.#withheldLabel()) }),
+      ...(opened && {
+        messages: toChatMessages(opened.messages, this.#withheldLabel()),
+        usage: await conversations.usageOf(opened.conversation.id),
+      }),
     });
   }
 

@@ -1,5 +1,6 @@
 import type { StoragePort } from "../ports/storage";
 import type { LanguageCode } from "../profile/types";
+import type { UsageRecord } from "../stats/types";
 import type { Conversation, Message, MessageStatus, Segment, Verdict } from "./types";
 
 const MAX_TITLE_LENGTH = 80;
@@ -131,6 +132,24 @@ export class ConversationService {
     await this.#storage.put("messages", updated);
     await this.#saveConversation(await this.#requireConversation(message.conversationId));
     return updated;
+  }
+
+  /**
+   * Stores the usage of a finished answer and links the message to it. The caller builds the
+   * record from the ids and timestamp supplied here, because only this service owns them.
+   */
+  async recordUsage(messageId: string, build: (ids: { id: string; createdAt: string }) => UsageRecord): Promise<UsageRecord> {
+    const message = await this.#requireMessage(messageId);
+    const record = build({ id: this.#newId(), createdAt: this.#stamp() });
+    await this.#storage.put("usage", record);
+    await this.#storage.put("messages", { ...message, usageId: record.id });
+    return record;
+  }
+
+  /** Usage records of a conversation, oldest first. */
+  async usageOf(conversationId: string): Promise<UsageRecord[]> {
+    const rows = await this.#storage.query<UsageRecord>("usage", { index: "conversationId", equals: conversationId });
+    return rows.sort((a, b) => (a.createdAt < b.createdAt ? -1 : a.createdAt > b.createdAt ? 1 : 0));
   }
 
   /** The interrupted message stays as it is, marked incomplete; the retry is a new message. */

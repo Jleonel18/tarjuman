@@ -282,3 +282,42 @@ describe("toChatMessages", () => {
     expect(json).not.toContain('"type":"html');
   });
 });
+
+describe("usage and model settings (US4)", () => {
+  it("keeps the provider-reported usage of the open conversation in the store", async () => {
+    const { controller } = await ready();
+    await controller.send("What does ser mean?");
+    await controller.send("And estar?");
+    expect(state().usage.map((u) => [u.inputTokens, u.outputTokens])).toEqual([
+      [120, 24],
+      [120, 24],
+    ]);
+  });
+
+  it("loads the usage of a conversation when it is opened, and clears it for a new one", async () => {
+    const { controller } = await ready();
+    await controller.send("What does ser mean?");
+    const id = state().activeConversationId ?? "";
+    controller.newConversation();
+    expect(state().usage).toEqual([]);
+    await controller.openConversation(id);
+    expect(state().usage).toHaveLength(1);
+  });
+
+  it("stores a new effort and model in the profile", async () => {
+    const { controller, storage } = await ready();
+    await controller.updateModelSettings({ effort: "low" });
+    await controller.updateModelSettings({ modelId: "mock-model-no-pricing" });
+    expect(state().profile).toMatchObject({ configuredEffort: "low", modelId: "mock-model-no-pricing" });
+    expect(await storage.get("profile", "profile")).toMatchObject({
+      configuredEffort: "low",
+      modelId: "mock-model-no-pricing",
+    });
+  });
+
+  it("ignores a model the app does not know and an effort it does not offer", async () => {
+    const { controller } = await ready();
+    await controller.updateModelSettings({ modelId: "not-a-model", effort: "max" });
+    expect(state().profile).toMatchObject({ configuredEffort: "medium", modelId: "mock-model" });
+  });
+});

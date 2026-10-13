@@ -1,8 +1,9 @@
-import type { ProviderErrorCode } from "@tarjuman/core";
+import { isContextWarning, type ProviderErrorCode } from "@tarjuman/core";
 import type { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import { describeProviderError } from "../errors/provider-error-messages";
 import { Composer } from "./Composer";
+import { ContextNotice } from "./ContextNotice";
 import { GuardNotice, type GuardNoticeCode } from "./GuardNotice";
 import { MessageBubble, type ChatMessage } from "./MessageBubble";
 
@@ -16,6 +17,9 @@ export interface ChatViewProps {
   /** Set when the input guard withheld part of the last message. */
   notice?: { code: GuardNoticeCode } | undefined;
   onDismissNotice?: (() => void) | undefined;
+  /** 0..1 share of the model's window the open conversation uses; a notice shows from 80%. */
+  contextRatio?: number | undefined;
+  onNewConversation?: (() => void) | undefined;
   onSend: (text: string) => void;
   onStop: () => void;
   /** Retries the interrupted answer: a new message, started by the user. */
@@ -30,6 +34,8 @@ export function ChatView({
   error,
   notice,
   onDismissNotice,
+  contextRatio,
+  onNewConversation,
   onSend,
   onStop,
   onRetry,
@@ -72,6 +78,10 @@ export function ChatView({
       ) : null}
 
       {notice ? <GuardNotice code={notice.code} onDismiss={onDismissNotice ?? (() => {})} /> : null}
+
+      {contextRatio !== undefined && isContextWarning(contextRatio) && onNewConversation ? (
+        <ContextNotice ratio={contextRatio} onNewConversation={onNewConversation} />
+      ) : null}
 
       <Composer streaming={streaming} onSend={onSend} onStop={onStop} />
     </section>

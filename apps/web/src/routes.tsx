@@ -1,4 +1,4 @@
-import { ChatView, ConversationList, KeyEntry, Onboarding, useTranslation } from "@tarjuman/ui";
+import { ChatView, ConversationList, KeyEntry, ModelEffortSettings, Onboarding, StatsPanel, useTranslation } from "@tarjuman/ui";
 import type { ReactElement } from "react";
 import type { AppController } from "./controller";
 import type { AppServices } from "./composition-root";
@@ -6,7 +6,7 @@ import { useAppStore } from "./store";
 
 export interface RoutesProps {
   controller: AppController;
-  services: Pick<AppServices, "storageAvailable">;
+  services: Pick<AppServices, "storageAvailable" | "models">;
 }
 
 /** First-run guard: onboarding, then key entry, then chat. `boot()` picks the starting screen. */
@@ -30,13 +30,31 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
     case "chat":
       return (
         <div className="workspace">
-          <ConversationList
-            conversations={state.conversations}
-            activeId={state.activeConversationId}
-            onNew={controller.newConversation}
-            onOpen={(id) => void controller.openConversation(id)}
-            onDelete={(id) => void controller.deleteConversation(id)}
-          />
+          <div className="workspace__side">
+            <ConversationList
+              conversations={state.conversations}
+              activeId={state.activeConversationId}
+              onNew={controller.newConversation}
+              onOpen={(id) => void controller.openConversation(id)}
+              onDelete={(id) => void controller.deleteConversation(id)}
+            />
+            {state.profile ? (
+              <>
+                <StatsPanel
+                  records={state.usage}
+                  configuredEffort={state.profile.configuredEffort}
+                  onApplyEffort={(effort) => void controller.updateModelSettings({ effort })}
+                />
+                <ModelEffortSettings
+                  models={services.models.list}
+                  modelId={state.profile.modelId}
+                  effort={state.profile.configuredEffort}
+                  disabled={state.streaming}
+                  onChange={(change) => void controller.updateModelSettings(change)}
+                />
+              </>
+            ) : null}
+          </div>
           <ChatView
             messages={state.messages}
             streaming={state.streaming}
@@ -44,6 +62,8 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
             error={state.error}
             notice={state.notice}
             onDismissNotice={controller.dismissNotice}
+            contextRatio={state.usage.at(-1)?.contextRatio}
+            onNewConversation={controller.newConversation}
             onSend={(text) => void controller.send(text)}
             onStop={controller.stop}
             onRetry={(id) => void controller.retry(id)}

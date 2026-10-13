@@ -9,8 +9,11 @@ import type { Effort, ModelInfo, ModelRequest, ProviderErrorCode, ProviderPort }
 import type { AbortSignalLike } from "../ports/provider";
 import type { CredentialStore } from "../ports/storage";
 import type { LearnerProfile } from "../profile/types";
+import { recommendEffort, extractRequestFeatures } from "../stats/recommend-effort";
+import type { ReportedUsage } from "../stats/usage";
 import { ContextAssembler } from "./context-assembler";
 import { guardInput } from "./input-guard";
+import { runMetrics } from "./metrics";
 import { OutputGuard } from "./output-guard";
 import type { Pipeline as PipelineContract, TurnEvent, TurnInput } from "./types";
 
@@ -32,8 +35,7 @@ export interface PipelineDeps {
  *
  * Stage order is fixed here, not configurable and not injectable:
  * InputGuard → ContextAssembler → ModelCall → OutputGuard → Metrics.
- * Metrics is an identity stage for now; it gets its behavior in US4 without changing the order or
- * the count. The OutputGuard also reads the first-line verdict
+ * Metrics runs once the answer is finished and persists the provider-reported usage. The OutputGuard also reads the first-line verdict
  * (ACCEPT | REFUSE | CLARIFY): a refusal replaces the model's text, and a missing verdict fails
  * closed to a refusal.
  */
@@ -89,6 +91,10 @@ export class Pipeline implements PipelineContract {
       ...effortFor(model, profile.configuredEffort),
     };
 
+    const recommendedEffort = recommendEffort(
+      extractRequestFeatures({ userText: guarded.userText, untrustedMaterial: guarded.untrustedMaterial }),
+    );
+
     await conversations.addUserMessage(turn.conversationId, guarded.segments);
     const reply = await conversations.beginAssistantMessage(turn.conversationId);
     let finished = false;
@@ -112,6 +118,7 @@ export class Pipeline implements PipelineContract {
       let received = false;
       let failure: { code: ProviderErrorCode; retryAfterSeconds?: number } | undefined;
       let ended: "complete" | "interrupted" | undefined;
+      let usage: ReportedUsage | undefined;
 
       const refusal = () =>
         resolveRefusal({
@@ -163,8 +170,14 @@ export class Pipeline implements PipelineContract {
               ...(event.retryAfterSeconds !== undefined && { retryAfterSeconds: event.retryAfterSeconds }),
             };
             break;
+          } else if (event.type === "usage") {
+            usage = {
+              inputTokens: event.inputTokens,
+              outputTokens: event.outputTokens,
+              cacheReadTokens: event.cacheReadTokens,
+              cacheWriteTokens: event.cacheWriteTokens,
+            };
           }
-          // `usage` events are consumed by the Metrics stage (US4).
         }
         // A finished stream that never produced a verdict fails closed to a refusal. An interrupted
         // or failed one does not: the learner is told it was interrupted instead.
@@ -185,6 +198,18 @@ export class Pipeline implements PipelineContract {
       let status: "complete" | "interrupted" | "refused" = failure || ended === undefined ? "interrupted" : ended;
       if (status === "complete" && verdict === "refuse") status = "refused";
       await finish(status, verdict === undefined ? {} : { verdict, ruleIds });
+      // Stage 5: Metrics. Whatever the provider reported is kept, even for a partial answer.
+      for (const out of await runMetrics({
+        conversations,
+        conversationId: turn.conversationId,
+        messageId: reply.id,
+        usage,
+        model,
+        configuredEffort: profile.configuredEffort,
+        recommendedEffort,
+      })) {
+        yield out;
+      }
       // A user stop is not news; a dropped connection is.
       if (status === "interrupted" && !signal.aborted) yield { type: "notice", code: "interrupted" };
       yield { type: "done", status };

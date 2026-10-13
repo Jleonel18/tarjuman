@@ -7,6 +7,7 @@ import {
   ProviderCredentialValidator,
   type CredentialStore,
   type LearnerProfile,
+  type ModelInfo,
   type ProviderPort,
   type StoragePort,
 } from "@tarjuman/core";
@@ -35,8 +36,8 @@ export interface AppServices {
   conversations: ConversationService;
   pipeline: Pipeline;
   keys: KeyManager;
-  /** Model ids a profile may use, and the one a new profile starts with. */
-  models: { ids: readonly string[]; defaultId: string };
+  /** Models a profile may use, and the one a new profile starts with. */
+  models: { ids: readonly string[]; defaultId: string; list: readonly ModelInfo[] };
 }
 
 /**
@@ -132,7 +133,11 @@ export function assembleServices(options: AssembleOptions): AppServices {
     conversations,
     pipeline,
     keys,
-    models: { ids: options.modelIds, defaultId: options.defaultModelId },
+    models: {
+      ids: options.modelIds,
+      defaultId: options.defaultModelId,
+      list: provider.listModels().filter((model) => options.modelIds.includes(model.id)),
+    },
   };
 }
 

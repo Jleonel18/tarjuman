@@ -61,7 +61,7 @@ describe("recommendEffort", () => {
 
   it("is pure and deterministic: the same features give the same answer and are not mutated", () => {
     const features: RequestFeatures = { ...base, requestType: "grammar", messageLength: 300 };
-    const copy = structuredClone(features);
+    const copy = JSON.parse(JSON.stringify(features)) as RequestFeatures;
     const first = recommendEffort(features);
     for (let i = 0; i < 5; i++) expect(recommendEffort(features)).toBe(first);
     expect(features).toEqual(copy);

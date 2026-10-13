@@ -280,3 +280,59 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* Usage panel and model settings. Logical properties only. */
+.workspace__side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.stats,
+.model-settings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.stats__title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.stats__block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.stats__block > p {
+  margin: 0;
+}
+
+.stats__table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats__table caption {
+  text-align: start;
+}
+
+.stats__table th,
+.stats__table td {
+  padding-block: var(--space-1);
+  padding-inline: var(--space-1);
+  text-align: start;
+}
+
+.stats__table tfoot {
+  border-block-start: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  font-weight: 600;
+}
+
+.stats meter {
+  inline-size: 100%;
+}

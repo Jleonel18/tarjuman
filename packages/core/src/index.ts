@@ -50,3 +50,8 @@ export type { PipelineDeps } from "./pipeline/pipeline";
 
 export { KeyManager } from "./credentials/key-manager";
 export type { EnterKeyOutcome, KeyManagerDeps, KeyState } from "./credentials/key-manager";
+
+export { buildUsageRecord, sumUsage, isContextWarning, CONTEXT_WARNING_RATIO } from "./stats/usage";
+export type { BuildUsageInput, ReportedUsage, UsageTotals } from "./stats/usage";
+export { recommendEffort, extractRequestFeatures } from "./stats/recommend-effort";
+export type { RequestFeatures, RequestType } from "./stats/recommend-effort";

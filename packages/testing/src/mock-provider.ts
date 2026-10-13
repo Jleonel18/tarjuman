@@ -177,10 +177,10 @@ export class MockProvider implements ProviderPort {
   }
 }
 
-const reply = (text: string): MockScript => ({
+const reply = (text: string, inputTokens = 120): MockScript => ({
   steps: [
     { type: "text", delta: text },
-    { type: "usage", inputTokens: 120, outputTokens: 24 },
+    { type: "usage", inputTokens, outputTokens: 24 },
     { type: "stop", reason: "end" },
   ],
 });
@@ -218,6 +218,8 @@ export function scopeAwareResponder(req: ModelRequest): MockScript | undefined {
   const asked = [...req.messages].reverse().find((m) => m.role === "user")?.content ?? "";
   // US3 e2e: a model that has been fully compromised, and one that explains injected material.
   if (/HOSTILE-RENDER-TEST/.test(asked)) return reply(HOSTILE_ANSWER);
+  // US4 e2e: a provider that reports a nearly full context window (85% of the 200,000 of mock-model).
+  if (/HIGH-USAGE-TEST/.test(asked)) return reply("ACCEPT\nThis answer reports a very large input.", 170_000);
   if (/ignore all previous instructions/i.test(asked) && /lyric/i.test(asked)) return reply(LYRIC_EXPLANATION);
   if (/\bhtml\b[\s\S]*\bapp\b|coding assistant/i.test(asked)) return reply("REFUSE\n");
   if (/web page/i.test(asked)) {

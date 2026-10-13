@@ -1,4 +1,4 @@
-import type { Conversation, LearnerProfile, ProviderErrorCode } from "@tarjuman/core";
+import type { Conversation, LearnerProfile, ProviderErrorCode, UsageRecord } from "@tarjuman/core";
 import type { ChatMessage } from "@tarjuman/ui";
 import { create } from "zustand";
 
@@ -19,6 +19,8 @@ export interface AppState {
   conversations: Conversation[];
   activeConversationId: string | undefined;
   messages: ChatMessage[];
+  /** Usage of the open conversation, oldest first. */
+  usage: UsageRecord[];
   streaming: boolean;
   /** Set when the input guard withheld part of the last message (FR-011). */
   notice: { code: "key_shape_detected" } | undefined;
@@ -34,6 +36,7 @@ const initialData = {
   conversations: [],
   activeConversationId: undefined,
   messages: [],
+  usage: [],
   streaming: false,
   notice: undefined,
   error: undefined,
