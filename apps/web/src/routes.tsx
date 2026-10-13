@@ -42,6 +42,8 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
             streaming={state.streaming}
             keyHint={state.keyHint}
             error={state.error}
+            notice={state.notice}
+            onDismissNotice={controller.dismissNotice}
             onSend={(text) => void controller.send(text)}
             onStop={controller.stop}
             onRetry={(id) => void controller.retry(id)}

@@ -1,5 +1,6 @@
 import type { SafeBlock, SafeInline } from "@tarjuman/core";
 import { createElement, type ReactElement, type ReactNode } from "react";
+import { InertLink } from "./InertLink";
 
 /**
  * Renders the OutputGuard's restricted AST and nothing else (Principle V). There is no case for
@@ -73,12 +74,10 @@ function renderInline(node: SafeInline, key: number): ReactNode {
     case "break":
       return <br key={key} />;
     case "link":
-      // Inert for now: the text plus the real destination, with no anchor, so nothing can
-      // navigate or load. T103 replaces this with `InertLink`, which opens only on explicit action.
       return (
-        <span key={key} className="inert-link">
-          {renderInlines(node.children)} <code className="inert-link__destination">{node.destinationDisplay}</code>
-        </span>
+        <InertLink key={key} destination={node.destination} destinationDisplay={node.destinationDisplay}>
+          {renderInlines(node.children)}
+        </InertLink>
       );
     default:
       return null;

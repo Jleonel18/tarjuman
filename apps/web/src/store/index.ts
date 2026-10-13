@@ -20,6 +20,8 @@ export interface AppState {
   activeConversationId: string | undefined;
   messages: ChatMessage[];
   streaming: boolean;
+  /** Set when the input guard withheld part of the last message (FR-011). */
+  notice: { code: "key_shape_detected" } | undefined;
   error: { code: ProviderErrorCode; retryAfterSeconds?: number } | undefined;
   navigate: (route: RouteId) => void;
 }
@@ -33,6 +35,7 @@ const initialData = {
   activeConversationId: undefined,
   messages: [],
   streaming: false,
+  notice: undefined,
   error: undefined,
 };
 

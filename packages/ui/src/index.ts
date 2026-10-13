@@ -19,3 +19,7 @@ export type { ChatMessage, MessageBubbleProps } from "./chat/MessageBubble";
 export { Composer } from "./chat/Composer";
 export type { ComposerProps } from "./chat/Composer";
 export { SafeBlockRenderer } from "./chat/SafeBlockRenderer";
+export { InertLink } from "./chat/InertLink";
+export type { InertLinkProps } from "./chat/InertLink";
+export { GuardNotice } from "./chat/GuardNotice";
+export type { GuardNoticeCode, GuardNoticeProps } from "./chat/GuardNotice";

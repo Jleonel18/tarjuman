@@ -6,6 +6,8 @@ import { assembleServices, type AppServices } from "../src/composition-root";
 import { AppController, toChatMessages } from "../src/controller";
 import { resetAppStore, useAppStore } from "../src/store";
 
+const PASTED_KEY = "sk-ant-api03-PASTED-BY-MISTAKE-1234567890";
+
 const DRAFT = { mediationLanguage: "es", targetLanguage: "ja", level: "B1" as const, interests: ["cooking"] };
 const ANSWER = "Ser describes identity; estar describes state.";
 
@@ -205,6 +207,38 @@ describe("conversations", () => {
     expect(state().conversations).toHaveLength(1);
     expect(state().activeConversationId).toBeUndefined();
     expect(await storage.query("messages", { index: "conversationId", equals: first })).toEqual([]);
+  });
+});
+
+describe("send with key-shaped text (FR-011)", () => {
+  it("warns, withholds the key from the model, and never shows or stores it", async () => {
+    const { controller, provider, storage } = await ready();
+    await controller.send(`Why does this fail? ${PASTED_KEY} thanks`);
+
+    expect(state().notice).toEqual({ code: "key_shape_detected" });
+    expect(JSON.stringify(provider.calls)).not.toContain(PASTED_KEY);
+    expect(JSON.stringify(state().messages)).not.toContain(PASTED_KEY);
+    expect(JSON.stringify(await storage.query("messages", { index: "conversationId", equals: state().activeConversationId ?? "" }))).not.toContain(PASTED_KEY);
+    // The learner still sees their message, with the key replaced by a label.
+    const shown = state().messages.find((m) => m.author === "user");
+    expect(shown).toMatchObject({ text: "Why does this fail? [withheld: looks like a key] thanks" });
+  });
+
+  it("clears the notice on the next send and when dismissed", async () => {
+    const { controller } = await ready();
+    await controller.send(`oops ${PASTED_KEY}`);
+    expect(state().notice).toBeDefined();
+    controller.dismissNotice();
+    expect(state().notice).toBeUndefined();
+    await controller.send(`oops ${PASTED_KEY}`);
+    await controller.send("a clean question");
+    expect(state().notice).toBeUndefined();
+  });
+
+  it("raises no notice for an ordinary message", async () => {
+    const { controller } = await ready();
+    await controller.send("What does ser mean?");
+    expect(state().notice).toBeUndefined();
   });
 });
 

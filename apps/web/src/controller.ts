@@ -2,13 +2,16 @@ import {
   DEFAULT_EFFORT,
   DEFAULT_TONE_ID,
   DEFAULT_UI_LOCALE,
+  guardInput,
   isShippedUiLocale,
   renderSafeBlocks,
+  WITHHELD_MARKER,
   validateProfile,
   type CredentialStorageMode,
   type EnterKeyOutcome,
   type LearnerProfile,
   type Message,
+  type Segment,
   type ProfileInput,
   type ProfileIssue,
 } from "@tarjuman/core";
@@ -20,16 +23,26 @@ const CAPABILITY_ID = "language-qa";
 const PENDING_USER_ID = "pending-user";
 const PENDING_REPLY_ID = "pending-reply";
 
+/**
+ * What the learner typed, as shown back to them. Pasted material is not part of it, and a token the
+ * input guard withheld shows as `withheldLabel` (a catalog string), so a key is never on screen.
+ */
+function typedText(segments: readonly Segment[], withheldLabel: string | undefined): string {
+  return segments
+    .map((segment) => {
+      if (segment.trust === "user") return segment.text;
+      if (segment.trust === "trusted" && segment.text === WITHHELD_MARKER) return withheldLabel ?? "";
+      return "";
+    })
+    .join("");
+}
+
 /** Turns stored messages into what the chat shows. Model text goes through the OutputGuard here. */
-export function toChatMessages(messages: readonly Message[]): ChatMessage[] {
+export function toChatMessages(messages: readonly Message[], withheldLabel?: string): ChatMessage[] {
   const result: ChatMessage[] = [];
   for (const message of messages) {
     if (message.author === "user") {
-      const text = message.segments
-        .filter((segment) => segment.trust === "user")
-        .map((segment) => segment.text)
-        .join("\n\n");
-      result.push({ id: message.id, author: "user", text });
+      result.push({ id: message.id, author: "user", text: typedText(message.segments, withheldLabel) });
     } else if (message.author === "assistant") {
       const text = message.segments.map((segment) => segment.text).join("");
       // A turn that failed before any text arrived leaves an empty message; the error says why.
@@ -67,7 +80,7 @@ export class AppController {
       keyHint: key?.maskedHint,
       conversations: list,
       activeConversationId: latest?.conversation.id,
-      messages: latest ? toChatMessages(latest.messages) : [],
+      messages: latest ? toChatMessages(latest.messages, this.#withheldLabel()) : [],
       route: profile === undefined ? "onboarding" : key === undefined ? "key" : "chat",
     });
   }
@@ -108,7 +121,7 @@ export class AppController {
     if (!opened) return;
     useAppStore.setState({
       activeConversationId: id,
-      messages: toChatMessages(opened.messages),
+      messages: toChatMessages(opened.messages, this.#withheldLabel()),
       error: undefined,
     });
   };
@@ -121,6 +134,10 @@ export class AppController {
       conversations: await this.#services.conversations.list(),
       ...(wasActive && { activeConversationId: undefined, messages: [], error: undefined }),
     });
+  };
+
+  dismissNotice = (): void => {
+    useAppStore.setState({ notice: undefined });
   };
 
   stop = (): void => {
@@ -139,7 +156,7 @@ export class AppController {
 
     const abort = new AbortController();
     this.#abort = abort;
-    useAppStore.setState({ streaming: true, error: undefined });
+    useAppStore.setState({ streaming: true, error: undefined, notice: undefined });
     let conversationId = state.activeConversationId;
     try {
       if (conversationId === undefined) {
@@ -154,7 +171,8 @@ export class AppController {
       useAppStore.setState({
         messages: [
           ...shown,
-          { id: PENDING_USER_ID, author: "user", text },
+          // The same view the stored message will have, so a pasted key is never shown, even briefly.
+          { id: PENDING_USER_ID, author: "user", text: typedText(guardInput({ userText: text }).segments, this.#withheldLabel()) },
           { id: PENDING_REPLY_ID, author: "assistant", status: "streaming", blocks: [] },
         ],
       });
@@ -169,6 +187,8 @@ export class AppController {
               m.id === PENDING_REPLY_ID && m.author === "assistant" ? { ...m, blocks: event.blocks } : m,
             ),
           }));
+        } else if (event.type === "guard_warning") {
+          useAppStore.setState({ notice: { code: event.code } });
         } else if (event.type === "error") {
           useAppStore.setState({
             error: {
@@ -205,8 +225,12 @@ export class AppController {
     const opened = conversationId === undefined ? undefined : await conversations.open(conversationId);
     useAppStore.setState({
       conversations: list,
-      ...(opened && { messages: toChatMessages(opened.messages) }),
+      ...(opened && { messages: toChatMessages(opened.messages, this.#withheldLabel()) }),
     });
+  }
+
+  #withheldLabel(): string {
+    return this.#services.i18n.t("chat.withheld");
   }
 
   #profileInput(draft: OnboardingDraft): ProfileInput {

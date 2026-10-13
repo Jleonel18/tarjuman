@@ -2,6 +2,7 @@ import type { SafeBlock } from "@tarjuman/core";
 import { createElement } from "react";
 import { describe, expect, it } from "vitest";
 import { ChatView, type ChatViewProps } from "../src/chat/ChatView";
+import { GuardNotice } from "../src/chat/GuardNotice";
 import { SafeBlockRenderer } from "../src/chat/SafeBlockRenderer";
 import { render } from "./render";
 
@@ -53,7 +54,7 @@ describe("SafeBlockRenderer", () => {
     expect(html).toContain("&lt;img");
   });
 
-  it("shows a link's real destination and renders no anchor", async () => {
+  it("shows a link's real destination and opens it only through a hardened anchor", async () => {
     const link: SafeBlock = {
       type: "paragraph",
       children: [
@@ -65,11 +66,17 @@ describe("SafeBlockRenderer", () => {
         },
       ],
     };
-    const { html } = await render(createElement(SafeBlockRenderer, { blocks: [link] }));
-    expect(html).not.toContain("<a ");
-    expect(html).not.toContain("href");
+    const { html, missing } = await render(createElement(SafeBlockRenderer, { blocks: [link] }));
+    expect(missing).toEqual([]);
+    // Nothing loads by itself: the only element that can carry the address is one plain anchor.
+    expect(html.match(/<a /g)).toHaveLength(1);
+    expect(html).toContain('rel="noopener noreferrer"');
+    expect(html).toContain('target="_blank"');
+    expect(html).toContain('referrerPolicy="no-referrer"');
+    expect(html).not.toMatch(/<(img|iframe|script|link|object|embed|video|audio|source)\b/i);
     expect(html).toContain("click here");
-    expect(html).toContain("https://evil.test/steal?k=1");
+    // The real destination is visible next to the text, so the text cannot disguise it.
+    expect(html).toMatch(/<code[^>]*>https:\/\/evil\.test\/steal\?k=1<\/code>/);
   });
 
   it("renders nothing for a node type it does not know", async () => {
@@ -120,5 +127,23 @@ describe.each(["en", "es"])("ChatView in %s", (locale) => {
     const net = await render(chat({ error: { code: "network" } }), locale);
     expect(net.html).toContain('role="alert"');
     expect(net.html).not.toContain(locale === "en" ? "Open key settings" : "Abrir ajustes de la clave");
+  });
+});
+
+describe.each(["en", "es"])("GuardNotice in %s", (locale) => {
+  it("explains that key-shaped text was withheld and offers to dismiss it", async () => {
+    const { html, missing } = await render(createElement(GuardNotice, { code: "key_shape_detected", onDismiss: noop }), locale);
+    expect(missing).toEqual([]);
+    expect(html).toContain('role="status"');
+    expect(html).toContain(locale === "en" ? "looks like an API key" : "parece una clave de API");
+    expect(html).toContain(locale === "en" ? ">Dismiss<" : ">Descartar<");
+  });
+
+  it("is shown by the chat view when a notice is set, and absent otherwise", async () => {
+    const withNotice = await render(chat({ notice: { code: "key_shape_detected" }, onDismissNotice: noop }), locale);
+    expect(withNotice.missing).toEqual([]);
+    expect(withNotice.html).toContain("guard-notice");
+    const without = await render(chat(), locale);
+    expect(without.html).not.toContain("guard-notice");
   });
 });
