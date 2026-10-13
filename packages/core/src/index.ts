@@ -7,6 +7,7 @@ export { SecretHandle, sealSecret, destroySecret } from "./ports/secret-handle";
 
 export type * from "./profile/types";
 export { LEVELS, CONFIGURABLE_EFFORTS, DEFAULT_TONE_ID, DEFAULT_EFFORT } from "./profile/types";
+export { TONE_PRESETS, getTonePreset } from "./profile/tone-presets";
 
 export type * from "./conversation/types";
 export type * from "./stats/types";

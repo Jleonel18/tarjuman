@@ -6,6 +6,7 @@ import {
   guardInput,
   isShippedUiLocale,
   renderSafeBlocks,
+  TONE_PRESETS,
   WITHHELD_MARKER,
   validateProfile,
   type CredentialStorageMode,
@@ -158,6 +159,16 @@ export class AppController {
         : profile.configuredEffort;
     if (modelId === profile.modelId && configuredEffort === profile.configuredEffort) return;
     const updated: LearnerProfile = { ...profile, modelId, configuredEffort, updatedAt: new Date().toISOString() };
+    await this.#services.storage.put("profile", updated);
+    useAppStore.setState({ profile: updated });
+  };
+
+  /** Changes the tone for the next question. An id that is not a known preset is ignored. */
+  updateTone = async (toneId: string): Promise<void> => {
+    const profile = useAppStore.getState().profile;
+    if (!profile || useAppStore.getState().streaming) return;
+    if (!TONE_PRESETS.some((p) => p.id === toneId) || toneId === profile.toneId) return;
+    const updated: LearnerProfile = { ...profile, toneId, updatedAt: new Date().toISOString() };
     await this.#services.storage.put("profile", updated);
     useAppStore.setState({ profile: updated });
   };

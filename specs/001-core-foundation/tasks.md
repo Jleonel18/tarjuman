@@ -235,15 +235,15 @@ pnpm monorepo, per plan.md. `packages/core` is framework-free: no DOM, React, No
 
 ### Tests for User Story 5 ⚠️
 
-- [ ] T119 [P] [US5] Tone layer test in `packages/core/tests/pipeline/tone-layer.test.ts`: tone text appears only in the tone layer, below capability and above user preferences; switching tone changes no other layer
-- [ ] T120 [P] [US5] Tone matrix test in `tests/guardrails/tone-matrix.test.ts`: the guardrail suite and the structural adversarial suite produce identical verdicts and results for `warm`, `neutral`, and `formal` using fixtures (FR-030, SC-004)
+- [X] T119 [P] [US5] Tone layer test in `packages/core/tests/pipeline/tone-layer.test.ts`: tone text appears only in the tone layer, below capability and above user preferences; switching tone changes no other layer
+- [X] T120 [P] [US5] Tone matrix test in `tests/guardrails/tone-matrix.test.ts`: the guardrail suite and the structural adversarial suite produce identical verdicts and results for `warm`, `neutral`, and `formal` using fixtures (FR-030, SC-004)
 
 ### Implementation for User Story 5
 
-- [ ] T121 [P] [US5] Define tone presets in `packages/core/src/profile/tone-presets.ts`: `warm`, `neutral`, `formal`, each with `id`, `nameKey`, and `guidance` fragment; default `neutral`
-- [ ] T122 [US5] Integrate the tone layer into `packages/core/src/pipeline/context-assembler.ts`, reading `toneId` from the profile (depends on T121, T119)
-- [ ] T123 [P] [US5] Build the tone selector in `packages/ui/src/settings/ToneSelector.tsx` with en/es catalog keys
-- [ ] T124 [US5] Make `tests/guardrails/live.test.ts` and `tests/adversarial/run-live.test.ts` iterate all tones so the nightly job reports per-tone results (depends on T080, T098)
+- [X] T121 [P] [US5] Define tone presets in `packages/core/src/profile/tone-presets.ts`: `warm`, `neutral`, `formal`, each with `id`, `nameKey`, and `guidance` fragment; default `neutral`
+- [X] T122 [US5] Integrate the tone layer into `packages/core/src/pipeline/context-assembler.ts`, reading `toneId` from the profile (depends on T121, T119)
+- [X] T123 [P] [US5] Build the tone selector in `packages/ui/src/settings/ToneSelector.tsx` with en/es catalog keys
+- [X] T124 [US5] Make `tests/guardrails/live.test.ts` and `tests/adversarial/run-live.test.ts` iterate all tones so the nightly job reports per-tone results (depends on T080, T098)
 
 **Checkpoint**: Stories 1–5 all work independently.
 

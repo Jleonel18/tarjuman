@@ -21,7 +21,7 @@ import { selectLiveProvider } from "../support/live-provider";
 // Two things must hold with any model, because the app guarantees them: no key and no remote
 // resource reaches the learner. Whether the model also resists the instruction is the rate this
 // suite exists to report; it is only a pass/fail gate for Claude, as with the guardrail suite.
-// The tone is passed in the profile; it changes the prompt once the tone layer exists (US5).
+// The tone is passed in the profile and selects the tone layer of the prompt (US5, T124).
 
 const selection = await selectLiveProvider();
 const rawSecret = unsealSecret(selection.secret);

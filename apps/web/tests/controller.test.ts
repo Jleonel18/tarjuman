@@ -320,4 +320,12 @@ describe("usage and model settings (US4)", () => {
     await controller.updateModelSettings({ modelId: "not-a-model", effort: "max" });
     expect(state().profile).toMatchObject({ configuredEffort: "medium", modelId: "mock-model" });
   });
+
+  it("stores a new tone and ignores one that is not a preset", async () => {
+    const { controller, storage } = await ready();
+    await controller.updateTone("warm");
+    expect(await storage.get("profile", "profile")).toMatchObject({ toneId: "warm" });
+    await controller.updateTone("anything-goes");
+    expect(state().profile).toMatchObject({ toneId: "warm" });
+  });
 });

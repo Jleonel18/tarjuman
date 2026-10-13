@@ -1,4 +1,4 @@
-import { ChatView, ConversationList, KeyEntry, ModelEffortSettings, Onboarding, StatsPanel, useTranslation } from "@tarjuman/ui";
+import { ChatView, ConversationList, KeyEntry, ModelEffortSettings, Onboarding, StatsPanel, ToneSelector, useTranslation } from "@tarjuman/ui";
 import type { ReactElement } from "react";
 import type { AppController } from "./controller";
 import type { AppServices } from "./composition-root";
@@ -51,6 +51,11 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
                   effort={state.profile.configuredEffort}
                   disabled={state.streaming}
                   onChange={(change) => void controller.updateModelSettings(change)}
+                />
+                <ToneSelector
+                  toneId={state.profile.toneId}
+                  disabled={state.streaming}
+                  onChange={(toneId) => void controller.updateTone(toneId)}
                 />
               </>
             ) : null}

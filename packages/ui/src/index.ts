@@ -29,3 +29,5 @@ export { StatsPanel } from "./stats/StatsPanel";
 export type { StatsPanelProps } from "./stats/StatsPanel";
 export { ModelEffortSettings } from "./settings/ModelEffortSettings";
 export type { ModelEffortSettingsProps } from "./settings/ModelEffortSettings";
+export { ToneSelector } from "./settings/ToneSelector";
+export type { ToneSelectorProps } from "./settings/ToneSelector";

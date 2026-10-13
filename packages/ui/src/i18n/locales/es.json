@@ -108,6 +108,13 @@
   "settings.model.model": "Modelo",
   "settings.model.effort": "Esfuerzo",
   "settings.model.effort_unavailable": "Este modelo no tiene ajuste de esfuerzo.",
+  "settings.tone.label": "Tono",
+  "settings.tone.title": "Tono",
+  "settings.tone.field": "Cómo habla Tarjuman",
+  "settings.tone.hint": "El tono cambia solo el estilo de las respuestas, nunca lo que Tarjuman acepta o rechaza ayudar.",
+  "tone.warm": "Cálido",
+  "tone.neutral": "Neutral",
+  "tone.formal": "Formal",
   "chat.context.nearly_full": "Esta conversación ha usado el {percent} del contexto del modelo. No se ha cortado nada, pero las conversaciones largas son más lentas, más caras y menos fiables.",
   "chat.context.new": "Empezar una conversación nueva"
 }

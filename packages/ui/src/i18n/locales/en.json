@@ -108,6 +108,13 @@
   "settings.model.model": "Model",
   "settings.model.effort": "Effort",
   "settings.model.effort_unavailable": "This model has no effort setting.",
+  "settings.tone.label": "Tone",
+  "settings.tone.title": "Tone",
+  "settings.tone.field": "How Tarjuman speaks",
+  "settings.tone.hint": "Tone changes only the style of the answers, never what Tarjuman will or won't help with.",
+  "tone.warm": "Warm",
+  "tone.neutral": "Neutral",
+  "tone.formal": "Formal",
   "chat.context.nearly_full": "This conversation has used {percent} of the model's context. Nothing has been cut, but long conversations get slower, costlier and less reliable.",
   "chat.context.new": "Start a new conversation"
 }

@@ -1,7 +1,8 @@
 import type { Capability } from "../capabilities/types";
 import type { Message, Segment } from "../conversation/types";
 import type { LayerId, PromptLayer, ProviderMessage } from "../ports/provider";
-import type { LearnerProfile, TonePreset } from "../profile/types";
+import { getTonePreset } from "../profile/tone-presets";
+import type { LearnerProfile } from "../profile/types";
 import type { UntrustedMaterial } from "./types";
 import { neutralize, wrapUntrusted } from "./untrusted-block";
 
@@ -11,8 +12,6 @@ export interface AssembleInput {
   capability: Readonly<Capability>;
   /** Filled in by the domain-scope work (US2). */
   domainScope?: string | undefined;
-  /** Filled in by the tone work (US5). */
-  tone?: TonePreset | undefined;
   /** Messages already in the conversation, before this turn. */
   history: readonly Message[];
   turn: { userText: string; untrustedMaterial?: readonly UntrustedMaterial[] | undefined };
@@ -51,7 +50,7 @@ export class ContextAssembler {
 
     add("domain_scope", input.domainScope);
     add("capability", capabilityText(input.capability, profile.mediationLanguage));
-    add("tone", input.tone?.guidance);
+    add("tone", getTonePreset(profile.toneId).guidance);
     add("user_preferences", preferencesText(profile));
 
     return { layers, messages: conversationMessages(input) };
