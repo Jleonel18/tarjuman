@@ -30,5 +30,7 @@ jobs:
       - run: pnpm lint:rules
       - run: pnpm test
       - run: pnpm test:redteam
+      - run: pnpm --filter @tarjuman/web build
+      - run: pnpm check:bundle-origins
       - run: pnpm exec playwright install --with-deps
       - run: pnpm test:e2e

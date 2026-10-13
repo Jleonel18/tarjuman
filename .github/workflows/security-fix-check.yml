@@ -1,0 +1,35 @@
+name: Security fix check
+
+# FR-038: a newly found injection bypass becomes a permanent adversarial case before its fix.
+# A pull request labeled `security-fix` must therefore add or change a case under
+# tests/adversarial/cases/. Mark this job as a required status check next to `CI / gate`.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+jobs:
+  adversarial-case-present:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require an adversarial case on security fixes
+        env:
+          IS_SECURITY_FIX: ${{ contains(github.event.pull_request.labels.*.name, 'security-fix') }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          if [ "$IS_SECURITY_FIX" != "true" ]; then
+            echo "Not labeled security-fix; nothing to check."
+            exit 0
+          fi
+          changed=$(git diff --name-only --diff-filter=AM "origin/${BASE_REF}...HEAD" -- 'tests/adversarial/cases/*.json')
+          if [ -z "$changed" ]; then
+            echo "::error::A pull request labeled security-fix must add or change a case in tests/adversarial/cases/ (FR-038)."
+            exit 1
+          fi
+          echo "Adversarial case(s) found:"
+          echo "$changed"
