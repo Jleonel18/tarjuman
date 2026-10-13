@@ -12,7 +12,7 @@ import type { SecretHandle } from "../../src/ports/secret-handle";
 
 export type Step =
   | { type: "text"; delta: string }
-  | { type: "usage"; inputTokens: number; outputTokens: number }
+  | { type: "usage"; inputTokens: number; outputTokens: number; cacheReadTokens?: number; cacheWriteTokens?: number }
   | { type: "stop"; reason: StopReason }
   | { type: "error"; code: ProviderErrorCode; retryAfterSeconds?: number }
   /** Blocks until the signal aborts, then ends the stream with `stop: aborted`. */
@@ -26,14 +26,17 @@ export class ScriptedProvider implements ProviderPort {
   readonly id = "scripted";
   readonly calls: ModelRequest[] = [];
 
-  constructor(private readonly script: Step[]) {}
+  constructor(
+    private readonly script: Step[],
+    private readonly models: ModelInfo[] = [],
+  ) {}
 
   get streamCalls(): number {
     return this.calls.length;
   }
 
   listModels(): ModelInfo[] {
-    return [];
+    return this.models;
   }
 
   async validateCredential(): Promise<ValidationResult> {
