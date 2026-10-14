@@ -14,7 +14,7 @@ export function nonClaudeLabel(modelId: string): string {
 }
 
 const base = z.strictObject({
-  providerId: z.enum(["ollama", "anthropic", "synthetic"]),
+  providerId: z.enum(["ollama", "anthropic", "gemini", "synthetic"]),
   modelId: z.string().min(1),
   runtimeVersion: z.string().min(1).nullable(),
   recordedAt: z.union([z.iso.date(), z.iso.datetime({ offset: true })]),
@@ -28,9 +28,10 @@ function check(value: Checked, ctx: z.RefinementCtx): void {
   if (value.isClaude !== (value.providerId === "anthropic")) {
     ctx.addIssue({ code: "custom", path: ["isClaude"], message: "isClaude must be true exactly when providerId is anthropic." });
   }
-  // A synthetic record states its own source instead, so only an Ollama run has a fixed label.
-  if (value.providerId === "ollama" && value.label !== nonClaudeLabel(value.modelId)) {
-    ctx.addIssue({ code: "custom", path: ["label"], message: "An Ollama recording must use nonClaudeLabel(modelId)." });
+  // A synthetic record states its own source instead, so only a live non-Claude run (Ollama, or
+  // Gemini since 004) has a fixed label.
+  if ((value.providerId === "ollama" || value.providerId === "gemini") && value.label !== nonClaudeLabel(value.modelId)) {
+    ctx.addIssue({ code: "custom", path: ["label"], message: "A non-Claude recording must use nonClaudeLabel(modelId)." });
   }
 }
 

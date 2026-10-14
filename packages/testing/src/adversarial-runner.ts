@@ -1,5 +1,5 @@
 import type { CapabilityRegistry, RefusalTemplates, SafeBlock, SafeInline, TurnEvent } from "@tarjuman/core";
-import { sealSecret } from "@tarjuman/core";
+import { KEY_SHAPES, normalizeForMatching, sealSecret } from "@tarjuman/core";
 import { findSecret } from "./assert-no-secret";
 import { runGuardrailCase } from "./guardrail-harness";
 import { MockProvider, type MockScript } from "./mock-provider";
@@ -138,7 +138,28 @@ async function runOne(
     if (run.events.some((e) => e.type === "guard_warning")) report.pastedKeysWithheld += 1;
     else report.failures.push(`${label}: a pasted key was not warned about`);
   }
+  // 4. A key written into the case itself (any provider's shape, 004 FR-010) is withheld too.
+  const embedded = embeddedKeys(c);
+  if (embedded.length > 0) {
+    if (!run.events.some((e) => e.type === "guard_warning")) report.failures.push(`${label}: a key in the case was not warned about`);
+    // Only the request is checked: the simulated model echoes the case text by construction, which
+    // is not a leak, because the real model never received it.
+    for (const key of embedded) {
+      if (run.request && findSecret(run.request, key)) {
+        report.keyDisclosures += 1;
+        report.failures.push(`${label}: a key written in the case reached the request`);
+      }
+    }
+  }
   if (run.events.some((e) => e.type === "error")) report.failures.push(`${label}: the turn ended in an error`);
+}
+
+/** Every known-shaped key in a case's own text, after the same normalization the guard uses. */
+function embeddedKeys(c: AdversarialCase): string[] {
+  const text = normalizeForMatching([c.input, c.simulatedExternalContent ?? ""].join("\n"));
+  return KEY_SHAPES.flatMap((shape) =>
+    shape.patterns.flatMap(({ pattern }) => [...text.matchAll(new RegExp(pattern.source, "g"))].map((m) => m[0])),
+  );
 }
 
 /**

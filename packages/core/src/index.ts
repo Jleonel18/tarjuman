@@ -30,8 +30,8 @@ export type { RefusalTemplates } from "./guardrails/refusal";
 
 export * from "./i18n/locales";
 
-export { validateProfile, MAX_INTERESTS, MAX_INTEREST_LENGTH } from "./profile/validation";
-export type { ProfileInput, ProfileIssue, ProfileValidation, ProfileValidationOptions } from "./profile/validation";
+export { validateProfile, readStoredProfile, LEGACY_PROVIDER_ID, MAX_INTERESTS, MAX_INTEREST_LENGTH } from "./profile/validation";
+export type { ProfileInput, ProfileIssue, ProfileValidation, ProfileValidationOptions, StoredProfile } from "./profile/validation";
 export { LEVEL_INFO } from "./profile/levels";
 export type { LevelInfo } from "./profile/levels";
 
@@ -48,7 +48,7 @@ export { ContextAssembler } from "./pipeline/context-assembler";
 export type { AssembleInput, AssembledContext } from "./pipeline/context-assembler";
 export { renderSafeBlocks, OutputGuard } from "./pipeline/output-guard";
 export type { ToolCall, ToolCallDecision } from "./pipeline/output-guard";
-export { guardInput, WITHHELD_MARKER } from "./pipeline/input-guard";
+export { guardInput, normalizeForMatching, WITHHELD_MARKER } from "./pipeline/input-guard";
 export type { GuardInput, GuardedInput } from "./pipeline/input-guard";
 export { checkTaint } from "./pipeline/taint-gate";
 export type { TaintCheck, TaintDecision } from "./pipeline/taint-gate";
@@ -59,8 +59,10 @@ export { Pipeline } from "./pipeline/pipeline";
 export type { PipelineDeps } from "./pipeline/pipeline";
 
 export { KeyManager } from "./credentials/key-manager";
-export type { EnterKeyOutcome, KeyManagerDeps, KeyState } from "./credentials/key-manager";
+export type { EnterKeyOutcome, KeyManagerDeps, KeyState, WrongProvider } from "./credentials/key-manager";
 export { DataController } from "./credentials/data-controller";
+export { findKeyShape, hasKeyShape, KEY_SHAPES, maskKey, providerOfKey } from "./credentials/key-shapes";
+export type { KeyShape } from "./credentials/key-shapes";
 export type { DataControllerDeps, DeleteAllOutcome } from "./credentials/data-controller";
 
 export { buildUsageRecord, sumUsage, isContextWarning, CONTEXT_WARNING_RATIO } from "./stats/usage";

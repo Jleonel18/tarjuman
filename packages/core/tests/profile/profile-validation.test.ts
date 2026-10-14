@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { validateProfile } from "../../src/profile/validation";
+import { readStoredProfile, validateProfile } from "../../src/profile/validation";
 
-const MODELS = ["claude-sonnet-5-5", "claude-opus-5-5"];
+const MODELS = {
+  anthropic: ["claude-sonnet-5-5", "claude-opus-5-5"],
+  gemini: ["gemini-3.8-flash", "gemini-3.5-flash-lite"],
+};
 
 function input(overrides: Record<string, unknown> = {}) {
   return {
@@ -10,13 +13,14 @@ function input(overrides: Record<string, unknown> = {}) {
     targetLanguage: "ja",
     level: "A2",
     interests: ["cooking", "football"],
+    providerId: "anthropic",
     modelId: "claude-sonnet-5-5",
     ...overrides,
   };
 }
 
 function check(overrides: Record<string, unknown> = {}) {
-  return validateProfile(input(overrides), { knownModelIds: MODELS });
+  return validateProfile(input(overrides), { modelsByProvider: MODELS });
 }
 
 function failedPaths(overrides: Record<string, unknown>): string[] {
@@ -121,8 +125,8 @@ describe("validateProfile", () => {
   });
 
   it("rejects missing required fields and non-objects", () => {
-    expect(validateProfile(undefined, { knownModelIds: MODELS }).ok).toBe(false);
-    expect(validateProfile({}, { knownModelIds: MODELS }).ok).toBe(false);
+    expect(validateProfile(undefined, { modelsByProvider: MODELS }).ok).toBe(false);
+    expect(validateProfile({}, { modelsByProvider: MODELS }).ok).toBe(false);
   });
 
   it("does not echo input values in issues", () => {
@@ -130,5 +134,56 @@ describe("validateProfile", () => {
     const result = check({ interests: [secretish.repeat(3)] });
     expect(result.ok).toBe(false);
     expect(JSON.stringify(result)).not.toContain(secretish);
+  });
+});
+
+describe("validateProfile: provider (004)", () => {
+  it("requires a provider", () => {
+    expect(failedPaths({ providerId: undefined })).toContain("providerId");
+  });
+
+  it("rejects a provider the build does not offer", () => {
+    const result = check({ providerId: "openai" });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.issues).toContainEqual({ path: "providerId", code: "unknown_provider" });
+  });
+
+  it("accepts a Gemini profile with a Gemini model", () => {
+    const result = check({ providerId: "gemini", modelId: "gemini-3.8-flash" });
+    expect(result.ok && result.value.providerId).toBe("gemini");
+  });
+
+  it("rejects a model that belongs to another provider (FR-018)", () => {
+    expect(failedPaths({ providerId: "gemini", modelId: "claude-sonnet-5-5" })).toContain("modelId");
+    expect(failedPaths({ providerId: "anthropic", modelId: "gemini-3.8-flash" })).toContain("modelId");
+  });
+});
+
+describe("readStoredProfile (004 FR-002)", () => {
+  const stored = {
+    id: "profile" as const,
+    uiLanguage: "en",
+    mediationLanguage: "es",
+    targetLanguage: "ja",
+    level: "A2" as const,
+    interests: [],
+    toneId: "neutral",
+    configuredEffort: "medium" as const,
+    modelId: "claude-sonnet-5-5",
+    createdAt: "2026-10-01T00:00:00.000Z",
+    updatedAt: "2026-10-01T00:00:00.000Z",
+  };
+
+  it("reads a profile saved before 004 as an Anthropic profile", () => {
+    expect(readStoredProfile(stored)?.providerId).toBe("anthropic");
+  });
+
+  it("keeps a stored provider", () => {
+    expect(readStoredProfile({ ...stored, providerId: "gemini", modelId: "gemini-3.8-flash" })?.providerId).toBe("gemini");
+  });
+
+  it("returns undefined for nothing stored", () => {
+    expect(readStoredProfile(undefined)).toBeUndefined();
   });
 });

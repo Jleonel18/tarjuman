@@ -1,0 +1,135 @@
+{
+  "api_key_invalid": {
+    "status": 400,
+    "body": {
+      "error": {
+        "code": 400,
+        "message": "API key not valid. Please pass a valid API key.",
+        "status": "INVALID_ARGUMENT",
+        "details": [
+          {
+            "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+            "reason": "API_KEY_INVALID",
+            "domain": "googleapis.com",
+            "metadata": {
+              "service": "generativelanguage.googleapis.com"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "bad_request": {
+    "status": 400,
+    "body": {
+      "error": {
+        "code": 400,
+        "message": "The input token count exceeds the maximum number of tokens allowed.",
+        "status": "INVALID_ARGUMENT"
+      }
+    }
+  },
+  "failed_precondition": {
+    "status": 400,
+    "body": {
+      "error": {
+        "code": 400,
+        "message": "User location is not supported for the API use.",
+        "status": "FAILED_PRECONDITION"
+      }
+    }
+  },
+  "unauthenticated": {
+    "status": 401,
+    "body": {
+      "error": {
+        "code": 401,
+        "message": "Request had invalid authentication credentials.",
+        "status": "UNAUTHENTICATED",
+        "details": [
+          {
+            "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+            "reason": "ACCESS_TOKEN_TYPE_UNSUPPORTED",
+            "domain": "googleapis.com"
+          }
+        ]
+      }
+    }
+  },
+  "permission_denied": {
+    "status": 403,
+    "body": {
+      "error": {
+        "code": 403,
+        "message": "Method doesn't allow unregistered callers.",
+        "status": "PERMISSION_DENIED"
+      }
+    }
+  },
+  "not_found": {
+    "status": 404,
+    "body": {
+      "error": {
+        "code": 404,
+        "message": "models/gemini-unknown is not found for API version v1beta.",
+        "status": "NOT_FOUND"
+      }
+    }
+  },
+  "rate_limited": {
+    "status": 429,
+    "body": {
+      "error": {
+        "code": 429,
+        "message": "You exceeded your current quota.",
+        "status": "RESOURCE_EXHAUSTED",
+        "details": [
+          {
+            "@type": "type.googleapis.com/google.rpc.RetryInfo",
+            "retryDelay": "17s"
+          }
+        ]
+      }
+    }
+  },
+  "rate_limited_no_delay": {
+    "status": 429,
+    "body": {
+      "error": {
+        "code": 429,
+        "message": "Resource has been exhausted.",
+        "status": "RESOURCE_EXHAUSTED"
+      }
+    }
+  },
+  "internal": {
+    "status": 500,
+    "body": {
+      "error": {
+        "code": 500,
+        "message": "An internal error has occurred.",
+        "status": "INTERNAL"
+      }
+    }
+  },
+  "unavailable": {
+    "status": 503,
+    "body": {
+      "error": {
+        "code": 503,
+        "message": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+        "status": "UNAVAILABLE"
+      }
+    }
+  },
+  "deadline_exceeded": {
+    "status": 504,
+    "body": {
+      "error": {
+        "code": 504,
+        "message": "Deadline expired before operation could complete.",
+        "status": "DEADLINE_EXCEEDED"
+      }
+    }
+  }
+}

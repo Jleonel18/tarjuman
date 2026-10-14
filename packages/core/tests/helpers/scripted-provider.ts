@@ -23,12 +23,12 @@ export type Step =
  * tests cannot import its MockProvider without a cycle; this keeps core self-contained.
  */
 export class ScriptedProvider implements ProviderPort {
-  readonly id = "scripted";
   readonly calls: ModelRequest[] = [];
 
   constructor(
     private readonly script: Step[],
     private readonly models: ModelInfo[] = [],
+    readonly id: string = "scripted",
   ) {}
 
   get streamCalls(): number {

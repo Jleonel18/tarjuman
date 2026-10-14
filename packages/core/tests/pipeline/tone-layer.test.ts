@@ -14,6 +14,7 @@ const PROFILE: LearnerProfile = {
   interests: ["cooking"],
   toneId: "neutral",
   configuredEffort: "medium",
+  providerId: "scripted",
   modelId: "claude-sonnet-5-5",
   createdAt: "2026-10-13T00:00:00.000Z",
   updatedAt: "2026-10-13T00:00:00.000Z",

@@ -1,18 +1,19 @@
 import { describe, expect, it } from "vitest";
 import { validateProfile } from "../../src/profile/validation";
 
-const MODELS = ["claude-sonnet-5-5"];
+const MODELS = { anthropic: ["claude-sonnet-5-5"] };
 const BASE = {
   uiLanguage: "en",
   mediationLanguage: "es",
   targetLanguage: "ja",
   level: "B1",
   interests: [],
+  providerId: "anthropic",
   modelId: "claude-sonnet-5-5",
 };
 
 function check(change: Record<string, unknown>) {
-  return validateProfile({ ...BASE, ...change }, { knownModelIds: MODELS });
+  return validateProfile({ ...BASE, ...change }, { modelsByProvider: MODELS });
 }
 
 function languages(change: Record<string, unknown>) {

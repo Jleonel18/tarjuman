@@ -13,7 +13,8 @@ import { selectLiveProvider } from "../tests/support/live-provider";
 /**
  * `pnpm record:guardrails`: records one response per guardrail case against a live model
  * (Ollama by default; `TARJUMAN_PROVIDER=anthropic` with `node --env-file=.env` for Claude) and
- * replaces the committed fixtures. All-or-nothing: if any case fails, the old fixtures stay.
+ * replaces the committed fixtures. For Gemini (004, not Claude, mechanics only):
+ * `TARJUMAN_PROVIDER=gemini node --env-file=.env --import tsx scripts/record-guardrails.ts`. All-or-nothing: if any case fails, the old fixtures stay.
  * It prints results only, never the environment, a key, or a request header.
  */
 const selection = await selectLiveProvider();

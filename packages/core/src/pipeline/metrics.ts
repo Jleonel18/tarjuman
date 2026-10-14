@@ -7,6 +7,8 @@ export interface MetricsInput {
   conversations: ConversationService;
   conversationId: string;
   messageId: string;
+  /** The provider that served the turn (004 FR-019). */
+  providerId: string;
   /** `undefined` when the provider reported nothing: nothing is invented in its place. */
   usage: ReportedUsage | undefined;
   /** `undefined` when the profile names a model the table does not know. */
@@ -28,6 +30,7 @@ export async function runMetrics(input: MetricsInput): Promise<TurnEvent[]> {
       id,
       conversationId: input.conversationId,
       messageId: input.messageId,
+      providerId: input.providerId,
       model,
       usage,
       configuredEffort: input.configuredEffort,

@@ -1,0 +1,67 @@
+[
+  {
+    "candidates": [
+      {
+        "content": {
+          "parts": [
+            {
+              "text": "The learner asks about ser.",
+              "thought": true
+            },
+            {
+              "text": "ACCEPT\n"
+            }
+          ],
+          "role": "model"
+        },
+        "index": 0
+      }
+    ],
+    "usageMetadata": {
+      "promptTokenCount": 30,
+      "candidatesTokenCount": 2,
+      "totalTokenCount": 44,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 30
+        }
+      ],
+      "thoughtsTokenCount": 12,
+      "serviceTier": "standard"
+    },
+    "modelVersion": "gemini-3.5-flash-lite",
+    "responseId": "SYNTHETICresponseId0001"
+  },
+  {
+    "candidates": [
+      {
+        "content": {
+          "parts": [
+            {
+              "text": "Ser is permanent."
+            }
+          ],
+          "role": "model"
+        },
+        "index": 0,
+        "finishReason": "STOP"
+      }
+    ],
+    "usageMetadata": {
+      "promptTokenCount": 30,
+      "candidatesTokenCount": 6,
+      "totalTokenCount": 48,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 30
+        }
+      ],
+      "thoughtsTokenCount": 12,
+      "serviceTier": "standard"
+    },
+    "modelVersion": "gemini-3.5-flash-lite",
+    "responseId": "SYNTHETICresponseId0001"
+  }
+]

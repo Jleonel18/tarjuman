@@ -1,7 +1,7 @@
 import { MemoryStorage, SessionSecrets, ThemePreferenceStore, type LocalStorageLike } from "@tarjuman/storage-web";
 import {
   DEFAULT_MOCK_KEY,
-  MOCK_MODELS,
+  MOCK_ALT_MODELS,
   MockProvider,
   REPLACEMENT_MOCK_KEY,
   type MockScript,
@@ -42,9 +42,7 @@ async function world(options: { provider?: MockProvider; storage?: MemoryStorage
   const local = new MapLocalStorage();
   const storage = options.storage ?? new MemoryStorage({ localStorage: local });
   const services: AppServices = assembleServices({
-    provider,
-    modelIds: MOCK_MODELS.map((m) => m.id),
-    defaultModelId: "mock-model",
+    providers: [{ provider, defaultModelId: "mock-model" }],
     storage,
     storageAvailable: options.storageAvailable ?? true,
     sessionSecrets: new SessionSecrets(),
@@ -114,7 +112,7 @@ describe("enterKey", () => {
     await controller.completeOnboarding(DRAFT);
     const outcome = await controller.enterKey("sk-ant-wrong", "persistent");
     expect(outcome).toEqual({ ok: false, code: "invalid_credential" });
-    expect(await services.credentials.describe()).toBeUndefined();
+    expect(await services.credentials.describe("mock")).toBeUndefined();
     expect(state()).toMatchObject({ route: "key", keyHint: undefined });
   });
 
@@ -126,7 +124,7 @@ describe("enterKey", () => {
     expect(outcome).toEqual({ ok: true, maskedHint: "sk-ant-…0000" });
     expect(state()).toMatchObject({ route: "chat", keyHint: "sk-ant-…0000" });
     expect(JSON.stringify(state())).not.toContain(DEFAULT_MOCK_KEY);
-    expect(await services.credentials.describe()).toMatchObject({ storageMode: "session" });
+    expect(await services.credentials.describe("mock")).toMatchObject({ storageMode: "session" });
   });
 });
 
@@ -408,7 +406,7 @@ describe("key and data control (US7)", () => {
     const outcome = await controller.replaceKey(REPLACEMENT_MOCK_KEY, "persistent");
     expect(outcome).toEqual({ ok: true, maskedHint: "sk-ant-…1111" });
     expect(state()).toMatchObject({ keyHint: "sk-ant-…1111", keyMode: "persistent" });
-    expect(await services.credentials.describe()).toMatchObject({ maskedHint: "sk-ant-…1111", storageMode: "persistent" });
+    expect(await services.credentials.describe("mock")).toMatchObject({ maskedHint: "sk-ant-…1111", storageMode: "persistent" });
   });
 
   it("a rejected replacement keeps the old key and hint", async () => {
@@ -416,14 +414,14 @@ describe("key and data control (US7)", () => {
     const outcome = await controller.replaceKey("sk-ant-wrong", "persistent");
     expect(outcome).toEqual({ ok: false, code: "invalid_credential" });
     expect(state()).toMatchObject({ keyHint: "sk-ant-…0000", keyMode: "session" });
-    expect(await services.credentials.describe()).toMatchObject({ maskedHint: "sk-ant-…0000" });
+    expect(await services.credentials.describe("mock")).toMatchObject({ maskedHint: "sk-ant-…0000" });
   });
 
   it("deleting the key keeps the profile and asks for a key again", async () => {
     const { controller, services, storage } = await ready();
     await controller.removeKey();
     expect(state()).toMatchObject({ route: "key", keyHint: undefined, keyMode: undefined });
-    expect(await services.credentials.describe()).toBeUndefined();
+    expect(await services.credentials.describe("mock")).toBeUndefined();
     expect(await storage.get("profile", "profile")).toBeDefined();
   });
 
@@ -442,7 +440,7 @@ describe("key and data control (US7)", () => {
     });
     expect(await storage.get("profile", "profile")).toBeUndefined();
     expect(await services.conversations.list()).toEqual([]);
-    expect(await services.credentials.describe()).toBeUndefined();
+    expect(await services.credentials.describe("mock")).toBeUndefined();
   });
 
   it("a deletion that cannot be verified is reported and leaves the screen in place", async () => {
@@ -515,5 +513,172 @@ describe("theme (003 US1)", () => {
     expect(w.local.getItem("tarjuman.theme")).toBeNull();
     expect(w.services.themes.get()).toBe("system");
     expect(state().theme).toBe("system");
+  });
+});
+
+describe("two providers (004)", () => {
+  // Mock providers named like the product ones, so the real key shapes apply. Fake keys only.
+  const GEMINI_KEY = "AQ.FAKEcontrollerGEMINIkeyFAKEfakeFAKE_-fakeFAKE00001";
+
+  async function twoProviderWorld(storage = new MemoryStorage()) {
+    const anthropic = new MockProvider({ id: "anthropic" });
+    const gemini = new MockProvider({ id: "gemini", models: MOCK_ALT_MODELS, validKeys: [GEMINI_KEY] });
+    const local = new MapLocalStorage();
+    const services = assembleServices({
+      providers: [
+        { provider: anthropic, defaultModelId: "mock-model" },
+        { provider: gemini, defaultModelId: "mock-alt-model" },
+      ],
+      storage,
+      storageAvailable: true,
+      sessionSecrets: new SessionSecrets(),
+      i18n: await createI18n({ locale: "en" }),
+      themes: new ThemePreferenceStore({ localStorage: local }),
+    });
+    const controller = new AppController(services, { themeRoot: { dataset: {} } });
+    await controller.boot();
+    return { anthropic, gemini, services, storage, controller };
+  }
+
+  describe("onboarding (US1)", () => {
+    it("needs a provider choice: a draft without one is not valid", async () => {
+      const { controller } = await twoProviderWorld();
+      expect(controller.validateDraft(DRAFT).map((issue) => issue.path)).toContain("providerId");
+      await controller.completeOnboarding(DRAFT);
+      expect(state().profile).toBeUndefined();
+    });
+
+    it("stores the chosen provider and its default model, then asks for that provider's key", async () => {
+      const { controller } = await twoProviderWorld();
+      await controller.completeOnboarding({ ...DRAFT, providerId: "gemini" });
+      expect(state().profile).toMatchObject({ providerId: "gemini", modelId: "mock-alt-model" });
+      expect(state().route).toBe("key");
+    });
+
+    it("rejects an Anthropic key for Gemini locally: no validation request, nothing stored (FR-007)", async () => {
+      const { controller, anthropic, gemini, services } = await twoProviderWorld();
+      await controller.completeOnboarding({ ...DRAFT, providerId: "gemini" });
+      const outcome = await controller.enterKey(DEFAULT_MOCK_KEY, "session");
+      expect(outcome).toEqual({ ok: false, code: "wrong_provider", expectedProviderId: "anthropic" });
+      expect(anthropic.validationCalls + gemini.validationCalls).toBe(0);
+      expect(await services.credentials.list()).toEqual([]);
+    });
+
+    it("validates a Gemini key with Gemini only, and the chat then goes to Gemini", async () => {
+      const { controller, anthropic, gemini } = await twoProviderWorld();
+      await controller.completeOnboarding({ ...DRAFT, providerId: "gemini" });
+      expect(await controller.enterKey(GEMINI_KEY, "session")).toEqual({ ok: true, maskedHint: "AQ.…0001" });
+      expect(gemini.validationCalls).toBe(1);
+      expect(anthropic.validationCalls).toBe(0);
+      await controller.send("What is the difference between ser and estar?");
+      expect(gemini.streamCalls).toBe(1);
+      expect(anthropic.streamCalls).toBe(0);
+      expect(state().usage.at(-1)).toMatchObject({ providerId: "gemini", modelId: "mock-alt-model" });
+    });
+  });
+
+  describe("switching (US2)", () => {
+    async function onAnthropicWithKey() {
+      const world = await twoProviderWorld();
+      await world.controller.completeOnboarding({ ...DRAFT, providerId: "anthropic" });
+      await world.controller.enterKey(DEFAULT_MOCK_KEY, "persistent");
+      await world.controller.updateModelSettings({ effort: "high" });
+      return world;
+    }
+
+    it("sets the provider, resets the model to its default, and keeps the effort", async () => {
+      const { controller, storage } = await onAnthropicWithKey();
+      await controller.switchProvider("gemini");
+      expect(state().profile).toMatchObject({ providerId: "gemini", modelId: "mock-alt-model", configuredEffort: "high" });
+      expect(await storage.get("profile", "profile")).toMatchObject({ providerId: "gemini" });
+    });
+
+    it("without a key for the new provider, asks for one and shows no key as in use", async () => {
+      const { controller } = await onAnthropicWithKey();
+      await controller.switchProvider("gemini");
+      expect(state()).toMatchObject({ route: "key", keyHint: undefined, keyMode: undefined });
+      expect(state().storedKeys).toEqual({ anthropic: { hint: "sk-ant-…0000", mode: "persistent" } });
+    });
+
+    it("with a stored key for the new provider, asks for nothing", async () => {
+      const { controller } = await onAnthropicWithKey();
+      await controller.switchProvider("gemini");
+      await controller.enterKey(GEMINI_KEY, "session");
+      state().navigate("settings");
+      await controller.switchProvider("anthropic");
+      expect(state()).toMatchObject({ route: "settings", keyHint: "sk-ant-…0000", keyMode: "persistent" });
+      await controller.switchProvider("gemini");
+      expect(state()).toMatchObject({ route: "settings", keyHint: "AQ.…0001", keyMode: "session" });
+    });
+
+    it("continues an old conversation with the new provider, keeping its messages", async () => {
+      const { controller, anthropic, gemini } = await onAnthropicWithKey();
+      await controller.send("What is the difference between ser and estar?");
+      const conversationId = state().activeConversationId;
+      await controller.switchProvider("gemini");
+      await controller.enterKey(GEMINI_KEY, "session");
+      await controller.openConversation(conversationId!);
+      await controller.send("And haber?");
+      expect(anthropic.streamCalls).toBe(1);
+      expect(gemini.streamCalls).toBe(1);
+      expect(state().messages.filter((m) => m.author === "user")).toHaveLength(2);
+      expect(state().usage.map((u) => u.providerId)).toEqual(["anthropic", "gemini"]);
+    });
+
+    it("deleting or replacing one provider's key leaves the other's", async () => {
+      const { controller, services } = await onAnthropicWithKey();
+      await controller.switchProvider("gemini");
+      await controller.enterKey(GEMINI_KEY, "session");
+      await controller.removeKey();
+      expect(await services.credentials.describe("gemini")).toBeUndefined();
+      expect(await services.credentials.describe("anthropic")).toMatchObject({ maskedHint: "sk-ant-…0000" });
+      expect(state().storedKeys).toEqual({ anthropic: { hint: "sk-ant-…0000", mode: "persistent" } });
+    });
+
+    it("ignores an unknown provider, the same provider, and any switch while an answer streams", async () => {
+      const { controller } = await onAnthropicWithKey();
+      const before = state().profile;
+      await controller.switchProvider("openai");
+      await controller.switchProvider("anthropic");
+      useAppStore.setState({ streaming: true });
+      await controller.switchProvider("gemini");
+      expect(state().profile).toBe(before);
+    });
+
+    it("boot lists every stored key's hint, never a key", async () => {
+      const { controller, services } = await onAnthropicWithKey();
+      await controller.switchProvider("gemini");
+      await controller.enterKey(GEMINI_KEY, "persistent");
+      resetAppStore();
+      await new AppController(services, { themeRoot: { dataset: {} } }).boot();
+      expect(state().storedKeys).toEqual({
+        anthropic: { hint: "sk-ant-…0000", mode: "persistent" },
+        gemini: { hint: "AQ.…0001", mode: "persistent" },
+      });
+      expect(JSON.stringify(state())).not.toContain(GEMINI_KEY);
+    });
+
+    it("delete all removes both keys", async () => {
+      const { controller, services } = await onAnthropicWithKey();
+      await controller.switchProvider("gemini");
+      await controller.enterKey(GEMINI_KEY, "session");
+      expect(await controller.deleteAllData()).toEqual({ ok: true });
+      expect(await services.credentials.list()).toEqual([]);
+      expect(state().storedKeys).toEqual({});
+    });
+  });
+
+  it("a profile saved before 004 boots as Anthropic with its key (FR-002)", async () => {
+    const storage = new MemoryStorage();
+    const first = await twoProviderWorld(storage);
+    await first.controller.completeOnboarding({ ...DRAFT, providerId: "anthropic" });
+    await first.controller.enterKey(DEFAULT_MOCK_KEY, "persistent");
+    const legacy = (await storage.get<Record<string, unknown>>("profile", "profile"))!;
+    delete legacy["providerId"];
+    await storage.put("profile", legacy as { id: string });
+    resetAppStore();
+    await new AppController(first.services, { themeRoot: { dataset: {} } }).boot();
+    expect(state()).toMatchObject({ route: "chat", keyHint: "sk-ant-…0000" });
+    expect(state().profile?.providerId).toBe("anthropic");
   });
 });

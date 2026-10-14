@@ -1,0 +1,68 @@
+[
+  {
+    "candidates": [
+      {
+        "content": {
+          "parts": [
+            {
+              "text": "ACCEPT\nHere is "
+            }
+          ],
+          "role": "model"
+        },
+        "index": 0
+      }
+    ],
+    "usageMetadata": {
+      "promptTokenCount": 50,
+      "candidatesTokenCount": 3,
+      "totalTokenCount": 53,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 50
+        }
+      ],
+      "serviceTier": "standard"
+    },
+    "modelVersion": "gemini-3.5-flash-lite",
+    "responseId": "SYNTHETICresponseId0001"
+  },
+  {
+    "candidates": [
+      {
+        "content": {
+          "parts": [
+            {
+              "text": ""
+            }
+          ],
+          "role": "model"
+        },
+        "finishReason": "SAFETY",
+        "index": 0,
+        "safetyRatings": [
+          {
+            "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+            "probability": "HIGH",
+            "blocked": true
+          }
+        ]
+      }
+    ],
+    "usageMetadata": {
+      "promptTokenCount": 50,
+      "candidatesTokenCount": 3,
+      "totalTokenCount": 53,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 50
+        }
+      ],
+      "serviceTier": "standard"
+    },
+    "modelVersion": "gemini-3.5-flash-lite",
+    "responseId": "SYNTHETICresponseId0001"
+  }
+]

@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import { useId, useState, type ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import { FormError } from "../forms/FormMessage";
+import { ProviderChoice } from "../key/ProviderChoice";
 import { addInterest, removeInterest, type AddInterestFailure } from "./interests";
 import { OFFERED_LANGUAGES, languageName } from "./languages";
 
@@ -11,6 +12,8 @@ export interface OnboardingDraft {
   targetLanguage: string;
   level: Level;
   interests: string[];
+  /** The chosen AI provider. Absent when the build offers only one, so there is nothing to choose (004). */
+  providerId?: string | undefined;
 }
 
 export interface OnboardingProps {
@@ -22,6 +25,8 @@ export interface OnboardingProps {
    */
   validate: (draft: OnboardingDraft) => readonly ProfileIssue[];
   onComplete: (draft: OnboardingDraft) => void;
+  /** Provider ids the build offers. With more than one, the learner must pick (004 FR-001). */
+  providerIds?: readonly string[] | undefined;
 }
 
 const INTEREST_ERROR_KEY: Record<AddInterestFailure, string> = {
@@ -32,7 +37,7 @@ const INTEREST_ERROR_KEY: Record<AddInterestFailure, string> = {
 };
 
 /** First screen: who the learner is, so answers fit them (comprehensible input). */
-export function Onboarding({ defaultMediationLanguage, validate, onComplete }: OnboardingProps): ReactElement {
+export function Onboarding({ defaultMediationLanguage, validate, onComplete, providerIds = [] }: OnboardingProps): ReactElement {
   const { t, i18n } = useTranslation();
   const ids = { mediation: useId(), target: useId(), level: useId(), interest: useId(), error: useId() };
   const [mediationLanguage, setMediationLanguage] = useState(defaultMediationLanguage);
@@ -41,12 +46,19 @@ export function Onboarding({ defaultMediationLanguage, validate, onComplete }: O
   const [interests, setInterests] = useState<string[]>([]);
   const [interestText, setInterestText] = useState("");
   const [interestError, setInterestError] = useState<AddInterestFailure | undefined>(undefined);
+  const [providerId, setProviderId] = useState<string | undefined>(undefined);
 
-  const draft: OnboardingDraft = { mediationLanguage, targetLanguage, level, interests };
-  const issues = targetLanguage === "" ? [] : validate(draft);
+  // No provider is preselected: with a choice to make, Next waits for it, and the provider and model
+  // issues that an empty choice causes are not shown as errors.
+  const mustChoose = providerIds.length > 1;
+  const chosen = !mustChoose || providerId !== undefined;
+  const draft: OnboardingDraft = { mediationLanguage, targetLanguage, level, interests, ...(mustChoose && { providerId }) };
+  const issues = (targetLanguage === "" ? [] : validate(draft)).filter(
+    (issue) => chosen || (issue.path !== "providerId" && issue.path !== "modelId"),
+  );
   const sameLanguage = issues.some((issue) => issue.code === "same_as_mediation");
   const otherIssues = issues.some((issue) => issue.code !== "same_as_mediation");
-  const canContinue = targetLanguage !== "" && issues.length === 0;
+  const canContinue = targetLanguage !== "" && chosen && issues.length === 0;
 
   const options = (current: string) =>
     (OFFERED_LANGUAGES.includes(current) || current === "" ? OFFERED_LANGUAGES : [...OFFERED_LANGUAGES, current]).map(
@@ -153,6 +165,8 @@ export function Onboarding({ defaultMediationLanguage, validate, onComplete }: O
           </ul>
         ) : null}
       </div>
+
+      <ProviderChoice providerIds={providerIds} value={providerId} onChange={setProviderId} />
 
       {otherIssues ? (
         <FormError>{t("onboarding.error.invalid")}</FormError>

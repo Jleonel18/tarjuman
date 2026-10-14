@@ -16,6 +16,8 @@ export interface KeySettingsProps {
   /** Deletes the key; the app then asks for one again. */
   onDelete: () => void;
   disabled?: boolean | undefined;
+  /** The provider the key in use is for; the replacement form shows its help (004). */
+  providerId?: string | undefined;
 }
 
 /**
@@ -30,6 +32,7 @@ export function KeySettings({
   onReplace,
   onDelete,
   disabled = false,
+  providerId,
 }: KeySettingsProps): ReactElement {
   const { t } = useTranslation();
   const titleId = useId();
@@ -55,7 +58,7 @@ export function KeySettings({
 
       {replacing ? (
         <>
-          <KeyEntry storageAvailable={storageAvailable} onEnter={replace} />
+          <KeyEntry storageAvailable={storageAvailable} onEnter={replace} providerId={providerId} />
           <button type="button" className="button button--quiet settings-card__cancel" onClick={() => setReplacing(false)}>
             {t("common.cancel")}
           </button>

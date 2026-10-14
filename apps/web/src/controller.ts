@@ -9,6 +9,7 @@ import {
   TEST_ONLY_LOCALES,
   TONE_PRESETS,
   WITHHELD_MARKER,
+  readStoredProfile,
   validateProfile,
   type CredentialStorageMode,
   type DeleteAllOutcome,
@@ -19,9 +20,10 @@ import {
   type Segment,
   type ProfileInput,
   type ProfileIssue,
+  type StoredProfile,
 } from "@tarjuman/core";
 import { applyTheme, type ChatMessage, type LanguageValues, type OnboardingDraft, type ThemePreference, type ThemeRoot } from "@tarjuman/ui";
-import type { AppServices } from "./composition-root";
+import type { AppServices, ProviderOffer } from "./composition-root";
 import { resetAppStore, useAppStore } from "./store";
 
 const CAPABILITY_ID = "language-qa";
@@ -80,11 +82,13 @@ export class AppController {
 
   async boot(): Promise<void> {
     const { storage, credentials, conversations, i18n } = this.#services;
-    const profile = await storage.get<LearnerProfile>("profile", "profile");
+    // A profile saved before 004 has no provider: it is read as Anthropic's (FR-002).
+    const profile = readStoredProfile(await storage.get<StoredProfile>("profile", "profile"));
     // A test locale chosen at start (`?locale=`) is kept; otherwise the saved interface language wins.
     const testLocaleActive = (TEST_ONLY_LOCALES as readonly string[]).includes(i18n.language);
     if (profile && isShippedUiLocale(profile.uiLanguage) && !testLocaleActive) await i18n.changeLanguage(profile.uiLanguage);
-    const key = await credentials.describe();
+    const key = profile ? await credentials.describe(profile.providerId) : undefined;
+    const storedKeys = await this.#storedKeys();
     const list = await conversations.list();
     const latest = list[0] === undefined ? undefined : await conversations.open(list[0].id);
     const usage = latest ? await conversations.usageOf(latest.conversation.id) : [];
@@ -94,6 +98,7 @@ export class AppController {
       profile,
       keyHint: key?.maskedHint,
       keyMode: key?.storageMode,
+      storedKeys,
       conversations: list,
       activeConversationId: latest?.conversation.id,
       messages: latest ? toChatMessages(latest.messages, this.#withheldLabel()) : [],
@@ -116,12 +121,12 @@ export class AppController {
 
   /** Reports problems with a draft using the core's profile rules; nothing is stored. */
   validateDraft = (draft: OnboardingDraft): readonly ProfileIssue[] => {
-    const result = validateProfile(this.#profileInput(draft), { knownModelIds: this.#services.models.ids });
+    const result = validateProfile(this.#profileInput(draft), { modelsByProvider: this.#modelsByProvider() });
     return result.ok ? [] : result.issues;
   };
 
   completeOnboarding = async (draft: OnboardingDraft): Promise<void> => {
-    const result = validateProfile(this.#profileInput(draft), { knownModelIds: this.#services.models.ids });
+    const result = validateProfile(this.#profileInput(draft), { modelsByProvider: this.#modelsByProvider() });
     if (!result.ok) return;
     const now = new Date().toISOString();
     const profile: LearnerProfile = { id: "profile", ...result.value, createdAt: now, updatedAt: now };
@@ -129,24 +134,61 @@ export class AppController {
     useAppStore.setState({ profile, route: useAppStore.getState().keyHint === undefined ? "key" : "chat" });
   };
 
+  /** Validates and stores a key for the active provider; no other provider sees it (004 FR-007). */
   enterKey = async (key: string, mode: CredentialStorageMode): Promise<EnterKeyOutcome> => {
-    const outcome = await this.#services.keys.enter(key, mode);
-    if (outcome.ok) useAppStore.setState({ keyHint: outcome.maskedHint, keyMode: mode, route: "chat", error: undefined });
+    const providerId = useAppStore.getState().profile?.providerId;
+    if (providerId === undefined) return { ok: false, code: "bad_request" };
+    const outcome = await this.#services.keys.enter(providerId, key, mode);
+    if (outcome.ok) {
+      useAppStore.setState({ keyHint: outcome.maskedHint, keyMode: mode, route: "chat", error: undefined, storedKeys: await this.#storedKeys() });
+    }
     return outcome;
   };
 
   /** Replaces the key from the settings screen. A rejected key keeps the old one (US7-1). */
   replaceKey = async (key: string, mode: CredentialStorageMode): Promise<EnterKeyOutcome> => {
-    const outcome = await this.#services.keys.replace(key, mode);
-    if (outcome.ok) useAppStore.setState({ keyHint: outcome.maskedHint, keyMode: mode, error: undefined });
+    const providerId = useAppStore.getState().profile?.providerId;
+    if (providerId === undefined) return { ok: false, code: "bad_request" };
+    const outcome = await this.#services.keys.replace(providerId, key, mode);
+    if (outcome.ok) {
+      useAppStore.setState({ keyHint: outcome.maskedHint, keyMode: mode, error: undefined, storedKeys: await this.#storedKeys() });
+    }
     return outcome;
   };
 
   /** Deletes the key. The profile and history stay; the app asks for a key again. */
   removeKey = async (): Promise<void> => {
-    if (useAppStore.getState().streaming) return;
-    await this.#services.keys.remove();
-    useAppStore.setState({ keyHint: undefined, keyMode: undefined, route: "key", error: undefined });
+    const { streaming, profile } = useAppStore.getState();
+    if (streaming || !profile) return;
+    await this.#services.keys.remove(profile.providerId);
+    useAppStore.setState({ keyHint: undefined, keyMode: undefined, route: "key", error: undefined, storedKeys: await this.#storedKeys() });
+  };
+
+  /**
+   * Makes another offered provider the active one (004 US2). The model resets to that provider's
+   * default and the effort is kept (the pipeline drops it for a model without effort). Every key and
+   * conversation stays. Without a key for the new provider the key screen opens, so nothing can be
+   * sent until one is validated.
+   */
+  switchProvider = async (providerId: string): Promise<void> => {
+    const { profile, streaming } = useAppStore.getState();
+    const offer = this.#offer(providerId);
+    if (!profile || streaming || !offer || providerId === profile.providerId) return;
+    const updated: LearnerProfile = {
+      ...profile,
+      providerId,
+      modelId: offer.defaultModelId,
+      updatedAt: new Date().toISOString(),
+    };
+    await this.#services.storage.put("profile", updated);
+    const key = await this.#services.credentials.describe(providerId);
+    useAppStore.setState({
+      profile: updated,
+      keyHint: key?.maskedHint,
+      keyMode: key?.storageMode,
+      error: undefined,
+      ...(key === undefined && { route: "key" as const }),
+    });
   };
 
   /**
@@ -206,7 +248,7 @@ export class AppController {
     const profile = useAppStore.getState().profile;
     if (!profile || useAppStore.getState().streaming) return;
     const modelId =
-      change.modelId !== undefined && this.#services.models.ids.includes(change.modelId)
+      change.modelId !== undefined && this.#modelIdsOf(profile.providerId).includes(change.modelId)
         ? change.modelId
         : profile.modelId;
     const configuredEffort =
@@ -226,7 +268,7 @@ export class AppController {
   validateLanguages = (candidate: LanguageValues): readonly ProfileIssue[] => {
     const profile = useAppStore.getState().profile;
     if (!profile) return [];
-    const result = validateProfile(this.#languageInput(profile, candidate), { knownModelIds: this.#services.models.ids });
+    const result = validateProfile(this.#languageInput(profile, candidate), { modelsByProvider: this.#modelsByProvider() });
     return result.ok ? [] : result.issues;
   };
 
@@ -243,7 +285,7 @@ export class AppController {
       mediationLanguage: change.mediationLanguage ?? profile.mediationLanguage,
       targetLanguage: change.targetLanguage ?? profile.targetLanguage,
     };
-    const result = validateProfile(this.#languageInput(profile, candidate), { knownModelIds: this.#services.models.ids });
+    const result = validateProfile(this.#languageInput(profile, candidate), { modelsByProvider: this.#modelsByProvider() });
     if (!result.ok) return;
     if (change.uiLanguage !== undefined && this.#services.uiLocales.includes(change.uiLanguage)) {
       await this.#services.i18n.changeLanguage(change.uiLanguage);
@@ -367,6 +409,12 @@ export class AppController {
     });
   }
 
+  /** Hints of every stored key, by provider. Never the keys: `describe` cannot return one. */
+  async #storedKeys(): Promise<Record<string, { hint: string; mode: CredentialStorageMode }>> {
+    const list = await this.#services.credentials.list();
+    return Object.fromEntries(list.map((d) => [d.providerId, { hint: d.maskedHint, mode: d.storageMode }]));
+  }
+
   #withheldLabel(): string {
     return this.#services.i18n.t("chat.withheld");
   }
@@ -377,6 +425,7 @@ export class AppController {
       interests: profile.interests,
       toneId: profile.toneId,
       configuredEffort: profile.configuredEffort,
+      providerId: profile.providerId,
       modelId: profile.modelId,
       uiLanguage: isShippedUiLocale(candidate.uiLanguage) ? candidate.uiLanguage : profile.uiLanguage,
       mediationLanguage: candidate.mediationLanguage,
@@ -384,8 +433,24 @@ export class AppController {
     };
   }
 
+  /** The provider offer with this id, if the build offers it. */
+  #offer(providerId: string): ProviderOffer | undefined {
+    return this.#services.providers.find((offer) => offer.id === providerId);
+  }
+
+  #modelIdsOf(providerId: string): string[] {
+    return this.#offer(providerId)?.models.map((model) => model.id) ?? [];
+  }
+
+  #modelsByProvider(): Record<string, string[]> {
+    return Object.fromEntries(this.#services.providers.map((offer) => [offer.id, this.#modelIdsOf(offer.id)]));
+  }
+
   #profileInput(draft: OnboardingDraft): ProfileInput {
     const language = this.#services.i18n.language;
+    // With one provider there is nothing to choose; with several, the learner must pick (004 FR-001).
+    const only = this.#services.providers.length === 1 ? this.#services.providers[0]?.id : undefined;
+    const providerId = draft.providerId ?? only ?? "";
     return {
       uiLanguage: isShippedUiLocale(language) ? language : DEFAULT_UI_LOCALE,
       mediationLanguage: draft.mediationLanguage,
@@ -394,7 +459,8 @@ export class AppController {
       interests: draft.interests,
       toneId: DEFAULT_TONE_ID,
       configuredEffort: DEFAULT_EFFORT,
-      modelId: this.#services.models.defaultId,
+      providerId,
+      modelId: this.#offer(providerId)?.defaultModelId ?? "",
     };
   }
 }

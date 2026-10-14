@@ -45,7 +45,8 @@ describe("MemoryStorage", () => {
   it("reports itself available and holds no credential until one is put", async () => {
     const storage = new MemoryStorage();
     expect(await storage.isAvailable()).toBe(true);
-    expect(await storage.getCredentialRecord()).toBeUndefined();
-    await storage.deleteCredentialRecord();
+    expect(await storage.getCredentialRecord("anthropic")).toBeUndefined();
+    expect(await storage.listCredentialRecords()).toEqual([]);
+    await storage.deleteCredentialRecord("anthropic");
   });
 });

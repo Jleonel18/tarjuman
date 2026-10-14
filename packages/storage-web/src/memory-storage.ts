@@ -12,7 +12,7 @@ const clone = <T>(value: T): T => structuredClone(value);
  */
 export class MemoryStorage implements StoragePort, CredentialRecordAccess {
   readonly #tables = new Map<Collection, Map<string, StoredRecord>>();
-  #credential: CredentialRecord | undefined;
+  readonly #credentials = new Map<string, CredentialRecord>();
   readonly #localStorage: LocalStorageLike | undefined;
 
   /** `localStorage` defaults to the browser's; `undefined` means there is none. */
@@ -50,7 +50,7 @@ export class MemoryStorage implements StoragePort, CredentialRecordAccess {
 
   async clearAll(): Promise<void> {
     this.#tables.clear();
-    this.#credential = undefined;
+    this.#credentials.clear();
     removeTarjumanKeys(this.#localStorage);
   }
 
@@ -58,15 +58,24 @@ export class MemoryStorage implements StoragePort, CredentialRecordAccess {
     return true;
   }
 
-  async getCredentialRecord(): Promise<CredentialRecord | undefined> {
-    return this.#credential;
+  async getCredentialRecord(providerId: string): Promise<CredentialRecord | undefined> {
+    return this.#credentials.get(providerId);
+  }
+
+  async listCredentialRecords(): Promise<CredentialRecord[]> {
+    return [...this.#credentials.values()];
   }
 
   async putCredentialRecord(record: CredentialRecord): Promise<void> {
-    this.#credential = record;
+    if (record.id !== record.providerId) throw new Error("A credential record is keyed by its provider id.");
+    this.#credentials.set(record.providerId, record);
   }
 
-  async deleteCredentialRecord(): Promise<void> {
-    this.#credential = undefined;
+  async deleteCredentialRecord(providerId: string): Promise<void> {
+    this.#credentials.delete(providerId);
+  }
+
+  async deleteAllCredentialRecords(): Promise<void> {
+    this.#credentials.clear();
   }
 }

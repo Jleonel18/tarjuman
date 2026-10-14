@@ -1,4 +1,4 @@
-import { BackIcon, ChatView, ConversationList, DataControls, KeyEntry, KeySettings, LanguageSettings, ModelEffortSettings, Onboarding, SettingsIcon, StatsPanel, ThemeSwitcher, ToneSelector, Workspace, useTranslation } from "@tarjuman/ui";
+import { BackIcon, ChatView, ConversationList, DataControls, KeyEntry, KeySettings, LanguageSettings, ModelEffortSettings, Onboarding, ProviderSettings, SettingsIcon, StatsPanel, ThemeSwitcher, ToneSelector, Workspace, useTranslation } from "@tarjuman/ui";
 import type { ReactElement } from "react";
 import type { AppController } from "./controller";
 import type { AppServices } from "./composition-root";
@@ -6,7 +6,7 @@ import { useAppStore } from "./store";
 
 export interface RoutesProps {
   controller: AppController;
-  services: Pick<AppServices, "storageAvailable" | "models" | "uiLocales">;
+  services: Pick<AppServices, "storageAvailable" | "providers" | "uiLocales">;
 }
 
 /** First-run guard: onboarding, then key entry, then chat. `boot()` picks the starting screen. */
@@ -23,10 +23,18 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
           defaultMediationLanguage={i18n.language.split("-")[0] ?? i18n.language}
           validate={controller.validateDraft}
           onComplete={(draft) => void controller.completeOnboarding(draft)}
+          providerIds={services.providers.map((offer) => offer.id)}
         />
       );
     case "key":
-      return <KeyEntry storageAvailable={services.storageAvailable} onEnter={controller.enterKey} />;
+      return (
+        <KeyEntry
+          storageAvailable={services.storageAvailable}
+          onEnter={controller.enterKey}
+          providerId={state.profile?.providerId}
+          showProvider={services.providers.length > 1}
+        />
+      );
     case "chat":
       return (
         <Workspace
@@ -57,7 +65,7 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
                     onApplyEffort={(effort) => void controller.updateModelSettings({ effort })}
                   />
                   <ModelEffortSettings
-                    models={services.models.list}
+                    models={services.providers.find((offer) => offer.id === state.profile?.providerId)?.models ?? []}
                     modelId={state.profile.modelId}
                     effort={state.profile.configuredEffort}
                     disabled={state.streaming}
@@ -109,6 +117,15 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
             />
           ) : null}
           <ThemeSwitcher variant="full" value={state.theme} onChange={controller.setTheme} />
+          {state.profile ? (
+            <ProviderSettings
+              providerIds={services.providers.map((offer) => offer.id)}
+              activeProviderId={state.profile.providerId}
+              storedKeys={state.storedKeys}
+              disabled={state.streaming}
+              onSwitch={(providerId) => void controller.switchProvider(providerId)}
+            />
+          ) : null}
           {state.keyHint !== undefined ? (
             <KeySettings
               maskedHint={state.keyHint}
@@ -117,6 +134,7 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
               disabled={state.streaming}
               onReplace={controller.replaceKey}
               onDelete={() => void controller.removeKey()}
+              providerId={state.profile?.providerId}
             />
           ) : null}
           <DataControls disabled={state.streaming} onDeleteAll={controller.deleteAllData} />

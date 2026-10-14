@@ -52,7 +52,22 @@ export const MOCK_MODELS: ModelInfo[] = [
   },
 ];
 
+/** A second mock provider's table, so tests and the e2e build can choose between two (004). */
+export const MOCK_ALT_MODELS: ModelInfo[] = [
+  {
+    id: "mock-alt-model",
+    displayName: "Mock alt model",
+    contextWindow: 100_000,
+    maxOutput: 8_192,
+    supportsEffort: true,
+    effortLevels: ["low", "medium", "high"],
+    pricing: { inputPerMTok: 2, outputPerMTok: 6, asOf: "2026-10-14" },
+  },
+];
+
 export interface MockProviderOptions {
+  /** Provider id. Default `"mock"`; a second instance needs another id (004). */
+  id?: string;
   models?: ModelInfo[];
   /** Raw keys `validateCredential` accepts. Anything else is `invalid_credential`. */
   validKeys?: string[];
@@ -86,7 +101,7 @@ export const HAPPY_SCRIPT: MockScript = {
  * records every request so tests can assert on exactly what the pipeline sent.
  */
 export class MockProvider implements ProviderPort {
-  readonly id = "mock";
+  readonly id: string;
 
   /** Every request received, in order. Requests cannot contain a secret by construction. */
   readonly calls: ModelRequest[] = [];
@@ -106,6 +121,7 @@ export class MockProvider implements ProviderPort {
   #validationFailure: ProviderErrorCode | undefined;
 
   constructor(options: MockProviderOptions = {}) {
+    this.id = options.id ?? "mock";
     this.#models = options.models ?? MOCK_MODELS;
     this.#validKeys = new Set(options.validKeys ?? [DEFAULT_MOCK_KEY]);
     this.#queue = [...(options.scripts ?? [])];

@@ -85,10 +85,49 @@ describe("selectLiveProvider: Anthropic", () => {
   });
 });
 
+describe("selectLiveProvider: Gemini (004 US3)", () => {
+  // Fake auth key: never a real credential.
+  const FAKE_GEMINI_KEY = "AQ.FAKEliveSELECTORgeminiKEYfakeFAKE_-fakeFAKE000001";
+
+  it("throws a message naming GEMINI_API_KEY when it is missing or empty, with no value in it", async () => {
+    for (const env of [{ TARJUMAN_PROVIDER: "gemini" }, { TARJUMAN_PROVIDER: "gemini", GEMINI_API_KEY: "" }]) {
+      const failure = selectLiveProvider({ ...env, TARJUMAN_TEST_KEY: FAKE_KEY }, fakeFetch());
+      await expect(failure).rejects.toThrow(/GEMINI_API_KEY/);
+      await expect(failure).rejects.not.toThrow(new RegExp(FAKE_KEY));
+    }
+  });
+
+  it("selects Gemini on the cheapest model, seals the key, and labels the provenance not Claude", async () => {
+    const fake = fakeFetch();
+    const selection = await selectLiveProvider({ TARJUMAN_PROVIDER: "gemini", GEMINI_API_KEY: FAKE_GEMINI_KEY }, fake);
+    expect(selection.provider.id).toBe("gemini");
+    expect(selection.modelId).toBe("gemini-3.5-flash-lite");
+    expect(unsealSecret(selection.secret)).toBe(FAKE_GEMINI_KEY);
+    expect(selection.provenance).toEqual({
+      providerId: "gemini",
+      modelId: "gemini-3.5-flash-lite",
+      runtimeVersion: null,
+      isClaude: false,
+      label: nonClaudeLabel("gemini-3.5-flash-lite"),
+    });
+    expect(JSON.stringify(selection.provenance)).not.toContain(FAKE_GEMINI_KEY);
+    expect(fake.urls).toEqual([]);
+  });
+
+  it("honors GEMINI_MODEL", async () => {
+    const selection = await selectLiveProvider(
+      { TARJUMAN_PROVIDER: "gemini", GEMINI_API_KEY: FAKE_GEMINI_KEY, GEMINI_MODEL: "gemini-3.8-flash" },
+      fakeFetch(),
+    );
+    expect(selection.modelId).toBe("gemini-3.8-flash");
+    expect(selection.provenance.label).toBe(nonClaudeLabel("gemini-3.8-flash"));
+  });
+});
+
 describe("selectLiveProvider: unknown provider", () => {
   it("throws listing the allowed values, without echoing other environment values", async () => {
     const failure = selectLiveProvider({ TARJUMAN_PROVIDER: "openai", TARJUMAN_TEST_KEY: FAKE_KEY }, fakeFetch());
-    await expect(failure).rejects.toThrow(/ollama.*anthropic|anthropic.*ollama/);
+    await expect(failure).rejects.toThrow(/ollama, anthropic, gemini/);
     await expect(failure).rejects.not.toThrow(new RegExp(FAKE_KEY));
   });
 });

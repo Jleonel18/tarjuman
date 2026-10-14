@@ -20,7 +20,11 @@ import type { Pipeline as PipelineContract, TurnEvent, TurnInput } from "./types
 const DEFAULT_MAX_TOKENS = 4096;
 
 export interface PipelineDeps {
-  provider: ProviderPort;
+  /**
+   * Every provider the build offers (004 FR-001). The profile names the active one; a turn goes to
+   * that provider only, with that provider's key, and never falls back to another (FR-003, FR-007).
+   */
+  providers: readonly ProviderPort[];
   conversations: ConversationService;
   credentials: CredentialStore;
   capabilities: CapabilityRegistry;
@@ -44,7 +48,10 @@ export class Pipeline implements PipelineContract {
   readonly #assembler = new ContextAssembler();
 
   constructor(deps: PipelineDeps) {
-    this.#deps = deps;
+    const providers = Object.freeze([...(deps.providers ?? [])]);
+    if (providers.length === 0) throw new Error("Pipeline needs at least one provider.");
+    if (new Set(providers.map((p) => p.id)).size !== providers.length) throw new Error("Provider ids must be unique.");
+    this.#deps = Object.freeze({ ...deps, providers });
     // Nothing on the instance or the prototype can be replaced, so the stage order above holds (US8-3).
     Object.freeze(this);
   }
@@ -59,12 +66,17 @@ export class Pipeline implements PipelineContract {
       yield { type: "error", code: "bad_request" };
       return;
     }
-    const secret = await credentials.load();
+    const profile = await this.#deps.getProfile();
+    const provider = this.#deps.providers.find((p) => p.id === profile.providerId);
+    if (!provider) {
+      yield { type: "error", code: "bad_request" };
+      return;
+    }
+    const secret = await credentials.load(provider.id);
     if (!secret) {
       yield { type: "error", code: "invalid_credential" };
       return;
     }
-    const profile = await this.#deps.getProfile();
 
     // Stage 1: InputGuard. Key-shaped text is withheld from the model and from storage; only the
     // guarded text goes any further.
@@ -84,7 +96,7 @@ export class Pipeline implements PipelineContract {
       history: opened.messages,
       turn: { userText: guarded.userText, untrustedMaterial: guarded.untrustedMaterial },
     });
-    const model = this.#deps.provider.listModels().find((m) => m.id === profile.modelId);
+    const model = provider.listModels().find((m) => m.id === profile.modelId);
     const request: ModelRequest = {
       modelId: profile.modelId,
       layers: context.layers,
@@ -120,6 +132,8 @@ export class Pipeline implements PipelineContract {
       let received = false;
       let failure: { code: ProviderErrorCode; retryAfterSeconds?: number } | undefined;
       let ended: "complete" | "interrupted" | undefined;
+      // The provider itself declined to answer (a safety filter, 004 research R5).
+      let providerRefused = false;
       let usage: ReportedUsage | undefined;
 
       const refusal = () =>
@@ -155,7 +169,7 @@ export class Pipeline implements PipelineContract {
       };
 
       try {
-        for await (const event of this.#deps.provider.stream(request, secret, signal)) {
+        for await (const event of provider.stream(request, secret, signal)) {
           if (signal.aborted) {
             ended = "interrupted";
             break;
@@ -165,6 +179,7 @@ export class Pipeline implements PipelineContract {
             for (const out of await apply(parser.push(event.delta))) yield out;
           } else if (event.type === "stop") {
             ended = event.reason === "aborted" ? "interrupted" : "complete";
+            providerRefused = event.reason === "refusal";
             break;
           } else if (event.type === "error") {
             failure = {
@@ -186,6 +201,9 @@ export class Pipeline implements PipelineContract {
         if (ended === "complete" && !failure) {
           for (const out of await apply(parser.finish())) yield out;
           if (verdict === "refuse" && !mediationHasCatalog && refusalBody.trim() === "") yield await show(refusal());
+          // The model had started an answer and the provider cut it off: what was shown stays, the
+          // refusal follows, and the message is never stored as complete.
+          else if (providerRefused && verdict !== "refuse") yield await show(`\n\n${refusal()}`);
         }
       } catch {
         // An adapter fault is reported by code only; its message is never forwarded.
@@ -198,13 +216,14 @@ export class Pipeline implements PipelineContract {
         return;
       }
       let status: "complete" | "interrupted" | "refused" = failure || ended === undefined ? "interrupted" : ended;
-      if (status === "complete" && verdict === "refuse") status = "refused";
+      if (status === "complete" && (verdict === "refuse" || providerRefused)) status = "refused";
       await finish(status, verdict === undefined ? {} : { verdict, ruleIds });
       // Stage 5: Metrics. Whatever the provider reported is kept, even for a partial answer.
       for (const out of await runMetrics({
         conversations,
         conversationId: turn.conversationId,
         messageId: reply.id,
+        providerId: provider.id,
         usage,
         model,
         configuredEffort: profile.configuredEffort,

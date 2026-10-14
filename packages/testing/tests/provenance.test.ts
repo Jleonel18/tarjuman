@@ -87,3 +87,26 @@ describe("parseProvenance", () => {
     expect(() => parseProvenance({ ...ANTHROPIC, label: "" })).toThrow();
   });
 });
+
+describe("parseProvenance: Gemini (004 FR-023)", () => {
+  const GEMINI = {
+    providerId: "gemini",
+    modelId: "gemini-3.5-flash-lite",
+    runtimeVersion: null,
+    recordedAt: "2026-10-14",
+    isClaude: false,
+    label: nonClaudeLabel("gemini-3.5-flash-lite"),
+  };
+
+  it("accepts a Gemini recording with the non-Claude label", () => {
+    expect(parseProvenance(GEMINI)).toEqual(GEMINI);
+  });
+
+  it("rejects a Gemini recording that claims to be Claude", () => {
+    expect(() => parseProvenance({ ...GEMINI, isClaude: true })).toThrow(/isClaude/);
+  });
+
+  it("requires the fixed non-Claude label for a Gemini recording", () => {
+    expect(() => parseProvenance({ ...GEMINI, label: "Recorded with Gemini." })).toThrow(/label/);
+  });
+});

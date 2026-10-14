@@ -21,7 +21,8 @@ const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
 /**
- * Web `CredentialStore` (contracts/storage-port.md, FR-013, FR-016).
+ * Web `CredentialStore` (contracts/storage-port.md, FR-013, FR-016), one key per provider
+ * (004 contracts/multi-provider-core.md).
  *
  * - `persistent`: a fresh non-extractable AES-GCM key encrypts the secret. The `CryptoKey` and the
  *   `{ iv, ciphertext }` go into IndexedDB; the secret is never stored in the clear.
@@ -49,12 +50,14 @@ export class WebCredentialStore implements CredentialStore {
     if (secret.length === 0) throw new Error("Cannot store an empty key.");
     // The hint is the only part of the key ever displayed; it must never be the key itself.
     if (meta.maskedHint.includes(secret)) throw new Error("The masked hint must not contain the key.");
+    const { providerId } = meta;
     const validatedAt = this.#now();
 
     if (mode === "session") {
-      // Switching to session-only must not leave an older remembered key behind.
-      await this.#records.deleteCredentialRecord();
-      this.#session.set(sealSecret(secret), { providerId: meta.providerId, maskedHint: meta.maskedHint, validatedAt });
+      // Switching to session-only must not leave this provider's remembered key behind. Other
+      // providers' keys are not touched (004 FR-004).
+      await this.#records.deleteCredentialRecord(providerId);
+      this.#session.set(sealSecret(secret), { providerId, maskedHint: meta.maskedHint, validatedAt });
       return;
     }
 
@@ -64,14 +67,14 @@ export class WebCredentialStore implements CredentialStore {
     const ciphertext = new Uint8Array(
       await subtle.encrypt(
         // Binding the provider id as additional data ties the ciphertext to its record.
-        { name: "AES-GCM", iv, additionalData: encoder.encode(meta.providerId) },
+        { name: "AES-GCM", iv, additionalData: encoder.encode(providerId) },
         wrappingKey,
         encoder.encode(secret),
       ),
     );
     await this.#records.putCredentialRecord({
-      id: "current",
-      providerId: meta.providerId,
+      id: providerId,
+      providerId,
       storageMode: "persistent",
       maskedHint: meta.maskedHint,
       validatedAt,
@@ -79,16 +82,18 @@ export class WebCredentialStore implements CredentialStore {
       ciphertext,
       wrappingKey,
     });
-    this.#session.clear();
+    this.#session.delete(providerId);
   }
 
-  async load(): Promise<SecretHandle | undefined> {
-    if (this.#session.handle) return this.#session.handle;
-    const record = await this.#records.getCredentialRecord();
+  async load(providerId: string): Promise<SecretHandle | undefined> {
+    const sessionHandle = this.#session.handle(providerId);
+    if (sessionHandle) return sessionHandle;
+    const record = await this.#records.getCredentialRecord(providerId);
     if (!record) return undefined;
     try {
       const plaintext = await this.#crypto.subtle.decrypt(
-        { name: "AES-GCM", iv: record.iv, additionalData: encoder.encode(record.providerId) },
+        // The id asked for, not the one in the record: a record moved to another provider fails.
+        { name: "AES-GCM", iv: record.iv, additionalData: encoder.encode(providerId) },
         record.wrappingKey,
         record.ciphertext,
       );
@@ -99,24 +104,34 @@ export class WebCredentialStore implements CredentialStore {
     }
   }
 
-  async describe(): Promise<CredentialDescription | undefined> {
-    const meta = this.#session.meta;
-    if (this.#session.handle && meta) {
-      return { providerId: meta.providerId, maskedHint: meta.maskedHint, validatedAt: meta.validatedAt, storageMode: "session" };
+  async describe(providerId: string): Promise<CredentialDescription | undefined> {
+    const meta = this.#session.meta(providerId);
+    if (this.#session.handle(providerId) && meta) {
+      return { providerId, maskedHint: meta.maskedHint, validatedAt: meta.validatedAt, storageMode: "session" };
     }
-    const record = await this.#records.getCredentialRecord();
+    const record = await this.#records.getCredentialRecord(providerId);
     if (!record) return undefined;
-    return {
-      providerId: record.providerId,
-      maskedHint: record.maskedHint,
-      validatedAt: record.validatedAt,
-      storageMode: "persistent",
-    };
+    return { providerId, maskedHint: record.maskedHint, validatedAt: record.validatedAt, storageMode: "persistent" };
   }
 
-  async remove(): Promise<void> {
+  async list(): Promise<CredentialDescription[]> {
+    const ids = new Set([...this.#session.providerIds(), ...(await this.#records.listCredentialRecords()).map((r) => r.providerId)]);
+    const out: CredentialDescription[] = [];
+    for (const id of ids) {
+      const description = await this.describe(id);
+      if (description) out.push(description);
+    }
+    return out;
+  }
+
+  async remove(providerId: string): Promise<void> {
+    this.#session.delete(providerId);
+    await this.#records.deleteCredentialRecord(providerId);
+  }
+
+  async removeAll(): Promise<void> {
     this.#session.clear();
-    await this.#records.deleteCredentialRecord();
+    await this.#records.deleteAllCredentialRecords();
   }
 }
 

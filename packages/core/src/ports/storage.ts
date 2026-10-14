@@ -40,12 +40,23 @@ export interface CredentialDescription extends CredentialMeta {
   validatedAt: string;
 }
 
+/**
+ * At most one key per provider (004 FR-004). Keys of different providers live side by side, each
+ * with its own mode, hint, and validation date; acting on one never touches another.
+ */
 export interface CredentialStore {
-  /** Called only after a successful validation. The mode has no default (FR-016). */
+  /**
+   * Stores under `meta.providerId`, replacing that provider's key in either mode. Called only after
+   * a successful validation. The mode has no default (FR-016).
+   */
   save(secret: string, mode: CredentialStorageMode, meta: CredentialMeta): Promise<void>;
-  load(): Promise<SecretHandle | undefined>;
+  load(providerId: string): Promise<SecretHandle | undefined>;
   /** Never returns the secret. */
-  describe(): Promise<CredentialDescription | undefined>;
-  /** Irrecoverable removal (US7-1). */
-  remove(): Promise<void>;
+  describe(providerId: string): Promise<CredentialDescription | undefined>;
+  /** Every stored key's description, never a secret. */
+  list(): Promise<CredentialDescription[]>;
+  /** Irrecoverable removal of one provider's key, in both modes (US7-1). */
+  remove(providerId: string): Promise<void>;
+  /** Irrecoverable removal of every key, in both modes ("delete all my data"). */
+  removeAll(): Promise<void>;
 }

@@ -69,7 +69,9 @@ export async function runGuardrailCase(c: TurnCase, deps: HarnessDeps): Promise<
     save: async () => {},
     load: async () => deps.secret,
     describe: async () => undefined,
+    list: async () => [],
     remove: async () => {},
+    removeAll: async () => {},
   };
   const profile: LearnerProfile = {
     id: "profile",
@@ -80,12 +82,13 @@ export async function runGuardrailCase(c: TurnCase, deps: HarnessDeps): Promise<
     interests: [],
     toneId: c.toneId ?? "neutral",
     configuredEffort: "medium",
+    providerId: capturing.id,
     modelId: deps.modelId,
     createdAt: "2026-01-01T00:00:00.000Z",
     updatedAt: "2026-01-01T00:00:00.000Z",
   };
   const pipeline = new Pipeline({
-    provider: capturing,
+    providers: [capturing],
     conversations,
     credentials,
     capabilities: deps.capabilities,

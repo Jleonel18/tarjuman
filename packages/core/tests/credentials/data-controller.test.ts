@@ -13,6 +13,9 @@ import type {
 
 const KEY = "sk-ant-api03-SECRETSECRETSECRET-a1b2";
 const META: CredentialMeta = { providerId: "anthropic", maskedHint: "sk-ant-…a1b2" };
+// Fake Gemini key (004): never a real credential.
+const GEMINI_KEY = "AQ.FAKEdataCONTROLLERgeminiKEYfakeFAKE_-fakeFAKE0001";
+const GEMINI_META: CredentialMeta = { providerId: "gemini", maskedHint: "AQ.…0001" };
 
 /** In-memory storage that logs `clearAll` and can be told to fail its emptiness check. */
 class FakeStorage implements StoragePort {
@@ -46,28 +49,41 @@ class FakeStorage implements StoragePort {
   }
 }
 
-/** Holds a session key in memory or a persistent one, like the web store. `remove` can be broken. */
+/** Holds keys per provider, like the web store. `removeAll` can be broken or skip one provider. */
 class FakeCredentials implements CredentialStore {
-  current: { secret: string; mode: CredentialStorageMode } | undefined;
+  readonly keys = new Map<string, { secret: string; mode: CredentialStorageMode }>();
   removeFails = false;
   removeIsNoop = false;
+  /** A provider whose key `removeAll` forgets, as a buggy store might. */
+  survivor: string | undefined;
   constructor(readonly log: string[] = []) {}
-  async save(secret: string, mode: CredentialStorageMode): Promise<void> {
-    this.current = { secret, mode };
+  async save(secret: string, mode: CredentialStorageMode, meta: CredentialMeta): Promise<void> {
+    this.keys.set(meta.providerId, { secret, mode });
   }
-  async load(): Promise<SecretHandle | undefined> {
-    this.log.push("load");
-    return this.current === undefined ? undefined : sealSecret(this.current.secret);
+  async load(providerId: string): Promise<SecretHandle | undefined> {
+    this.log.push(`load:${providerId}`);
+    const entry = this.keys.get(providerId);
+    return entry === undefined ? undefined : sealSecret(entry.secret);
   }
-  async describe(): Promise<CredentialDescription | undefined> {
-    this.log.push("describe");
-    if (this.current === undefined) return undefined;
-    return { ...META, storageMode: this.current.mode, validatedAt: "2026-10-13T00:00:00.000Z" };
+  async describe(providerId: string): Promise<CredentialDescription | undefined> {
+    const entry = this.keys.get(providerId);
+    if (entry === undefined) return undefined;
+    return { providerId, maskedHint: "…", storageMode: entry.mode, validatedAt: "2026-10-13T00:00:00.000Z" };
   }
-  async remove(): Promise<void> {
-    this.log.push("remove");
+  async list(): Promise<CredentialDescription[]> {
+    this.log.push("list");
+    const out: CredentialDescription[] = [];
+    for (const id of this.keys.keys()) out.push((await this.describe(id))!);
+    return out;
+  }
+  async remove(providerId: string): Promise<void> {
+    this.keys.delete(providerId);
+  }
+  async removeAll(): Promise<void> {
+    this.log.push("removeAll");
     if (this.removeFails) throw new Error("remove failed");
-    if (!this.removeIsNoop) this.current = undefined;
+    if (this.removeIsNoop) return;
+    for (const id of [...this.keys.keys()]) if (id !== this.survivor) this.keys.delete(id);
   }
 }
 
@@ -79,13 +95,19 @@ async function world(mode: CredentialStorageMode = "persistent") {
   await storage.put("conversations", { id: "c1" });
   await storage.put("messages", { id: "m1", conversationId: "c1" });
   await storage.put("usage", { id: "u1", conversationId: "c1" });
-  await credentials.save(KEY, mode);
-  return { storage, credentials, log, data: new DataController({ storage, credentials }) };
+  await credentials.save(KEY, mode, META);
+  await credentials.save(GEMINI_KEY, mode, GEMINI_META);
+  return {
+    storage,
+    credentials,
+    log,
+    data: new DataController({ storage, credentials, providerIds: ["anthropic", "gemini"] }),
+  };
 }
 
 describe("DataController.deleteAll", () => {
   it.each<CredentialStorageMode>(["persistent", "session"])(
-    "clears storage and the %s key, and leaves the app at first run",
+    "clears storage and every provider's %s key, and leaves the app at first run (004 SC-007)",
     async (mode) => {
       const { data, storage, credentials } = await world(mode);
       expect(await data.deleteAll()).toEqual({ ok: true });
@@ -94,8 +116,10 @@ describe("DataController.deleteAll", () => {
       expect(await storage.query("conversations")).toEqual([]);
       expect(await storage.query("messages")).toEqual([]);
       expect(await storage.query("usage")).toEqual([]);
-      expect(await credentials.describe()).toBeUndefined();
-      expect(await credentials.load()).toBeUndefined();
+      for (const id of ["anthropic", "gemini"]) {
+        expect(await credentials.describe(id)).toBeUndefined();
+        expect(await credentials.load(id)).toBeUndefined();
+      }
     },
   );
 
@@ -103,7 +127,7 @@ describe("DataController.deleteAll", () => {
     const { data, log } = await world();
     await data.deleteAll();
     // Checking the key after `clearAll` would reopen (and so recreate) the database it just dropped.
-    expect(log).toEqual(["remove", "describe", "load", "clearAll"]);
+    expect(log).toEqual(["removeAll", "list", "load:anthropic", "load:gemini", "clearAll"]);
   });
 
   it("reports a failure, never success, when the storage emptiness check fails", async () => {
@@ -119,6 +143,21 @@ describe("DataController.deleteAll", () => {
     expect(log).toContain("clearAll");
   });
 
+  it("reports a failure when one provider's key survives, and still drops storage", async () => {
+    const { data, credentials, log } = await world("persistent");
+    credentials.survivor = "gemini";
+    expect(await data.deleteAll()).toEqual({ ok: false, code: "not_verified" });
+    expect(log).toContain("clearAll");
+  });
+
+  it("checks every offered provider even if the list looks empty", async () => {
+    const { data, credentials } = await world();
+    // A store whose list forgets an entry must still be caught by loading each provider.
+    credentials.survivor = "gemini";
+    credentials.list = async () => [];
+    expect(await data.deleteAll()).toEqual({ ok: false, code: "not_verified" });
+  });
+
   it("reports a failure when removing the key throws, and still drops storage", async () => {
     const { data, credentials, log } = await world();
     credentials.removeFails = true;
@@ -129,6 +168,8 @@ describe("DataController.deleteAll", () => {
   it("never puts the key in its outcome", async () => {
     const { data, credentials } = await world();
     credentials.removeIsNoop = true;
-    expect(JSON.stringify(await data.deleteAll())).not.toContain("SECRETSECRET");
+    const outcome = JSON.stringify(await data.deleteAll());
+    expect(outcome).not.toContain("SECRETSECRET");
+    expect(outcome).not.toContain("geminiKEY");
   });
 });

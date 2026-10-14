@@ -18,51 +18,68 @@ class FakeValidator implements CredentialValidator {
     private readonly result: ValidationResult,
     private readonly log: string[] = [],
   ) {}
-  async validate(): Promise<ValidationResult> {
+  providers: string[] = [];
+  async validate(providerId: string): Promise<ValidationResult> {
     this.calls += 1;
+    this.providers.push(providerId);
     this.log.push("validate");
     return this.result;
   }
 }
 
-/** Keeps one current credential, like the real store, and logs every call in order. */
+/** Keeps one credential per provider, like the real store, and logs every call in order. */
 class FakeStore implements CredentialStore {
   saved: { secret: string; mode: CredentialStorageMode; meta: CredentialMeta }[] = [];
-  current: { secret: string; mode: CredentialStorageMode; meta: CredentialMeta } | undefined;
+  readonly byProvider = new Map<string, { secret: string; mode: CredentialStorageMode; meta: CredentialMeta }>();
   constructor(readonly log: string[] = []) {}
+  /** The Anthropic entry, which most tests use. */
+  get current() {
+    return this.byProvider.get("anthropic");
+  }
   async save(secret: string, mode: CredentialStorageMode, meta: CredentialMeta): Promise<void> {
     this.log.push("save");
     this.saved.push({ secret, mode, meta });
-    this.current = { secret, mode, meta };
+    this.byProvider.set(meta.providerId, { secret, mode, meta });
   }
-  async load(): Promise<SecretHandle | undefined> {
-    return this.current === undefined ? undefined : sealSecret(this.current.secret);
+  async load(providerId: string): Promise<SecretHandle | undefined> {
+    const entry = this.byProvider.get(providerId);
+    return entry === undefined ? undefined : sealSecret(entry.secret);
   }
-  async describe(): Promise<CredentialDescription | undefined> {
-    if (this.current === undefined) return undefined;
-    return { ...this.current.meta, storageMode: this.current.mode, validatedAt: "2026-10-13T00:00:00.000Z" };
+  async describe(providerId: string): Promise<CredentialDescription | undefined> {
+    const entry = this.byProvider.get(providerId);
+    if (entry === undefined) return undefined;
+    return { ...entry.meta, storageMode: entry.mode, validatedAt: "2026-10-13T00:00:00.000Z" };
   }
-  async remove(): Promise<void> {
+  async list(): Promise<CredentialDescription[]> {
+    const out: CredentialDescription[] = [];
+    for (const id of this.byProvider.keys()) out.push((await this.describe(id))!);
+    return out;
+  }
+  async remove(providerId: string): Promise<void> {
     this.log.push("remove");
-    this.current = undefined;
+    this.byProvider.delete(providerId);
+  }
+  async removeAll(): Promise<void> {
+    this.log.push("removeAll");
+    this.byProvider.clear();
   }
 }
 
 function manager(result: ValidationResult, store = new FakeStore()) {
   const validator = new FakeValidator(result);
-  return { keys: new KeyManager({ validator, store, providerId: "anthropic" }), validator, store };
+  return { keys: new KeyManager({ validator, store }), validator, store };
 }
 
 describe("KeyManager.enter", () => {
   it("starts absent", () => {
-    expect(manager({ ok: true }).keys.state).toBe("absent");
+    expect(manager({ ok: true }).keys.stateOf("anthropic")).toBe("absent");
   });
 
   it("stores the key only after a valid result, in the chosen mode, with a masked hint", async () => {
     const { keys, store } = manager({ ok: true });
-    const outcome = await keys.enter(KEY, "persistent");
+    const outcome = await keys.enter("anthropic", KEY, "persistent");
     expect(outcome).toEqual({ ok: true, maskedHint: "sk-ant-…a1b2" });
-    expect(keys.state).toBe("stored");
+    expect(keys.stateOf("anthropic")).toBe("stored");
     expect(store.saved).toHaveLength(1);
     expect(store.saved[0]?.mode).toBe("persistent");
     expect(store.saved[0]?.meta).toEqual({ providerId: "anthropic", maskedHint: "sk-ant-…a1b2" });
@@ -70,7 +87,7 @@ describe("KeyManager.enter", () => {
 
   it("passes session mode through", async () => {
     const { keys, store } = manager({ ok: true });
-    await keys.enter(KEY, "session");
+    await keys.enter("anthropic", KEY, "session");
     expect(store.saved[0]?.mode).toBe("session");
   });
 
@@ -78,22 +95,22 @@ describe("KeyManager.enter", () => {
     "never stores a rejected key (%s)",
     async (code) => {
       const { keys, store } = manager({ ok: false, code });
-      const outcome = await keys.enter(KEY, "persistent");
+      const outcome = await keys.enter("anthropic", KEY, "persistent");
       expect(outcome).toEqual({ ok: false, code });
-      expect(keys.state).toBe("rejected");
+      expect(keys.stateOf("anthropic")).toBe("rejected");
       expect(store.saved).toEqual([]);
     },
   );
 
   it("never exposes the key in the outcome or the hint", async () => {
     const { keys } = manager({ ok: true });
-    const outcome = await keys.enter(KEY, "session");
+    const outcome = await keys.enter("anthropic", KEY, "session");
     expect(JSON.stringify(outcome)).not.toContain("SECRETSECRET");
   });
 
   it("rejects an empty key without calling the validator", async () => {
     const { keys, validator, store } = manager({ ok: true });
-    const outcome = await keys.enter("   ", "session");
+    const outcome = await keys.enter("anthropic", "   ", "session");
     expect(outcome).toEqual({ ok: false, code: "invalid_credential" });
     expect(validator.calls).toBe(0);
     expect(store.saved).toEqual([]);
@@ -101,7 +118,7 @@ describe("KeyManager.enter", () => {
 
   it("trims whitespace around a pasted key", async () => {
     const { keys, store } = manager({ ok: true });
-    await keys.enter(`  ${KEY}\n`, "session");
+    await keys.enter("anthropic", `  ${KEY}\n`, "session");
     expect(store.saved[0]?.secret).toBe(KEY);
   });
 
@@ -111,16 +128,16 @@ describe("KeyManager.enter", () => {
       validate: () => new Promise((resolve) => (release = resolve)),
     };
     const store = new FakeStore();
-    const keys = new KeyManager({ validator, store, providerId: "anthropic" });
-    const pending = keys.enter(KEY, "session");
-    expect(keys.state).toBe("validating");
+    const keys = new KeyManager({ validator, store });
+    const pending = keys.enter("anthropic", KEY, "session");
+    expect(keys.stateOf("anthropic")).toBe("validating");
     release({ ok: false, code: "network" });
     await pending;
-    expect(keys.state).toBe("rejected");
-    const again = keys.enter(KEY, "session");
+    expect(keys.stateOf("anthropic")).toBe("rejected");
+    const again = keys.enter("anthropic", KEY, "session");
     release({ ok: true });
     await again;
-    expect(keys.state).toBe("stored");
+    expect(keys.stateOf("anthropic")).toBe("stored");
     expect(store.saved).toHaveLength(1);
   });
 });
@@ -138,8 +155,8 @@ async function storedManager(next: ValidationResult) {
       return results.shift() ?? { ok: false, code: "unknown" };
     },
   };
-  const keys = new KeyManager({ validator, store, providerId: "anthropic" });
-  await keys.enter(KEY, "persistent");
+  const keys = new KeyManager({ validator, store });
+  await keys.enter("anthropic", KEY, "persistent");
   log.length = 0;
   return { keys, store, log };
 }
@@ -147,26 +164,26 @@ async function storedManager(next: ValidationResult) {
 describe("KeyManager.replace", () => {
   it("goes stored → validating → stored, and the new key replaces the old one", async () => {
     const { keys, store } = await storedManager({ ok: true });
-    expect(keys.state).toBe("stored");
-    const pending = keys.replace(NEW_KEY, "session");
-    expect(keys.state).toBe("validating");
+    expect(keys.stateOf("anthropic")).toBe("stored");
+    const pending = keys.replace("anthropic", NEW_KEY, "session");
+    expect(keys.stateOf("anthropic")).toBe("validating");
     const outcome = await pending;
     expect(outcome).toEqual({ ok: true, maskedHint: "sk-ant-…c3d4" });
-    expect(keys.state).toBe("stored");
+    expect(keys.stateOf("anthropic")).toBe("stored");
     expect(store.current?.secret).toBe(NEW_KEY);
     expect(store.current?.mode).toBe("session");
   });
 
   it("removes the old key only after the new key validates, then stores the new one", async () => {
     const { keys, log } = await storedManager({ ok: true });
-    await keys.replace(NEW_KEY, "persistent");
+    await keys.replace("anthropic", NEW_KEY, "persistent");
     expect(log).toEqual(["validate", "remove", "save"]);
   });
 
   it("leaves no trace of the old key once replaced", async () => {
     const { keys, store } = await storedManager({ ok: true });
-    await keys.replace(NEW_KEY, "persistent");
-    expect(JSON.stringify(await store.describe())).not.toContain("a1b2");
+    await keys.replace("anthropic", NEW_KEY, "persistent");
+    expect(JSON.stringify(await store.describe("anthropic"))).not.toContain("a1b2");
     expect(JSON.stringify(store.current)).not.toContain("SECRETSECRET");
   });
 
@@ -174,9 +191,9 @@ describe("KeyManager.replace", () => {
     "keeps the old key when the replacement is rejected (%s)",
     async (code) => {
       const { keys, store, log } = await storedManager({ ok: false, code });
-      const outcome = await keys.replace(NEW_KEY, "persistent");
+      const outcome = await keys.replace("anthropic", NEW_KEY, "persistent");
       expect(outcome).toEqual({ ok: false, code });
-      expect(keys.state).toBe("stored");
+      expect(keys.stateOf("anthropic")).toBe("stored");
       expect(store.current?.secret).toBe(KEY);
       expect(log).toEqual(["validate"]);
     },
@@ -184,9 +201,9 @@ describe("KeyManager.replace", () => {
 
   it("keeps the old key when the replacement is empty, without calling the validator", async () => {
     const { keys, store, log } = await storedManager({ ok: true });
-    const outcome = await keys.replace("  ", "persistent");
+    const outcome = await keys.replace("anthropic", "  ", "persistent");
     expect(outcome).toEqual({ ok: false, code: "invalid_credential" });
-    expect(keys.state).toBe("stored");
+    expect(keys.stateOf("anthropic")).toBe("stored");
     expect(store.current?.secret).toBe(KEY);
     expect(log).toEqual([]);
   });
@@ -195,18 +212,92 @@ describe("KeyManager.replace", () => {
 describe("KeyManager.remove", () => {
   it("goes stored → absent and leaves nothing in the store", async () => {
     const { keys, store, log } = await storedManager({ ok: true });
-    await keys.remove();
-    expect(keys.state).toBe("absent");
+    await keys.remove("anthropic");
+    expect(keys.stateOf("anthropic")).toBe("absent");
     expect(log).toEqual(["remove"]);
-    expect(await store.describe()).toBeUndefined();
-    expect(await store.load()).toBeUndefined();
+    expect(await store.describe("anthropic")).toBeUndefined();
+    expect(await store.load("anthropic")).toBeUndefined();
   });
 
   it("a new key can be entered after removal", async () => {
     const { keys, store } = await storedManager({ ok: true });
-    await keys.remove();
-    await keys.enter(NEW_KEY, "session");
-    expect(keys.state).toBe("stored");
+    await keys.remove("anthropic");
+    await keys.enter("anthropic", NEW_KEY, "session");
+    expect(keys.stateOf("anthropic")).toBe("stored");
     expect(store.current?.secret).toBe(NEW_KEY);
+  });
+});
+
+// Fake keys only (004): shapes from data-model.md → KeyShape.
+const GEMINI_KEY = "AQ.FAKEkeyMANAGERgeminiKEYfakeFAKEfake_-fakeFAKE0001";
+const OTHER_GEMINI_KEY = "AIzaFAKEkeyMANAGERstandardKEY_-00000002";
+
+describe("KeyManager across providers (004 FR-004, FR-007)", () => {
+  it.each([
+    ["a Gemini key for Anthropic", "anthropic", GEMINI_KEY, "gemini"],
+    ["a standard Gemini key for Anthropic", "anthropic", OTHER_GEMINI_KEY, "gemini"],
+    ["an Anthropic key for Gemini", "gemini", KEY, "anthropic"],
+  ])("rejects %s locally, without any validation call", async (_name, provider, key, expected) => {
+    const { keys, validator, store } = manager({ ok: true });
+    const outcome = await keys.enter(provider, key, "persistent");
+    expect(outcome).toEqual({ ok: false, code: "wrong_provider", expectedProviderId: expected });
+    expect(validator.calls).toBe(0);
+    expect(store.saved).toEqual([]);
+    expect(keys.stateOf(provider)).toBe("rejected");
+    expect(JSON.stringify(outcome)).not.toContain(key);
+  });
+
+  it("checks the shape on replace too, and keeps the old key", async () => {
+    const { keys, store, log } = await storedManager({ ok: true });
+    const outcome = await keys.replace("anthropic", GEMINI_KEY, "persistent");
+    expect(outcome).toEqual({ ok: false, code: "wrong_provider", expectedProviderId: "gemini" });
+    expect(log).toEqual([]);
+    expect(store.current?.secret).toBe(KEY);
+    expect(keys.stateOf("anthropic")).toBe("stored");
+  });
+
+  it("does not judge shapes for a provider with no known key shape (dev and test providers)", async () => {
+    const { keys, validator } = manager({ ok: true });
+    expect(await keys.enter("mock", KEY, "session")).toEqual({ ok: true, maskedHint: "sk-ant-…a1b2" });
+    expect(validator.providers).toEqual(["mock"]);
+  });
+
+  it("validates a key of unknown shape against the given provider only", async () => {
+    const { keys, validator, store } = manager({ ok: true });
+    await keys.enter("gemini", "an-unknown-shape-1234", "session");
+    expect(validator.providers).toEqual(["gemini"]);
+    expect(store.saved[0]?.meta).toEqual({ providerId: "gemini", maskedHint: "…1234" });
+  });
+
+  it("stores a Gemini key under gemini with a Gemini mask", async () => {
+    const { keys, store } = manager({ ok: true });
+    const outcome = await keys.enter("gemini", GEMINI_KEY, "persistent");
+    expect(outcome).toEqual({ ok: true, maskedHint: "AQ.…0001" });
+    expect(store.byProvider.get("gemini")?.meta).toEqual({ providerId: "gemini", maskedHint: "AQ.…0001" });
+  });
+
+  it("replacing or removing one provider's key leaves the other's untouched", async () => {
+    const { keys, store } = manager({ ok: true });
+    await keys.enter("anthropic", KEY, "persistent");
+    await keys.enter("gemini", GEMINI_KEY, "session");
+
+    await keys.replace("gemini", OTHER_GEMINI_KEY, "persistent");
+    expect(store.byProvider.get("anthropic")?.secret).toBe(KEY);
+    expect(store.byProvider.get("gemini")?.secret).toBe(OTHER_GEMINI_KEY);
+
+    await keys.remove("gemini");
+    expect(store.byProvider.has("gemini")).toBe(false);
+    expect(store.byProvider.get("anthropic")?.secret).toBe(KEY);
+    expect(keys.stateOf("gemini")).toBe("absent");
+    expect(keys.stateOf("anthropic")).toBe("stored");
+  });
+
+  it("a failed replacement keeps that provider's old key", async () => {
+    const store = new FakeStore();
+    const results: ValidationResult[] = [{ ok: true }, { ok: false, code: "invalid_credential" }];
+    const keys = new KeyManager({ validator: { validate: async () => results.shift()! }, store });
+    await keys.enter("gemini", GEMINI_KEY, "persistent");
+    expect(await keys.replace("gemini", OTHER_GEMINI_KEY, "persistent")).toEqual({ ok: false, code: "invalid_credential" });
+    expect(store.byProvider.get("gemini")?.secret).toBe(GEMINI_KEY);
   });
 });

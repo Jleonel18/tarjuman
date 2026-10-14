@@ -8,12 +8,11 @@ import type {
   StreamEvent,
   ValidationResult,
 } from "@tarjuman/core";
-import { unsealSecret } from "@tarjuman/core/adapter";
+import { SecretStreamFilter, unsealSecret } from "@tarjuman/core/adapter";
 import type { MessageCreateParamsStreaming } from "@anthropic-ai/sdk/resources/messages";
 import { createClient, type AnthropicProviderOptions } from "./client";
 import { mapProviderError } from "./errors";
 import { ANTHROPIC_MODELS } from "./models";
-import { SecretStreamFilter } from "./scrub";
 import { validateCredential } from "./validate-credential";
 
 const STOP_REASONS: Record<string, StopReason> = {

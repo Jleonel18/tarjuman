@@ -31,6 +31,9 @@ export interface LearnerProfile {
   interests: string[];
   toneId: string;
   configuredEffort: Effort;
+  /** The active AI provider (004 FR-001). A profile saved before 004 has none: see `readStoredProfile`. */
+  providerId: string;
+  /** Always one of `providerId`'s models (004 FR-018). */
   modelId: string;
   createdAt: string;
   updatedAt: string;

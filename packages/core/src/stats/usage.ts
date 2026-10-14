@@ -18,6 +18,8 @@ export interface BuildUsageInput {
   id: string;
   conversationId: string;
   messageId: string;
+  /** The provider that served the turn (004 FR-019). */
+  providerId?: string;
   model: ModelInfo;
   usage: ReportedUsage;
   configuredEffort: Effort;
@@ -53,6 +55,7 @@ export function buildUsageRecord(input: BuildUsageInput): UsageRecord {
     id: input.id,
     conversationId: input.conversationId,
     messageId: input.messageId,
+    ...(input.providerId !== undefined && { providerId: input.providerId }),
     modelId: model.id,
     inputTokens: usage.inputTokens,
     outputTokens: usage.outputTokens,

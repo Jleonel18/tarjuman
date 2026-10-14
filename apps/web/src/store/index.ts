@@ -18,6 +18,8 @@ export interface AppState {
   keyHint: string | undefined;
   /** Where the key in use is kept. */
   keyMode: CredentialStorageMode | undefined;
+  /** Masked hint and mode of every provider's stored key (004 FR-004); never a key. */
+  storedKeys: Readonly<Record<string, { hint: string; mode: CredentialStorageMode }>>;
   conversations: Conversation[];
   activeConversationId: string | undefined;
   messages: ChatMessage[];
@@ -38,6 +40,7 @@ const initialData = {
   profile: undefined,
   keyHint: undefined,
   keyMode: undefined,
+  storedKeys: {},
   conversations: [],
   activeConversationId: undefined,
   messages: [],

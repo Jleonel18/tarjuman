@@ -2,7 +2,7 @@
  * Content-Security-Policy for the web app (Principle V, plan.md threat analysis).
  *
  * Production is strict: only same-origin scripts and styles, no inline anything, no remote
- * images, and `connect-src` limited to this origin and the AI provider. Because the API key is
+ * images, and `connect-src` limited to this origin and the AI providers. Because the API key is
  * handled in this page, an injected script is the main residual risk, and this policy is the
  * mitigation (see SECURITY.md).
  *
@@ -12,10 +12,11 @@
  */
 
 /**
- * Origins the user's key may be sent to. Must match `ANTHROPIC_API_ORIGIN` in
- * `@tarjuman/provider-anthropic`; `tests/csp.test.ts` fails if they drift apart.
+ * Origins a user's key may be sent to, one per product provider (004 FR-011). Must match
+ * `ANTHROPIC_API_ORIGIN` in `@tarjuman/provider-anthropic` and `GEMINI_API_ORIGIN` in
+ * `@tarjuman/provider-gemini`; `tests/csp.test.ts` fails if they drift apart.
  */
-export const PROVIDER_ORIGINS = ["https://api.anthropic.com"] as const;
+export const PROVIDER_ORIGINS = ["https://api.anthropic.com", "https://generativelanguage.googleapis.com"] as const;
 
 export type CspMode = "production" | "development";
 

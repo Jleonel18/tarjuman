@@ -5,6 +5,7 @@ import type { Message } from "../../src/conversation/types";
 import { Pipeline } from "../../src/pipeline/pipeline";
 import type { TurnEvent } from "../../src/pipeline/types";
 import { sealSecret } from "../../src/ports/secret-handle";
+import type { ModelInfo } from "../../src/ports/provider";
 import type { CredentialStore } from "../../src/ports/storage";
 import type { LearnerProfile } from "../../src/profile/types";
 import { makeClock, MemoryStorage } from "../helpers/memory-storage";
@@ -19,6 +20,7 @@ const PROFILE: LearnerProfile = {
   interests: [],
   toneId: "neutral",
   configuredEffort: "medium",
+  providerId: "scripted",
   modelId: "mock-model",
   createdAt: "2026-10-03T00:00:00.000Z",
   updatedAt: "2026-10-03T00:00:00.000Z",
@@ -30,7 +32,9 @@ const credentials: CredentialStore = {
   save: async () => {},
   load: async () => sealSecret(KEY),
   describe: async () => undefined,
+  list: async () => [],
   remove: async () => {},
+  removeAll: async () => {},
 };
 
 const HAPPY: Step[] = [
@@ -67,7 +71,7 @@ function makePipeline(script: Step[]) {
     i18n: {},
   });
   const pipeline = new Pipeline({
-    provider,
+    providers: [provider],
     conversations,
     credentials,
     capabilities,
@@ -254,5 +258,98 @@ describe("Pipeline: one terminal event per turn", () => {
     }
     const opened = await conversations.open(conversationId);
     expect(opened?.messages.some((m) => m.status === "streaming")).toBe(false);
+  });
+});
+
+describe("Pipeline: provider set (004 FR-003, FR-007, FR-019)", () => {
+  const model = (id: string): ModelInfo => ({
+    id,
+    displayName: id,
+    contextWindow: 100_000,
+    maxOutput: 8_000,
+    supportsEffort: false,
+    effortLevels: [],
+    pricing: { inputPerMTok: 1, outputPerMTok: 2, asOf: "2026-10-14" },
+  });
+  const KEYS: Record<string, string> = {
+    first: "sk-ant-api03-FAKE-FIRST-PROVIDER-KEY",
+    second: "AQ.FAKEsecondPROVIDERkeyFAKEfakeFAKEfake_-0001",
+  };
+  const perProvider: CredentialStore = {
+    save: async () => {},
+    load: async (providerId) => (KEYS[providerId] === undefined ? undefined : sealSecret(KEYS[providerId])),
+    describe: async () => undefined,
+    list: async () => [],
+    remove: async () => {},
+    removeAll: async () => {},
+  };
+
+  function twoProviders(active: string, credentials = perProvider) {
+    const first = new ScriptedProvider(HAPPY, [model("first-model")], "first");
+    const second = new ScriptedProvider(HAPPY, [model("second-model")], "second");
+    const capabilities = new CapabilityRegistry();
+    capabilities.register({
+      id: "language-qa",
+      version: "1.0.0",
+      contractVersion: "1.0.0",
+      tools: [],
+      permissions: [],
+      domainRules: [],
+      promptFragments: {},
+      i18n: {},
+    });
+    const modelId = active === "second" ? "second-model" : "first-model";
+    const pipeline = new Pipeline({
+      providers: [first, second],
+      conversations,
+      credentials,
+      capabilities,
+      getProfile: async () => ({ ...PROFILE, providerId: active, modelId }),
+      refusalTemplate: () => undefined,
+    });
+    return { first, second, pipeline };
+  }
+
+  it("sends the turn to the provider named by the profile, and never to the other", async () => {
+    const { first, second, pipeline } = twoProviders("second");
+    const events = await collect(pipeline.run(turn(), createTestAbort().signal));
+    expect(terminals(events)).toEqual([{ type: "done", status: "complete" }]);
+    expect(second.streamCalls).toBe(1);
+    expect(first.streamCalls).toBe(0);
+    expect(second.calls[0]?.modelId).toBe("second-model");
+  });
+
+  it("records which provider served the turn", async () => {
+    const { pipeline } = twoProviders("second");
+    const events = await collect(pipeline.run(turn(), createTestAbort().signal));
+    const usage = events.find((e) => e.type === "usage");
+    expect(usage?.type === "usage" && usage.record.providerId).toBe("second");
+  });
+
+  it("uses the active provider's key: loads it by provider id", async () => {
+    const asked: string[] = [];
+    const { pipeline } = twoProviders("first", { ...perProvider, load: async (id) => (asked.push(id), sealSecret(KEYS[id]!)) });
+    await collect(pipeline.run(turn(), createTestAbort().signal));
+    expect(asked).toEqual(["first"]);
+  });
+
+  it("ends with bad_request and calls nobody when the profile names an unknown provider", async () => {
+    const { first, second, pipeline } = twoProviders("openai");
+    const events = await collect(pipeline.run(turn(), createTestAbort().signal));
+    expect(terminals(events)).toEqual([{ type: "error", code: "bad_request" }]);
+    expect(first.streamCalls + second.streamCalls).toBe(0);
+  });
+
+  it("ends with invalid_credential when the active provider has no key, even if another does", async () => {
+    const { first, second, pipeline } = twoProviders("second", { ...perProvider, load: async (id) => (id === "first" ? sealSecret(KEYS["first"]!) : undefined) });
+    const events = await collect(pipeline.run(turn(), createTestAbort().signal));
+    expect(terminals(events)).toEqual([{ type: "error", code: "invalid_credential" }]);
+    expect(first.streamCalls + second.streamCalls).toBe(0);
+  });
+
+  it("rejects an empty provider list and duplicate ids", () => {
+    const base = { conversations, credentials, capabilities: new CapabilityRegistry(), getProfile: async () => PROFILE, refusalTemplate: () => undefined };
+    expect(() => new Pipeline({ ...base, providers: [] })).toThrow();
+    expect(() => new Pipeline({ ...base, providers: [new ScriptedProvider([]), new ScriptedProvider([])] })).toThrow();
   });
 });

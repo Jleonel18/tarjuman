@@ -4,11 +4,13 @@ import { defaultLocalStorage, removeTarjumanKeys, tarjumanKeys, type LocalStorag
 import { defaultSessionSecrets, type SessionSecrets } from "./session-secrets";
 
 export const DB_NAME = "tarjuman";
-export const DB_VERSION = 1;
+/** 2 since 004: credential records are keyed by provider id instead of the fixed key "current". */
+export const DB_VERSION = 2;
 
 /** The `credential` store is internal: it is not a `Collection`, so `StoragePort` cannot reach it. */
 const CREDENTIAL_STORE = "credential";
-const CREDENTIAL_KEY = "current";
+/** The single credential key of version 1, moved to its provider id by the upgrade to version 2. */
+const LEGACY_CREDENTIAL_KEY = "current";
 
 export const COLLECTIONS: readonly Collection[] = [
   "profile",
@@ -20,7 +22,8 @@ export const COLLECTIONS: readonly Collection[] = [
 
 /** What is persisted for a remembered key. The secret itself is only ever present as ciphertext. */
 export interface CredentialRecord {
-  id: typeof CREDENTIAL_KEY;
+  /** Always equal to `providerId`: at most one record per provider (004 FR-004). */
+  id: string;
   providerId: string;
   storageMode: "persistent";
   maskedHint: string;
@@ -31,11 +34,14 @@ export interface CredentialRecord {
   wrappingKey: CryptoKey;
 }
 
-/** Access to the credential record for `WebCredentialStore`, kept out of `StoragePort`. */
+/** Access to the credential records for `WebCredentialStore`, kept out of `StoragePort`. */
 export interface CredentialRecordAccess {
-  getCredentialRecord(): Promise<CredentialRecord | undefined>;
+  getCredentialRecord(providerId: string): Promise<CredentialRecord | undefined>;
+  listCredentialRecords(): Promise<CredentialRecord[]>;
+  /** Stored under `record.id`, which must equal `record.providerId`. */
   putCredentialRecord(record: CredentialRecord): Promise<void>;
-  deleteCredentialRecord(): Promise<void>;
+  deleteCredentialRecord(providerId: string): Promise<void>;
+  deleteAllCredentialRecords(): Promise<void>;
 }
 
 /** Minimal views of browser APIs so tests can inject doubles. */
@@ -87,12 +93,24 @@ export class IndexedDbStorage implements StoragePort, CredentialRecordAccess {
 
   #open(): Promise<IDBPDatabase> {
     this.#dbPromise ??= openDB(DB_NAME, DB_VERSION, {
-      upgrade(db) {
-        for (const name of COLLECTIONS) {
-          const store = db.createObjectStore(name, { keyPath: "id" });
-          if (name === "messages" || name === "usage") store.createIndex("conversationId", "conversationId");
+      async upgrade(db, oldVersion, _newVersion, transaction) {
+        if (oldVersion < 1) {
+          for (const name of COLLECTIONS) {
+            const store = db.createObjectStore(name, { keyPath: "id" });
+            if (name === "messages" || name === "usage") store.createIndex("conversationId", "conversationId");
+          }
+          db.createObjectStore(CREDENTIAL_STORE, { keyPath: "id" });
         }
-        db.createObjectStore(CREDENTIAL_STORE, { keyPath: "id" });
+        if (oldVersion >= 1 && oldVersion < 2) {
+          // Keep the key a learner saved before 004 (FR-002): same record, keyed by its provider.
+          // The ciphertext's additional data is already the provider id, so it still decrypts.
+          const credentials = transaction.objectStore(CREDENTIAL_STORE);
+          const legacy = (await credentials.get(LEGACY_CREDENTIAL_KEY)) as CredentialRecord | undefined;
+          if (legacy) {
+            await credentials.put({ ...legacy, id: legacy.providerId });
+            await credentials.delete(LEGACY_CREDENTIAL_KEY);
+          }
+        }
       },
       // Another tab is deleting or upgrading the database: step aside instead of blocking it.
       blocking() {
@@ -145,16 +163,25 @@ export class IndexedDbStorage implements StoragePort, CredentialRecordAccess {
     return (await db.getAll(collection)) as T[];
   }
 
-  async getCredentialRecord(): Promise<CredentialRecord | undefined> {
-    return (await (await this.#open()).get(CREDENTIAL_STORE, CREDENTIAL_KEY)) as CredentialRecord | undefined;
+  async getCredentialRecord(providerId: string): Promise<CredentialRecord | undefined> {
+    return (await (await this.#open()).get(CREDENTIAL_STORE, providerId)) as CredentialRecord | undefined;
+  }
+
+  async listCredentialRecords(): Promise<CredentialRecord[]> {
+    return (await (await this.#open()).getAll(CREDENTIAL_STORE)) as CredentialRecord[];
   }
 
   async putCredentialRecord(record: CredentialRecord): Promise<void> {
+    if (record.id !== record.providerId) throw new Error("A credential record is keyed by its provider id.");
     await (await this.#open()).put(CREDENTIAL_STORE, record);
   }
 
-  async deleteCredentialRecord(): Promise<void> {
-    await (await this.#open()).delete(CREDENTIAL_STORE, CREDENTIAL_KEY);
+  async deleteCredentialRecord(providerId: string): Promise<void> {
+    await (await this.#open()).delete(CREDENTIAL_STORE, providerId);
+  }
+
+  async deleteAllCredentialRecords(): Promise<void> {
+    await (await this.#open()).clear(CREDENTIAL_STORE);
   }
 
   /**

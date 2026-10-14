@@ -184,6 +184,9 @@ importers:
       '@tarjuman/provider-anthropic':
         specifier: workspace:*
         version: link:packages/provider-anthropic
+      '@tarjuman/provider-gemini':
+        specifier: workspace:*
+        version: link:packages/provider-gemini
       '@tarjuman/provider-ollama':
         specifier: workspace:*
         version: link:packages/provider-ollama
@@ -244,6 +247,9 @@ importers:
       '@tarjuman/provider-anthropic':
         specifier: workspace:*
         version: link:../../packages/provider-anthropic
+      '@tarjuman/provider-gemini':
+        specifier: workspace:*
+        version: link:../../packages/provider-gemini
       '@tarjuman/storage-web':
         specifier: workspace:*
         version: link:../../packages/storage-web
@@ -303,6 +309,16 @@ importers:
       '@anthropic-ai/sdk':
         specifier: ^0.131.0
         version: 0.131.0(zod@4.6.5)
+      '@tarjuman/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@tarjuman/testing':
+        specifier: workspace:*
+        version: link:../testing
+
+  packages/provider-gemini:
+    dependencies:
       '@tarjuman/core':
         specifier: workspace:*
         version: link:../core

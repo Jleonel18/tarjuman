@@ -8,12 +8,15 @@ import {
   Pipeline,
   ProviderCredentialValidator,
   type CredentialStore,
+  readStoredProfile,
   type LearnerProfile,
   type ModelInfo,
   type ProviderPort,
   type StoragePort,
+  type StoredProfile,
 } from "@tarjuman/core";
-import { ANTHROPIC_MODELS, AnthropicProvider, DEFAULT_MODEL_ID } from "@tarjuman/provider-anthropic";
+import { AnthropicProvider, DEFAULT_MODEL_ID } from "@tarjuman/provider-anthropic";
+import { DEFAULT_GEMINI_MODEL_ID, GeminiProvider } from "@tarjuman/provider-gemini";
 import {
   IndexedDbStorage,
   MemoryStorage,
@@ -43,63 +46,82 @@ export interface AppServices {
   keys: KeyManager;
   /** "Delete all my data". */
   data: DataController;
-  /** Models a profile may use, and the one a new profile starts with. */
-  models: { ids: readonly string[]; defaultId: string; list: readonly ModelInfo[] };
+  /** The providers the learner can choose from, in display order, with their models (004). */
+  providers: readonly ProviderOffer[];
   /** The light, dark, or follow-system choice, kept on the device (003). */
   themes: ThemePreferenceStore;
 }
 
+/** One provider the build offers, as the UI and the controller see it: no `ProviderPort` (004). */
+export interface ProviderOffer {
+  id: string;
+  models: readonly ModelInfo[];
+  /** The model a profile starts with, and resets to when the learner switches to this provider. */
+  defaultModelId: string;
+}
+
+/** A concrete provider and the model a new profile on it starts with. */
+export interface ProviderEntry {
+  provider: ProviderPort;
+  defaultModelId: string;
+}
+
 /**
- * Builds the provider. `VITE_PROVIDER=mock` (the e2e build) swaps in the deterministic mock.
- * `VITE_PROVIDER=ollama` swaps in the local Ollama adapter, in the dev server only: the branch is
- * guarded by `import.meta.env.DEV`, so a production build drops it and never contains the adapter
- * (specs/002-free-dev-provider, SC-005).
+ * Builds the providers the app offers, in display order (004 research R15). `VITE_PROVIDER=mock`
+ * (the e2e build) swaps in deterministic mocks. `VITE_PROVIDER=ollama` swaps in the local Ollama
+ * adapter, in the dev server only: the branch is guarded by `import.meta.env.DEV`, so a production
+ * build drops it and never contains the adapter (specs/002-free-dev-provider, SC-005).
  */
-async function createProvider(): Promise<{ provider: ProviderPort; modelIds: string[]; defaultModelId: string }> {
+async function createProviders(): Promise<ProviderEntry[]> {
   if (import.meta.env.VITE_PROVIDER === "mock") {
     // Subpath import: the package index also exports the contract suite, which needs vitest.
-    const { DEFAULT_MOCK_KEY, MockProvider, MOCK_MODELS, REPLACEMENT_MOCK_KEY, scopeAwareResponder } = await import(
+    const { DEFAULT_MOCK_KEY, MOCK_ALT_MODELS, MockProvider, REPLACEMENT_MOCK_KEY, scopeAwareResponder } = await import(
       "@tarjuman/testing/mock-provider"
     );
+    const params = new URLSearchParams(window.location.search);
     // `?mockLatencyMs=` sets the delay before each streamed event, so the latency e2e can simulate a
     // real network (T149). Clamped; the default keeps the other e2e tests fast.
-    const requested = Number(new URLSearchParams(window.location.search).get("mockLatencyMs") ?? "15");
+    const requested = Number(params.get("mockLatencyMs") ?? "15");
     const latencyMs = Number.isFinite(requested) ? Math.min(Math.max(requested, 0), 2000) : 15;
-    return {
-      provider: new MockProvider({
+    const mock = (id: string, models?: typeof MOCK_ALT_MODELS) =>
+      new MockProvider({
+        id,
+        ...(models && { models }),
         latencyMs,
         responder: scopeAwareResponder,
         validKeys: [DEFAULT_MOCK_KEY, REPLACEMENT_MOCK_KEY],
-      }),
-      modelIds: MOCK_MODELS.map((model) => model.id),
-      defaultModelId: "mock-model",
-    };
+      });
+    const entries: ProviderEntry[] = [{ provider: mock("mock"), defaultModelId: "mock-model" }];
+    // `?mockProviders=2` offers a second provider, as the product offers two, so e2e can cover the
+    // choice and the switch (004). Without it every other spec sees one provider and no choice.
+    if (params.get("mockProviders") === "2") entries.push({ provider: mock("mock-alt", MOCK_ALT_MODELS), defaultModelId: "mock-alt-model" });
+    return entries;
   }
   if (import.meta.env.DEV && import.meta.env.VITE_PROVIDER === "ollama") {
-    const { DEFAULT_OLLAMA_MODEL_ID, OLLAMA_MODELS, OllamaProvider } = await import("@tarjuman/provider-ollama");
+    const { DEFAULT_OLLAMA_MODEL_ID, OllamaProvider } = await import("@tarjuman/provider-ollama");
     const baseUrl = import.meta.env.VITE_OLLAMA_BASE_URL;
-    return {
-      provider: new OllamaProvider({
-        ...(baseUrl ? { baseUrl } : {}),
-        // Developer-only console output, not a user-facing string, so the i18n rule (Principle VIII)
-        // does not apply. It logs the diagnostic object only: no request or message content.
-        diagnose: (d) => console.warn("[tarjuman dev provider]", d.kind, d, "see docs/local-model.md#" + d.kind),
-      }),
-      modelIds: OLLAMA_MODELS.map((model) => model.id),
-      defaultModelId: DEFAULT_OLLAMA_MODEL_ID,
-    };
+    return [
+      {
+        provider: new OllamaProvider({
+          ...(baseUrl ? { baseUrl } : {}),
+          // Developer-only console output, not a user-facing string, so the i18n rule (Principle VIII)
+          // does not apply. It logs the diagnostic object only: no request or message content.
+          diagnose: (d) => console.warn("[tarjuman dev provider]", d.kind, d, "see docs/local-model.md#" + d.kind),
+        }),
+        defaultModelId: DEFAULT_OLLAMA_MODEL_ID,
+      },
+    ];
   }
-  return {
-    provider: new AnthropicProvider(),
-    modelIds: ANTHROPIC_MODELS.map((model) => model.id),
-    defaultModelId: DEFAULT_MODEL_ID,
-  };
+  // The product: Anthropic first (constitution: first provider), then Gemini (004).
+  return [
+    { provider: new AnthropicProvider(), defaultModelId: DEFAULT_MODEL_ID },
+    { provider: new GeminiProvider(), defaultModelId: DEFAULT_GEMINI_MODEL_ID },
+  ];
 }
 
 export interface AssembleOptions {
-  provider: ProviderPort;
-  modelIds: readonly string[];
-  defaultModelId: string;
+  /** In display order. Ids must be unique; the pipeline checks it. */
+  providers: readonly ProviderEntry[];
   storage: StoragePort & CredentialRecordAccess;
   storageAvailable: boolean;
   sessionSecrets: SessionSecrets;
@@ -112,7 +134,8 @@ export interface AssembleOptions {
 
 /** Pure wiring: connects the pieces without reading the environment, so tests build the same graph. */
 export function assembleServices(options: AssembleOptions): AppServices {
-  const { provider, storage, i18n } = options;
+  const { storage, i18n } = options;
+  const providers = options.providers.map((entry) => entry.provider);
   const credentials = new WebCredentialStore({ records: storage, sessionSecrets: options.sessionSecrets });
 
   const registry = new CapabilityRegistry();
@@ -126,7 +149,8 @@ export function assembleServices(options: AssembleOptions): AppServices {
     newId: () => crypto.randomUUID(),
   });
   const getProfile = async (): Promise<LearnerProfile> => {
-    const profile = await storage.get<LearnerProfile>("profile", "profile");
+    // A profile saved before 004 has no provider: it is read as Anthropic's (FR-002).
+    const profile = readStoredProfile(await storage.get<StoredProfile>("profile", "profile"));
     if (!profile) throw new Error("No profile: onboarding has not been completed.");
     return profile;
   };
@@ -134,18 +158,14 @@ export function assembleServices(options: AssembleOptions): AppServices {
   const refusalTemplate = (key: string, locale: string): string | undefined =>
     i18n.exists(key, { lng: locale }) ? i18n.t(key, { lng: locale }) : undefined;
   const pipeline = new Pipeline({
-    provider,
+    providers,
     conversations,
     credentials,
     capabilities: registry,
     getProfile,
     refusalTemplate,
   });
-  const keys = new KeyManager({
-    validator: new ProviderCredentialValidator(provider),
-    store: credentials,
-    providerId: provider.id,
-  });
+  const keys = new KeyManager({ validator: new ProviderCredentialValidator(providers), store: credentials });
 
   return {
     storage,
@@ -157,12 +177,12 @@ export function assembleServices(options: AssembleOptions): AppServices {
     conversations,
     pipeline,
     keys,
-    data: new DataController({ storage, credentials }),
-    models: {
-      ids: options.modelIds,
-      defaultId: options.defaultModelId,
-      list: provider.listModels().filter((model) => options.modelIds.includes(model.id)),
-    },
+    data: new DataController({ storage, credentials, providerIds: providers.map((p) => p.id) }),
+    providers: options.providers.map(({ provider, defaultModelId }) => ({
+      id: provider.id,
+      models: provider.listModels(),
+      defaultModelId,
+    })),
     themes: options.themes ?? new ThemePreferenceStore(),
   };
 }
@@ -191,11 +211,8 @@ export async function createAppServices(): Promise<AppServices> {
     }
   }
 
-  const { provider, modelIds, defaultModelId } = await createProvider();
   return assembleServices({
-    provider,
-    modelIds,
-    defaultModelId,
+    providers: await createProviders(),
     storage: storageAvailable ? indexedDb : new MemoryStorage(),
     storageAvailable,
     sessionSecrets: defaultSessionSecrets,

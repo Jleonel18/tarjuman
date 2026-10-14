@@ -18,8 +18,23 @@ export interface ProfileIssue {
 export type ProfileValidation = { ok: true; value: ProfileInput } | { ok: false; issues: ProfileIssue[] };
 
 export interface ProfileValidationOptions {
-  /** Ids from the provider model table; core cannot import it. */
-  knownModelIds: readonly string[];
+  /**
+   * Model ids per provider the build offers, from the providers' tables (core cannot import them).
+   * A provider id is valid when it is a key here; a model id when it is in that provider's list.
+   */
+  modelsByProvider: Readonly<Record<string, readonly string[]>>;
+}
+
+/** A profile as read from storage; one saved before 004 has no `providerId`. */
+export type StoredProfile = Omit<LearnerProfile, "providerId"> & { providerId?: string };
+
+/** Profiles saved before 004 used Anthropic, the only provider then (004 FR-002). */
+export const LEGACY_PROVIDER_ID = "anthropic";
+
+/** Reads a stored profile, filling in the provider for one saved before 004. */
+export function readStoredProfile(stored: StoredProfile | undefined): LearnerProfile | undefined {
+  if (stored === undefined) return undefined;
+  return { ...stored, providerId: stored.providerId ?? LEGACY_PROVIDER_ID };
 }
 
 // Shape check only (e.g. "ja", "es-MX", "zh-Hant-TW"); the registry is not consulted so that
@@ -32,7 +47,8 @@ const interest = z
   .refine((s) => s.trim().length > 0, { message: "blank" })
   .refine((s) => [...s].length <= MAX_INTEREST_LENGTH, { message: "too_long" });
 
-function buildSchema(knownModelIds: readonly string[]) {
+function buildSchema(modelsByProvider: Readonly<Record<string, readonly string[]>>) {
+  const offered = (providerId: string) => Object.hasOwn(modelsByProvider, providerId);
   return z
     .object({
       uiLanguage: z.enum(SHIPPED_UI_LOCALES),
@@ -42,9 +58,15 @@ function buildSchema(knownModelIds: readonly string[]) {
       interests: z.array(interest).max(MAX_INTERESTS),
       toneId: z.string().min(1).default(DEFAULT_TONE_ID),
       configuredEffort: z.enum(CONFIGURABLE_EFFORTS as [string, ...string[]]).default(DEFAULT_EFFORT),
-      modelId: z.string().refine((id) => knownModelIds.includes(id), { message: "unknown_model" }),
+      providerId: z.string().refine(offered, { message: "unknown_provider" }),
+      modelId: z.string(),
     })
     .superRefine((value, ctx) => {
+      // The model must belong to the chosen provider (004 FR-018); an unknown provider is
+      // reported on its own field and not again here.
+      if (offered(value.providerId) && !modelsByProvider[value.providerId]!.includes(value.modelId)) {
+        ctx.addIssue({ code: "custom", message: "unknown_model", path: ["modelId"] });
+      }
       if (value.mediationLanguage.toLowerCase() === value.targetLanguage.toLowerCase()) {
         ctx.addIssue({ code: "custom", message: "same_as_mediation", path: ["targetLanguage"] });
       }
@@ -52,7 +74,7 @@ function buildSchema(knownModelIds: readonly string[]) {
 }
 
 export function validateProfile(input: unknown, options: ProfileValidationOptions): ProfileValidation {
-  const parsed = buildSchema(options.knownModelIds).safeParse(input);
+  const parsed = buildSchema(options.modelsByProvider).safeParse(input);
   if (parsed.success) {
     return {
       ok: true,

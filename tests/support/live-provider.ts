@@ -4,8 +4,9 @@ import { FixtureProvenanceDraft, nonClaudeLabel } from "@tarjuman/testing/proven
 
 /**
  * Picks the live provider for tools that run against a real model: the guardrail recorder (001
- * T079) and the live runners (001 T080). `TARJUMAN_PROVIDER` is `ollama` (default, free, local)
- * or `anthropic` (needs `TARJUMAN_TEST_KEY`, loaded with `node --env-file=.env`).
+ * T079) and the live runners (001 T080). `TARJUMAN_PROVIDER` is `ollama` (default, free, local),
+ * `anthropic` (needs `TARJUMAN_TEST_KEY`), or `gemini` (needs `GEMINI_API_KEY`, 004 US3). Keys are
+ * loaded with `node --env-file=.env`, never read from the file here.
  *
  * It never prints an environment value. Concrete providers may only be built here and in the
  * composition root (dependency-cruiser).
@@ -24,7 +25,7 @@ export interface SelectOptions {
 
 type Env = Record<string, string | undefined>;
 
-const ALLOWED = ["ollama", "anthropic"] as const;
+const ALLOWED = ["ollama", "anthropic", "gemini"] as const;
 const DEFAULT_OLLAMA_BASE_URL = "http://localhost:11434";
 // The key the app's key screen accepts for Ollama; it is never sent.
 const OLLAMA_PLACEHOLDER_KEY = "ollama";
@@ -33,6 +34,7 @@ export async function selectLiveProvider(env: Env = process.env, options: Select
   const choice = env["TARJUMAN_PROVIDER"] || "ollama";
   if (choice === "ollama") return selectOllama(env, options);
   if (choice === "anthropic") return selectAnthropic(env);
+  if (choice === "gemini") return selectGemini(env);
   // The value is not echoed: a mistyped variable could hold anything.
   throw new Error(`Unknown TARJUMAN_PROVIDER. Allowed values: ${ALLOWED.join(", ")}.`);
 }
@@ -78,6 +80,31 @@ async function selectAnthropic(env: Env): Promise<LiveProviderSelection> {
       runtimeVersion: null,
       isClaude: true,
       label: `Recorded with Claude (${DEFAULT_MODEL_ID}).`,
+    }),
+  };
+}
+
+/**
+ * Gemini, on the cheapest listed model unless `GEMINI_MODEL` says otherwise (004 research R16).
+ * Not Claude: what it records proves mechanics only and is never 001 SC-003 evidence (FR-023).
+ */
+async function selectGemini(env: Env): Promise<LiveProviderSelection> {
+  const key = env["GEMINI_API_KEY"];
+  if (!key) {
+    throw new Error("TARJUMAN_PROVIDER=gemini needs GEMINI_API_KEY. Run with `node --env-file=.env`.");
+  }
+  const { GeminiProvider } = await import("@tarjuman/provider-gemini");
+  const modelId = env["GEMINI_MODEL"] || "gemini-3.5-flash-lite";
+  return {
+    provider: new GeminiProvider(),
+    secret: sealSecret(key),
+    modelId,
+    provenance: FixtureProvenanceDraft.parse({
+      providerId: "gemini",
+      modelId,
+      runtimeVersion: null,
+      isClaude: false,
+      label: nonClaudeLabel(modelId),
     }),
   };
 }

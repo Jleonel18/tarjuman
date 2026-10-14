@@ -5,6 +5,8 @@ export interface UsageRecord {
   id: string;
   conversationId: string;
   messageId: string;
+  /** The provider that served the turn (004 FR-019). Absent on records saved before 004. */
+  providerId?: string;
   modelId: string;
   /** Provider-reported only (SC-005). */
   inputTokens: number;

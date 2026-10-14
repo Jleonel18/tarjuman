@@ -75,7 +75,7 @@ describe("stages cannot be reordered, skipped, or replaced", () => {
   });
 
   it("a pipeline instance has no own state to swap and cannot gain any", () => {
-    const pipeline = new Pipeline({} as ConstructorParameters<typeof Pipeline>[0]);
+    const pipeline = new Pipeline({ providers: [{ id: "any" }] } as unknown as ConstructorParameters<typeof Pipeline>[0]);
     expect(Reflect.ownKeys(pipeline)).toEqual([]);
     expect(Object.isFrozen(pipeline)).toBe(true);
     expect(() => {

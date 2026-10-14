@@ -2,7 +2,7 @@ import { sealSecret } from "@tarjuman/core";
 import type { StreamEvent } from "@tarjuman/core";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AnthropicProvider } from "../src/anthropic-provider";
-import { scrubSecret, SecretStreamFilter } from "../src/scrub";
+import { scrubSecret } from "../src/scrub";
 import { answerEvents, FakeAnthropic, messageJson } from "./helpers/fake-anthropic";
 
 const SECRET = "sk-ant-api03-SYNTHETIC-KEY-FOR-SCRUB-TESTS-0003";
@@ -46,45 +46,6 @@ describe("scrubSecret", () => {
 
   it("never scrubs on an empty secret (that would blank the whole text)", () => {
     expect(scrubSecret("hello", "")).toBe("hello");
-  });
-});
-
-describe("SecretStreamFilter", () => {
-  function run(chunks: string[]): string {
-    const filter = new SecretStreamFilter(SECRET);
-    return chunks.map((c) => filter.push(c)).join("") + filter.flush();
-  }
-
-  it("passes ordinary text through unchanged", () => {
-    expect(run(["Hello ", "world"])).toBe("Hello world");
-  });
-
-  it("holds nothing back when the text cannot be the start of the secret", () => {
-    const filter = new SecretStreamFilter(SECRET);
-    expect(filter.push("Hello world")).toBe("Hello world");
-  });
-
-  it("redacts a secret that arrives in one chunk", () => {
-    expect(run([`my key is ${SECRET}!`])).toBe("my key is [redacted]!");
-  });
-
-  it("redacts a secret split across every possible boundary", () => {
-    for (let cut = 1; cut < SECRET.length; cut += 1) {
-      const out = run(["key: ", SECRET.slice(0, cut), SECRET.slice(cut), " end"]);
-      expect(out, `cut ${cut}`).toBe("key: [redacted] end");
-    }
-  });
-
-  it("redacts a secret delivered one character at a time", () => {
-    expect(run([...`x${SECRET}y`])).toBe("x[redacted]y");
-  });
-
-  it("releases a held partial match when it turns out not to be the secret", () => {
-    expect(run(["sk-ant-", "api03-SOMETHING-ELSE"])).toBe("sk-ant-api03-SOMETHING-ELSE");
-  });
-
-  it("releases a held partial match at the end of the stream", () => {
-    expect(run(["see sk-ant-api"])).toBe("see sk-ant-api");
   });
 });
 

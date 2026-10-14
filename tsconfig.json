@@ -4,6 +4,7 @@
     { "path": "packages/core" },
     { "path": "packages/provider-anthropic" },
     { "path": "packages/provider-ollama" },
+    { "path": "packages/provider-gemini" },
     { "path": "packages/storage-web" },
     { "path": "packages/capabilities/language-qa" },
     { "path": "packages/ui" },

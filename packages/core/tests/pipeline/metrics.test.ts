@@ -30,6 +30,7 @@ const PROFILE: LearnerProfile = {
   interests: [],
   toneId: "neutral",
   configuredEffort: "medium",
+  providerId: "scripted",
   modelId: "mock-model",
   createdAt: "2026-10-03T00:00:00.000Z",
   updatedAt: "2026-10-03T00:00:00.000Z",
@@ -39,7 +40,9 @@ const credentials: CredentialStore = {
   save: async () => {},
   load: async () => sealSecret("sk-ant-api03-FAKE-KEY-FOR-METRICS-TESTS"),
   describe: async () => undefined,
+  list: async () => [],
   remove: async () => {},
+  removeAll: async () => {},
 };
 
 const answer = (inputTokens: number, outputTokens: number, extra: Partial<Step & { type: "usage" }> = {}): Step[] => [
@@ -74,7 +77,7 @@ function makePipeline(script: Step[]) {
     i18n: {},
   });
   return new Pipeline({
-    provider: new ScriptedProvider(script, [MODEL]),
+    providers: [new ScriptedProvider(script, [MODEL])],
     conversations,
     credentials,
     capabilities,

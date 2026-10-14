@@ -1,0 +1,38 @@
+[
+  {
+    "candidates": [
+      {
+        "content": {
+          "parts": [
+            {
+              "text": "ACCEPT\nSer "
+            }
+          ],
+          "role": "model"
+        },
+        "index": 0
+      }
+    ],
+    "usageMetadata": {
+      "promptTokenCount": 40,
+      "candidatesTokenCount": 2,
+      "totalTokenCount": 42,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 40
+        }
+      ],
+      "serviceTier": "standard"
+    },
+    "modelVersion": "gemini-3.5-flash-lite",
+    "responseId": "SYNTHETICresponseId0001"
+  },
+  {
+    "error": {
+      "code": 503,
+      "message": "SYNTHETIC: The model is overloaded. Please try again later.",
+      "status": "UNAVAILABLE"
+    }
+  }
+]

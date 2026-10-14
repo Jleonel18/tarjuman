@@ -5,9 +5,9 @@ import { bundleOriginProblems, type BundleFile } from "../../scripts/bundle-orig
 // bundle may reference only its own origin and the AI provider. CSP is what enforces it in the
 // browser; this check catches drift before it ships, such as a font from a CDN or a tracker.
 
-const PROVIDER = ["https://api.anthropic.com"];
+const PROVIDER = ["https://api.anthropic.com", "https://generativelanguage.googleapis.com"];
 const CSP =
-  "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' https://api.anthropic.com; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'self'";
+  "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' https://api.anthropic.com https://generativelanguage.googleapis.com; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'self'";
 
 const html = (head = "", csp = CSP): BundleFile => ({
   path: "index.html",
@@ -18,8 +18,14 @@ const css = (content: string): BundleFile => ({ path: "assets/app.css", content 
 const check = (...files: BundleFile[]) => bundleOriginProblems(files, { providerOrigins: PROVIDER });
 
 describe("bundleOriginProblems", () => {
-  it("accepts a bundle that talks only to itself and the provider", () => {
+  it("accepts a bundle that talks only to itself and the providers", () => {
     expect(check(html(), js('fetch("https://api.anthropic.com/v1/messages")'), css("a{color:red}"))).toEqual([]);
+    expect(check(html(), js('fetch("https://generativelanguage.googleapis.com/v1beta/models")'), css(""))).toEqual([]);
+  });
+
+  it("rejects another Google host: only the Gemini API origin is allowed (004 FR-011)", () => {
+    const problems = check(html(), js('fetch("https://aistudio.google.com/apikey")'), css(""));
+    expect(problems).toEqual([expect.stringContaining("aistudio.google.com")]);
   });
 
   it("accepts the documentation and namespace strings libraries carry, which are never fetched", () => {

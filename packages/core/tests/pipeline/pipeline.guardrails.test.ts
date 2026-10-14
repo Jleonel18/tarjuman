@@ -27,7 +27,9 @@ const credentials: CredentialStore = {
   save: async () => {},
   load: async () => sealSecret(KEY),
   describe: async () => undefined,
+  list: async () => [],
   remove: async () => {},
+  removeAll: async () => {},
 };
 
 function profile(mediation: string, ui = "en"): LearnerProfile {
@@ -40,6 +42,7 @@ function profile(mediation: string, ui = "en"): LearnerProfile {
     interests: [],
     toneId: "neutral",
     configuredEffort: "medium",
+    providerId: "scripted",
     modelId: "mock-model",
     createdAt: "2026-10-08T00:00:00.000Z",
     updatedAt: "2026-10-08T00:00:00.000Z",
@@ -75,7 +78,7 @@ async function setup(script: Step[], mediation = "en", ui = "en") {
     i18n: {},
   });
   const pipeline = new Pipeline({
-    provider,
+    providers: [provider],
     conversations,
     credentials,
     capabilities,
@@ -253,5 +256,45 @@ describe("interrupted before a verdict", () => {
     expect(events.filter((e) => e.type === "verdict")).toHaveLength(1);
     expect(events.at(-1)).toEqual({ type: "done", status: "interrupted" });
     expect((await reply())?.verdict).toBe("accept");
+  });
+});
+
+describe("a provider-side refusal stop (004 research R5)", () => {
+  const refusedByProvider: Step[] = [{ type: "usage", inputTokens: 10, outputTokens: 5 }, { type: "stop", reason: "refusal" }];
+
+  it("with no text: the refusal template is shown and the message is refused", async () => {
+    const { pipeline } = await setup(refusedByProvider);
+    const events = await run(pipeline);
+    expect(events.at(-1)).toEqual({ type: "done", status: "refused" });
+    expect(shown(events)).toBe(TEMPLATES["en"]?.["refusal.out_of_scope"]);
+    expect((await reply())?.status).toBe("refused");
+  });
+
+  it("after ACCEPT and partial text: keeps the text, appends the template, and is never stored as complete", async () => {
+    const { pipeline } = await setup([text("ACCEPT\nSer describe "), text("la identidad"), ...refusedByProvider], "es");
+    const events = await run(pipeline);
+    expect(events.at(-1)).toEqual({ type: "done", status: "refused" });
+    const visible = shown(events);
+    expect(visible).toContain("Ser describe la identidad");
+    expect(visible).toContain(TEMPLATES["es"]?.["refusal.out_of_scope"]);
+    const message = await reply();
+    expect(message?.status).toBe("refused");
+    expect(storedText(message)).toContain("Ser describe la identidad");
+    expect(storedText(message)).toContain(TEMPLATES["es"]?.["refusal.out_of_scope"]);
+  });
+
+  it("after ACCEPT in a language without a catalog: appends the interface-language template", async () => {
+    const { pipeline } = await setup([text("ACCEPT\nمرحبا"), ...refusedByProvider], "ar", "en");
+    const events = await run(pipeline);
+    expect(events.at(-1)).toEqual({ type: "done", status: "refused" });
+    expect(shown(events)).toContain(TEMPLATES["en"]?.["refusal.out_of_scope"]);
+  });
+
+  it("after REFUSE: shows the refusal once, not twice", async () => {
+    const { pipeline } = await setup([text("REFUSE\n"), ...refusedByProvider], "es");
+    const events = await run(pipeline);
+    const template = TEMPLATES["es"]?.["refusal.out_of_scope"] ?? "";
+    expect(shown(events).split(template)).toHaveLength(2);
+    expect((await reply())?.status).toBe("refused");
   });
 });

@@ -1,0 +1,13 @@
+[
+  {
+    "promptFeedback": {
+      "blockReason": "PROHIBITED_CONTENT"
+    },
+    "usageMetadata": {
+      "promptTokenCount": 8,
+      "totalTokenCount": 8
+    },
+    "modelVersion": "gemini-3.5-flash-lite",
+    "responseId": "SYNTHETICresponseId0001"
+  }
+]

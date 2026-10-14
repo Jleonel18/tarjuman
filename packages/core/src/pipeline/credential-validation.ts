@@ -6,18 +6,22 @@ import type { SecretHandle } from "../ports/secret-handle";
  * depends on this interface, never on `ProviderPort`, so no other module holds a provider.
  */
 export interface CredentialValidator {
-  validate(secret: SecretHandle, signal?: AbortSignalLike): Promise<ValidationResult>;
+  /** Checks the key with the named provider only; no other provider ever sees it (004 FR-007). */
+  validate(providerId: string, secret: SecretHandle, signal?: AbortSignalLike): Promise<ValidationResult>;
 }
 
-/** Thin wrapper: the request is the adapter's fixed, trusted prompt with no user content. */
+/** Thin wrapper: the request is the adapter's fixed, trusted probe with no user content. */
 export class ProviderCredentialValidator implements CredentialValidator {
-  readonly #provider: ProviderPort;
+  readonly #providers: readonly ProviderPort[];
 
-  constructor(provider: ProviderPort) {
-    this.#provider = provider;
+  constructor(providers: readonly ProviderPort[]) {
+    this.#providers = Object.freeze([...providers]);
   }
 
-  validate(secret: SecretHandle, signal?: AbortSignalLike): Promise<ValidationResult> {
-    return this.#provider.validateCredential(secret, signal);
+  validate(providerId: string, secret: SecretHandle, signal?: AbortSignalLike): Promise<ValidationResult> {
+    const provider = this.#providers.find((p) => p.id === providerId);
+    // An unknown id is a programming error, reported like any rejected request; nothing falls back.
+    if (!provider) return Promise.resolve({ ok: false, code: "bad_request" });
+    return provider.validateCredential(secret, signal);
   }
 }

@@ -1,7 +1,10 @@
 import "fake-indexeddb/auto";
 import { IDBFactory } from "fake-indexeddb";
 import { beforeEach, describe, expect, it } from "vitest";
-import { COLLECTIONS, IndexedDbStorage, StorageNotEmptyError } from "../src/indexeddb-storage";
+import { unsealSecret } from "@tarjuman/core/adapter";
+import { openDB } from "idb";
+import { WebCredentialStore } from "../src/credential-store";
+import { COLLECTIONS, DB_NAME, DB_VERSION, IndexedDbStorage, StorageNotEmptyError } from "../src/indexeddb-storage";
 import { SessionSecrets } from "../src/session-secrets";
 import { sealSecret } from "@tarjuman/core";
 import { FakeLocalStorage, throwingLocalStorage } from "./fake-local-storage";
@@ -53,7 +56,7 @@ describe("IndexedDbStorage.clearAll (SC-007)", () => {
     const storage = new IndexedDbStorage({ ...noWebExtras, sessionSecrets: session });
     for (const collection of COLLECTIONS) await storage.put(collection, { id: "x", conversationId: "c" });
     await storage.putCredentialRecord({
-      id: "current",
+      id: "anthropic",
       providerId: "anthropic",
       storageMode: "persistent",
       maskedHint: "sk-ant-…1234",
@@ -63,14 +66,15 @@ describe("IndexedDbStorage.clearAll (SC-007)", () => {
       wrappingKey: await crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]),
     });
     session.set(sealSecret("sk-ant-session"), { providerId: "anthropic", maskedHint: "x", validatedAt: "t" });
+    session.set(sealSecret("AQ.session"), { providerId: "gemini", maskedHint: "y", validatedAt: "t" });
 
     await storage.clearAll();
 
     expect(await indexedDB.databases()).toEqual([]);
-    expect(session.handle).toBeUndefined();
+    expect(session.providerIds()).toEqual([]);
     const reopened = new IndexedDbStorage(noWebExtras);
     for (const collection of COLLECTIONS) expect(await reopened.query(collection)).toEqual([]);
-    expect(await reopened.getCredentialRecord()).toBeUndefined();
+    expect(await reopened.listCredentialRecords()).toEqual([]);
   });
 
   it("is safe to call on an empty install and more than once", async () => {
@@ -171,5 +175,73 @@ describe("IndexedDbStorage.isAvailable", () => {
     // @ts-expect-error simulating an environment without IndexedDB
     delete globalThis.indexedDB;
     expect(await new IndexedDbStorage(noWebExtras).isAvailable()).toBe(false);
+  });
+});
+
+describe("IndexedDbStorage upgrade from version 1 (004 FR-002, SC-006)", () => {
+  const OLD_KEY = "sk-ant-api03-FAKE-KEY-STORED-BEFORE-004-abcdefgh-0001";
+
+  /** Builds the database exactly as 001-003 left it: version 1, one credential under "current". */
+  async function createVersion1Database(): Promise<void> {
+    const db = await openDB(DB_NAME, 1, {
+      upgrade(database) {
+        for (const name of COLLECTIONS) {
+          const store = database.createObjectStore(name, { keyPath: "id" });
+          if (name === "messages" || name === "usage") store.createIndex("conversationId", "conversationId");
+        }
+        database.createObjectStore("credential", { keyPath: "id" });
+      },
+    });
+    const wrappingKey = await crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ciphertext = new Uint8Array(
+      await crypto.subtle.encrypt(
+        { name: "AES-GCM", iv, additionalData: new TextEncoder().encode("anthropic") },
+        wrappingKey,
+        new TextEncoder().encode(OLD_KEY),
+      ),
+    );
+    await db.put("credential", {
+      id: "current",
+      providerId: "anthropic",
+      storageMode: "persistent",
+      maskedHint: "sk-ant-…0001",
+      validatedAt: "2026-10-01T00:00:00.000Z",
+      iv,
+      ciphertext,
+      wrappingKey,
+    });
+    await db.put("profile", { id: "profile", level: "B1" });
+    db.close();
+  }
+
+  it("is now version 2", () => {
+    expect(DB_VERSION).toBe(2);
+  });
+
+  it("moves the old credential under its provider id and keeps it readable", async () => {
+    await createVersion1Database();
+    const storage = new IndexedDbStorage(noWebExtras);
+    const store = new WebCredentialStore({ records: storage, sessionSecrets: new SessionSecrets() });
+
+    expect(unsealSecret((await store.load("anthropic"))!)).toBe(OLD_KEY);
+    expect((await store.describe("anthropic"))?.maskedHint).toBe("sk-ant-…0001");
+    expect(await storage.get("profile", "profile")).toEqual({ id: "profile", level: "B1" });
+
+    const raw = await openDB(DB_NAME);
+    expect(await raw.getAllKeys("credential")).toEqual(["anthropic"]);
+    raw.close();
+  });
+
+  it("upgrades a version-1 database that holds no credential", async () => {
+    const db = await openDB(DB_NAME, 1, {
+      upgrade(database) {
+        for (const name of COLLECTIONS) database.createObjectStore(name, { keyPath: "id" });
+        database.createObjectStore("credential", { keyPath: "id" });
+      },
+    });
+    db.close();
+    const store = new WebCredentialStore({ records: new IndexedDbStorage(noWebExtras), sessionSecrets: new SessionSecrets() });
+    expect(await store.list()).toEqual([]);
   });
 });

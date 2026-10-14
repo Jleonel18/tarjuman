@@ -4,3 +4,4 @@
  * importer, so UI, capabilities, and the pipeline cannot read a raw secret.
  */
 export { unsealSecret } from "./ports/secret-unseal";
+export { REDACTED, SecretStreamFilter } from "./credentials/secret-stream-filter";

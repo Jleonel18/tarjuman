@@ -1,4 +1,5 @@
 import type { Segment, Trust } from "../conversation/types";
+import { findKeyShape } from "../credentials/key-shapes";
 import type { UntrustedMaterial } from "./types";
 
 /**
@@ -10,8 +11,6 @@ export const WITHHELD_MARKER = "[withheld: key-shaped text]";
 /** Zero-width and bidi control characters (FR-011, research R8): invisible, so stripped for matching. */
 const INVISIBLE = /[\u00ad\u061c\u180e\u200b-\u200f\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff]/g;
 
-/** The Anthropic key family, searched anywhere in a token so `NAME=sk-ant-…` is caught too. */
-const ANTHROPIC_KEY = /sk-ant-[A-Za-z0-9_-]{8,}/;
 /** Candidate for the generic check: a long run of the base64url alphabet (hex is a subset). */
 const KEY_ALPHABET = /^[A-Za-z0-9_-]{32,}$/;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -83,7 +82,9 @@ function withhold(text: string, trust: Trust): { text: string; segments: Segment
 
 function isKeyShaped(token: string): boolean {
   const normalized = normalizeForMatching(token);
-  if (ANTHROPIC_KEY.test(normalized)) return true;
+  // Every known provider's key family (004 FR-010), searched anywhere in a token so `NAME=…` is
+  // caught too.
+  if (findKeyShape(normalized) !== undefined) return true;
   const core = normalized.replace(WRAPPING, "");
   return (
     KEY_ALPHABET.test(core) &&

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { describeProviderError } from "../errors/provider-error-messages";
 import { FormError, FormNotice } from "../forms/FormMessage";
 import { withKeyHint } from "./KeyHint";
+import { providerName } from "./provider-names";
 
 export interface KeyEntryProps {
   /** False in private mode or when the browser blocks storage: only session-only is offered. */
@@ -14,19 +15,33 @@ export interface KeyEntryProps {
   onEnter: (key: string, mode: CredentialStorageMode) => Promise<EnterKeyOutcome>;
   /** Asks to replace the stored key; the app then clears it and renders this screen again. */
   onReplace?: (() => void) | undefined;
+  /** The provider this key is for. Its help text follows it (004 FR-020). */
+  providerId?: string | undefined;
+  /** Names the provider on screen; the app sets it when the learner had a choice. */
+  showProvider?: boolean | undefined;
 }
+
+/** Where to get a key, per product provider. Written out so the catalog-key check sees them. */
+const HELP_KEYS: Readonly<Record<string, string>> = {
+  anthropic: "key.help.anthropic",
+  gemini: "key.help.gemini",
+};
+/** What the provider may do with what is sent (004 FR-020): only Gemini's free tier needs saying. */
+const DISCLOSURE_KEYS: Readonly<Record<string, string>> = {
+  gemini: "key.disclosure.gemini",
+};
 
 /**
  * Where the learner brings their own API key. The storage choice has no preselected option and
  * a plain-language trade-off for each (FR-016); the key is never shown again after entry.
  */
-export function KeyEntry({ storageAvailable, maskedHint, onEnter, onReplace }: KeyEntryProps): ReactElement {
+export function KeyEntry({ storageAvailable, maskedHint, onEnter, onReplace, providerId, showProvider = false }: KeyEntryProps): ReactElement {
   const { t } = useTranslation();
   const ids = { key: useId(), mode: useId() };
   const [key, setKey] = useState("");
   const [mode, setMode] = useState<CredentialStorageMode | undefined>(undefined);
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState<{ messageKey: string; params: { seconds?: number } } | undefined>(undefined);
+  const [error, setError] = useState<{ messageKey: string; params: Record<string, string | number> } | undefined>(undefined);
 
   if (maskedHint !== undefined) {
     return (
@@ -48,7 +63,10 @@ export function KeyEntry({ storageAvailable, maskedHint, onEnter, onReplace }: K
     try {
       const outcome = await onEnter(key, mode);
       if (outcome.ok) setKey("");
-      else setError(describeProviderError(outcome.code));
+      // Recognized locally as another provider's key: it was sent nowhere (004 FR-007).
+      else if (outcome.code === "wrong_provider") {
+        setError({ messageKey: "key.wrong_provider", params: { provider: providerName(t, outcome.expectedProviderId) } });
+      } else setError(describeProviderError(outcome.code));
     } finally {
       setPending(false);
     }
@@ -58,6 +76,15 @@ export function KeyEntry({ storageAvailable, maskedHint, onEnter, onReplace }: K
     <section className="form screen-card" aria-labelledby={`${ids.key}-title`}>
       <h2 id={`${ids.key}-title`}>{t("key.title")}</h2>
       <p className="screen-card__intro">{t("key.intro")}</p>
+      {providerId !== undefined && showProvider ? (
+        <p>{t("key.provider_in_use", { provider: providerName(t, providerId) })}</p>
+      ) : null}
+      {providerId !== undefined && HELP_KEYS[providerId] !== undefined ? (
+        <p className="form__hint">{t(HELP_KEYS[providerId])}</p>
+      ) : null}
+      {providerId !== undefined && DISCLOSURE_KEYS[providerId] !== undefined ? (
+        <FormNotice role={null}>{t(DISCLOSURE_KEYS[providerId])}</FormNotice>
+      ) : null}
 
       <div className="form__field">
         <label htmlFor={ids.key}>{t("key.label")}</label>

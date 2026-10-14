@@ -16,7 +16,7 @@ module.exports = {
       to: {
         // Matches both resolved paths and bare package names: core declares none of these as
         // dependencies, so a violating import is "unresolved" and shows up by package name.
-        path: "^(packages/(capabilities|provider-anthropic|provider-ollama|storage-web|ui|testing)|apps)/|^@tarjuman/(capability-.*|provider-anthropic|provider-ollama|storage-web|ui|web|testing)(/|$)",
+        path: "^(packages/(capabilities|provider-anthropic|provider-ollama|provider-gemini|storage-web|ui|testing)|apps)/|^@tarjuman/(capability-.*|provider-anthropic|provider-ollama|provider-gemini|storage-web|ui|web|testing)(/|$)",
       },
     },
     {
@@ -30,7 +30,7 @@ module.exports = {
     },
     {
       name: "sdk-only-in-provider-adapter",
-      comment: "Only packages/provider-anthropic may import @anthropic-ai/sdk (Principle XI).",
+      comment: "Only packages/provider-anthropic may import @anthropic-ai/sdk (Principle XI). Gemini uses fetch.",
       severity: "error",
       from: { pathNot: "^packages/provider-anthropic/" },
       to: { path: "@anthropic-ai/sdk" },
@@ -40,8 +40,8 @@ module.exports = {
       comment:
         "A concrete provider is instantiated only in the composition root; everything else sees the ProviderPort type.",
       severity: "error",
-      from: { pathNot: "^(apps/web/src/composition-root\\.ts|apps/[^/]+/tests/|packages/provider-(anthropic|ollama)/|tests/)" },
-      to: { path: "^packages/provider-(anthropic|ollama)/", dependencyTypesNot: NOT_TYPE_ONLY },
+      from: { pathNot: "^(apps/web/src/composition-root\\.ts|apps/[^/]+/tests/|packages/provider-(anthropic|ollama|gemini)/|tests/)" },
+      to: { path: "^packages/provider-(anthropic|ollama|gemini)/", dependencyTypesNot: NOT_TYPE_ONLY },
     },
     {
       name: "providers-independent",
@@ -49,14 +49,21 @@ module.exports = {
         "Provider adapters never import each other: each stands alone behind ProviderPort (Principle XI).",
       severity: "error",
       from: { path: "^packages/provider-anthropic/" },
-      to: { path: "^packages/provider-ollama/|^@tarjuman/provider-ollama(/|$)" },
+      to: { path: "^packages/provider-(ollama|gemini)/|^@tarjuman/provider-(ollama|gemini)(/|$)" },
     },
     {
       name: "providers-independent-reverse",
       comment: "See providers-independent.",
       severity: "error",
       from: { path: "^packages/provider-ollama/" },
-      to: { path: "^packages/provider-anthropic/|^@tarjuman/provider-anthropic(/|$)|@anthropic-ai/sdk" },
+      to: { path: "^packages/provider-(anthropic|gemini)/|^@tarjuman/provider-(anthropic|gemini)(/|$)|@anthropic-ai/sdk" },
+    },
+    {
+      name: "providers-independent-gemini",
+      comment: "See providers-independent. The Gemini adapter uses fetch, never another adapter or an SDK.",
+      severity: "error",
+      from: { path: "^packages/provider-gemini/" },
+      to: { path: "^packages/provider-(anthropic|ollama)/|^@tarjuman/provider-(anthropic|ollama)(/|$)|@anthropic-ai/sdk" },
     },
     {
       name: "provider-ollama-never-unseals",
@@ -90,7 +97,7 @@ module.exports = {
       severity: "error",
       from: {
         pathNot:
-          "^(packages/(provider-anthropic|storage-web|testing)/|packages/core/src/ports/secret-handle\\.ts$|packages/core/src/ports/secret-unseal\\.ts$|packages/core/src/adapter\\.ts$|packages/[^/]+/tests/|tests/)",
+          "^(packages/(provider-anthropic|provider-gemini|storage-web|testing)/|packages/core/src/ports/secret-handle\\.ts$|packages/core/src/ports/secret-unseal\\.ts$|packages/core/src/adapter\\.ts$|packages/[^/]+/tests/|tests/)",
       },
       to: { path: "^packages/core/src/(ports/secret-(store|unseal)|adapter)\\.ts$" },
     },
