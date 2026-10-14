@@ -20,7 +20,7 @@ import {
   type ProfileInput,
   type ProfileIssue,
 } from "@tarjuman/core";
-import type { ChatMessage, LanguageValues, OnboardingDraft } from "@tarjuman/ui";
+import { applyTheme, type ChatMessage, type LanguageValues, type OnboardingDraft, type ThemePreference, type ThemeRoot } from "@tarjuman/ui";
 import type { AppServices } from "./composition-root";
 import { resetAppStore, useAppStore } from "./store";
 
@@ -63,12 +63,19 @@ export function toChatMessages(messages: readonly Message[], withheldLabel?: str
  * is the only writer of the store. It never sees a secret (keys go straight to `KeyManager`) and
  * never reaches a provider (every model call goes through the pipeline).
  */
+export interface AppControllerOptions {
+  /** Where the theme is applied. Defaults to <html>; tests pass a stand-in. */
+  themeRoot?: ThemeRoot | undefined;
+}
+
 export class AppController {
   readonly #services: AppServices;
+  readonly #themeRoot: ThemeRoot | undefined;
   #abort: AbortController | undefined;
 
-  constructor(services: AppServices) {
+  constructor(services: AppServices, options: AppControllerOptions = {}) {
     this.#services = services;
+    this.#themeRoot = "themeRoot" in options ? options.themeRoot : globalThis.document?.documentElement;
   }
 
   async boot(): Promise<void> {
@@ -92,8 +99,20 @@ export class AppController {
       messages: latest ? toChatMessages(latest.messages, this.#withheldLabel()) : [],
       usage,
       route: profile === undefined ? "onboarding" : key === undefined ? "key" : "chat",
+      // theme-init.js has already applied it before first paint; this lets the controls show it.
+      theme: this.#services.themes.get(),
     });
   }
+
+  /**
+   * Light, dark, or follow the device (003 FR-003). Takes effect at once, with no reload, and does
+   * not touch a running answer. Works before onboarding, because it is not part of the profile.
+   */
+  setTheme = (preference: ThemePreference): void => {
+    this.#services.themes.set(preference);
+    if (this.#themeRoot) applyTheme(preference, this.#themeRoot);
+    useAppStore.setState({ theme: preference });
+  };
 
   /** Reports problems with a draft using the core's profile rules; nothing is stored. */
   validateDraft = (draft: OnboardingDraft): readonly ProfileIssue[] => {
@@ -139,8 +158,10 @@ export class AppController {
     if (useAppStore.getState().streaming) return { ok: false, code: "not_verified" };
     const outcome = await this.#services.data.deleteAll();
     if (outcome.ok) {
+      // The stored choice is gone with everything else (003 FR-003a), so the device decides again.
+      if (this.#themeRoot) applyTheme("system", this.#themeRoot);
       resetAppStore();
-      useAppStore.setState({ ready: true, route: "onboarding" });
+      useAppStore.setState({ ready: true, route: "onboarding", theme: "system" });
     }
     return outcome;
   };

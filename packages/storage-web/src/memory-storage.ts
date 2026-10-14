@@ -1,16 +1,24 @@
 import type { Collection, StoragePort, StorageQuery, StoredRecord } from "@tarjuman/core";
 import type { CredentialRecord, CredentialRecordAccess } from "./indexeddb-storage";
+import { defaultLocalStorage, removeTarjumanKeys, type LocalStorageLike } from "./local-storage";
 
 const clone = <T>(value: T): T => structuredClone(value);
 
 /**
  * The fallback when the browser blocks IndexedDB (private mode, blocked site data). Everything
  * lives in memory and is gone on reload, which is exactly what the user is told in that mode
- * (FR-016, storage-port invariant 5). It never touches the disk.
+ * (FR-016, storage-port invariant 5). It never touches the disk, apart from removing the
+ * `tarjuman.*` preferences in `localStorage` on "delete all" (003 FR-003a).
  */
 export class MemoryStorage implements StoragePort, CredentialRecordAccess {
   readonly #tables = new Map<Collection, Map<string, StoredRecord>>();
   #credential: CredentialRecord | undefined;
+  readonly #localStorage: LocalStorageLike | undefined;
+
+  /** `localStorage` defaults to the browser's; `undefined` means there is none. */
+  constructor(options: { localStorage?: LocalStorageLike | undefined } = {}) {
+    this.#localStorage = "localStorage" in options ? options.localStorage : defaultLocalStorage();
+  }
 
   #table(collection: Collection): Map<string, StoredRecord> {
     let table = this.#tables.get(collection);
@@ -43,6 +51,7 @@ export class MemoryStorage implements StoragePort, CredentialRecordAccess {
   async clearAll(): Promise<void> {
     this.#tables.clear();
     this.#credential = undefined;
+    removeTarjumanKeys(this.#localStorage);
   }
 
   async isAvailable(): Promise<boolean> {

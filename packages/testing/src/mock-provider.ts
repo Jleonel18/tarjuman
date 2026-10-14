@@ -205,6 +205,30 @@ export const HOSTILE_ANSWER = [
   "[Bad link](javascript:alert(1))",
 ].join("\n");
 
+/** 003 e2e: every wide element at once, to check that nothing scrolls the page sideways. */
+const LAYOUT_STRESS_ANSWER = [
+  "ACCEPT",
+  "## Ser and estar, side by side",
+  "",
+  "| Verb | Used for | Example | Translation |",
+  "| --- | --- | --- | --- |",
+  "| ser | identity, origin, time, what something is made of | Soy de Montevideo y soy ingeniera | I am from Montevideo and I am an engineer |",
+  "| estar | location, temporary state, the result of a change | Estoy cansada porque estoy en la oficina | I am tired because I am at the office |",
+  "",
+  "```",
+  "const conjugation = { yo: 'soy / estoy', tú: 'eres / estás', ella: 'es / está', nosotros: 'somos / estamos', ellos: 'son / están' };",
+  "```",
+  "",
+  `A very long word: ${"supercalifragilistico".repeat(10)}`,
+  "",
+  "> Ser es lo que eres; estar es cómo y dónde estás.",
+  "",
+  "- *ser* for what lasts",
+  "- *estar* for what changes",
+  "",
+  "[Grammar notes](https://example.com/grammar/spanish/verbs/ser-and-estar/the-difference-explained-with-many-examples-for-learners?section=all&lang=en)",
+].join("\n");
+
 const LYRIC_EXPLANATION = [
   "ACCEPT",
   "This lyric is a love song. *Bésame* is an imperative with an attached pronoun: *besa* + *me*.",
@@ -221,6 +245,9 @@ export function scopeAwareResponder(req: ModelRequest): MockScript | undefined {
   // US3 e2e: a model that has been fully compromised, and one that explains injected material.
   if (/HOSTILE-RENDER-TEST/.test(asked)) return reply(HOSTILE_ANSWER);
   // US4 e2e: a provider that reports a nearly full context window (85% of the 200,000 of mock-model).
+  if (/LAYOUT-STRESS-TEST/.test(asked)) return reply(LAYOUT_STRESS_ANSWER);
+  // 003 e2e: a provider error mid-conversation, so its alert can be checked for contrast and focus.
+  if (/PROVIDER-ERROR-TEST/.test(asked)) return { steps: [{ type: "error", code: "invalid_credential" }] };
   if (/HIGH-USAGE-TEST/.test(asked)) return reply("ACCEPT\nThis answer reports a very large input.", 170_000);
   if (/ignore all previous instructions/i.test(asked) && /lyric/i.test(asked)) return reply(LYRIC_EXPLANATION);
   if (/\bhtml\b[\s\S]*\bapp\b|coding assistant/i.test(asked)) return reply("REFUSE\n");

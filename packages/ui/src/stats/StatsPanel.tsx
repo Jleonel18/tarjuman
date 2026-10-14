@@ -2,6 +2,7 @@ import { isContextWarning, sumUsage, type Effort, type UsageRecord } from "@tarj
 import type { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import { effortLabelKey } from "../settings/effort-labels";
+import { FormError } from "../forms/FormMessage";
 
 export interface StatsPanelProps {
   /** Usage of the open conversation, oldest first. */
@@ -76,7 +77,7 @@ export function StatsPanel({ records, configuredEffort, onApplyEffort }: StatsPa
               })}
             </p>
             {isContextWarning(latest.contextRatio) ? (
-              <p className="form__error">{t("stats.context.warning")}</p>
+              <FormError role={null}>{t("stats.context.warning")}</FormError>
             ) : null}
           </div>
 

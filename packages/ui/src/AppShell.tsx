@@ -5,6 +5,8 @@ import { applyDocumentLocale } from "./i18n";
 
 export interface AppShellProps {
   children: ReactNode;
+  /** Controls shown at the inline-end of the header on every screen, such as the theme switcher. */
+  headerActions?: ReactNode;
 }
 
 /**
@@ -12,7 +14,7 @@ export interface AppShellProps {
  * core's locale metadata, and the document's `lang` and `dir` are kept in sync with it, so
  * switching to a right-to-left locale mirrors the whole layout (FR-032).
  */
-export function AppShell({ children }: AppShellProps) {
+export function AppShell({ children, headerActions }: AppShellProps) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
   const dir = directionOf(locale);
@@ -25,6 +27,7 @@ export function AppShell({ children }: AppShellProps) {
     <div className="app-shell" dir={dir} lang={locale}>
       <header className="app-shell__header">
         <h1 className="app-shell__title">{t("common.appName")}</h1>
+        {headerActions !== undefined ? <div className="app-shell__actions">{headerActions}</div> : null}
       </header>
       <main className="app-shell__main">{children}</main>
     </div>

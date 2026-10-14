@@ -134,5 +134,12 @@
   "settings.data.confirm_text": "Esto borra tu clave, tu perfil, tus ajustes y tus conversaciones de este dispositivo. No se puede deshacer.",
   "settings.data.confirm": "Sí, borrar todo",
   "settings.data.deleting": "Borrando…",
-  "settings.data.failed": "Tarjuman no pudo confirmar que se borraron todos tus datos. Vuelve a intentarlo o borra los datos de este sitio desde la configuración del navegador."
+  "settings.data.failed": "Tarjuman no pudo confirmar que se borraron todos tus datos. Vuelve a intentarlo o borra los datos de este sitio desde la configuración del navegador.",
+  "theme.label": "Tema",
+  "theme.light": "Claro",
+  "theme.dark": "Oscuro",
+  "theme.system": "Seguir el sistema",
+  "shell.sidebar.open": "Mostrar conversaciones",
+  "shell.sidebar.close": "Ocultar conversaciones",
+  "chat.streaming": "Escribiendo…"
 }

@@ -1,4 +1,5 @@
 import type { Conversation } from "@tarjuman/core";
+import { Plus, Trash2 } from "lucide-react";
 import { useState, type ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import { languageName } from "../onboarding/languages";
@@ -27,8 +28,9 @@ export function ConversationList({
 
   return (
     <nav className="conversations" aria-label={t("conversations.label")}>
-      <button type="button" onClick={onNew}>
-        {t("conversations.new")}
+      <button type="button" className="button button--primary" onClick={onNew}>
+        <Plus aria-hidden="true" className="icon" />
+        <span>{t("conversations.new")}</span>
       </button>
       {sorted.length === 0 ? <p className="form__hint">{t("conversations.empty")}</p> : null}
       <ul className="conversations__list">
@@ -37,10 +39,15 @@ export function ConversationList({
           return (
             <li key={conversation.id} className="conversations__item">
               {confirmingId === conversation.id ? (
-                <div role="group" aria-label={t("conversations.delete_confirm", { title })}>
+                <div
+                  role="group"
+                  className="conversations__confirm"
+                  aria-label={t("conversations.delete_confirm", { title })}
+                >
                   <p>{t("conversations.delete_confirm", { title })}</p>
                   <button
                     type="button"
+                    className="button button--danger"
                     onClick={() => {
                       setConfirmingId(undefined);
                       onDelete(conversation.id);
@@ -48,7 +55,7 @@ export function ConversationList({
                   >
                     {t("conversations.delete_yes")}
                   </button>
-                  <button type="button" onClick={() => setConfirmingId(undefined)}>
+                  <button type="button" className="button button--quiet" onClick={() => setConfirmingId(undefined)}>
                     {t("common.cancel")}
                   </button>
                 </div>
@@ -60,9 +67,9 @@ export function ConversationList({
                     aria-current={conversation.id === activeId ? "true" : undefined}
                     onClick={() => onOpen(conversation.id)}
                   >
-                    <span>{title}</span>
-                    <small>{date.format(new Date(conversation.updatedAt))}</small>
-                    <small>
+                    <span className="conversations__title">{title}</span>
+                    <small className="conversations__meta">{date.format(new Date(conversation.updatedAt))}</small>
+                    <small className="conversations__meta">
                       {t("conversations.languages", {
                         mediation: languageName(conversation.languageSnapshot.mediation, i18n.language),
                         target: languageName(conversation.languageSnapshot.target, i18n.language),
@@ -71,10 +78,11 @@ export function ConversationList({
                   </button>
                   <button
                     type="button"
+                    className="button button--quiet button--icon"
                     aria-label={t("conversations.delete", { title })}
                     onClick={() => setConfirmingId(conversation.id)}
                   >
-                    {t("common.delete")}
+                    <Trash2 aria-hidden="true" className="icon" />
                   </button>
                 </>
               )}

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MemoryStorage } from "../src/memory-storage";
+import { FakeLocalStorage, throwingLocalStorage } from "./fake-local-storage";
 
 describe("MemoryStorage", () => {
   it("puts, gets, queries by index, and deletes", async () => {
@@ -29,6 +30,16 @@ describe("MemoryStorage", () => {
     await storage.clearAll();
     expect(await storage.query("profile")).toEqual([]);
     expect(await new MemoryStorage().query("profile")).toEqual([]);
+  });
+
+  it("clearAll removes every tarjuman.* key from localStorage and leaves other keys alone (FR-003a)", async () => {
+    const local = new FakeLocalStorage({ "tarjuman.theme": "light", "tarjuman.future": "x", "other-app": "keep" });
+    await new MemoryStorage({ localStorage: local }).clearAll();
+    expect([...local.items.keys()]).toEqual(["other-app"]);
+  });
+
+  it("clearAll treats blocked localStorage as empty", async () => {
+    await expect(new MemoryStorage({ localStorage: throwingLocalStorage }).clearAll()).resolves.toBeUndefined();
   });
 
   it("reports itself available and holds no credential until one is put", async () => {

@@ -7,7 +7,8 @@ const live = !!process.env["TARJUMAN_LIVE"];
 export default defineConfig({
   test: {
     projects: [
-      { test: { name: "unit", include: ["packages/*/tests/**/*.test.{ts,tsx}", "packages/capabilities/*/tests/**/*.test.{ts,tsx}", "apps/*/tests/**/*.test.{ts,tsx}"], exclude: ["packages/*/tests/**/*.live.test.ts"], environment: "node" } },
+      // `css.include` lets a test read a stylesheet with `?raw` (Vitest empties CSS imports by default).
+      { test: { name: "unit", include: ["packages/*/tests/**/*.test.{ts,tsx}", "packages/capabilities/*/tests/**/*.test.{ts,tsx}", "apps/*/tests/**/*.test.{ts,tsx}"], exclude: ["packages/*/tests/**/*.live.test.ts"], environment: "node", css: { include: [/\.css\?raw$/] } } },
       { test: { name: "architecture", include: ["tests/architecture/**/*.test.ts"], environment: "node" } },
       { test: { name: "adversarial", include: ["tests/adversarial/**/*.test.ts"], exclude: ["tests/adversarial/**/*.live.test.ts"], environment: "node" } },
       { test: { name: "guardrails", include: ["tests/guardrails/**/*.test.ts"], exclude: ["tests/guardrails/**/*.live.test.ts"], environment: "node" } },

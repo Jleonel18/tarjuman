@@ -2,6 +2,7 @@ import type { CredentialStorageMode, EnterKeyOutcome } from "@tarjuman/core";
 import { useId, useState, type ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import { KeyEntry } from "../key/KeyEntry";
+import { withKeyHint } from "../key/KeyHint";
 
 export interface KeySettingsProps {
   /** The only form of the key ever shown (FR-015). */
@@ -41,11 +42,11 @@ export function KeySettings({
   }
 
   return (
-    <section className="form" aria-labelledby={titleId}>
-      <h2 id={titleId} className="stats__title">
+    <section className="form settings-card" aria-labelledby={titleId}>
+      <h2 id={titleId} className="stats__title settings-card__title">
         {t("settings.key.title")}
       </h2>
-      <p>{t("settings.key.in_use", { hint: maskedHint })}</p>
+      <p>{withKeyHint(t("settings.key.in_use", { hint: maskedHint }), maskedHint)}</p>
       {storageMode !== undefined ? (
         <p className="form__hint">
           {storageMode === "persistent" ? t("settings.key.mode.persistent") : t("settings.key.mode.session")}
@@ -55,7 +56,7 @@ export function KeySettings({
       {replacing ? (
         <>
           <KeyEntry storageAvailable={storageAvailable} onEnter={replace} />
-          <button type="button" onClick={() => setReplacing(false)}>
+          <button type="button" className="button button--quiet settings-card__cancel" onClick={() => setReplacing(false)}>
             {t("common.cancel")}
           </button>
         </>

@@ -1,4 +1,5 @@
 import type { MessageStatus, SafeBlock } from "@tarjuman/core";
+import { CircleAlert, LoaderCircle } from "lucide-react";
 import type { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import { directionRuns } from "./bidi";
@@ -39,13 +40,20 @@ export function MessageBubble({ message, onRetry }: MessageBubbleProps): ReactEl
       aria-busy={message.status === "streaming"}
     >
       <SafeBlockRenderer blocks={message.blocks} />
+      {message.status === "streaming" ? (
+        <p className="bubble__status">
+          <LoaderCircle aria-hidden="true" className="icon icon--spin" />
+          <span>{t("chat.streaming")}</span>
+        </p>
+      ) : null}
       {message.status === "interrupted" ? (
         <p className="bubble__note">
-          {t("chat.interrupted")}
+          <CircleAlert aria-hidden="true" className="icon" />
+          <span>{t("chat.interrupted")}</span>
           {onRetry ? (
             <>
               {" "}
-              <button type="button" onClick={onRetry}>
+              <button type="button" className="button button--quiet" onClick={onRetry}>
                 {t("common.retry")}
               </button>
             </>

@@ -1,3 +1,4 @@
+import { Info } from "lucide-react";
 import type { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -13,8 +14,9 @@ export function ContextNotice({ ratio, onNewConversation }: ContextNoticeProps):
   const percent = new Intl.NumberFormat(i18n.language, { style: "percent", maximumFractionDigits: 0 });
   return (
     <div role="status" className="guard-notice">
+      <Info aria-hidden="true" className="icon" />
       <p className="guard-notice__text">{t("chat.context.nearly_full", { percent: percent.format(ratio) })}</p>
-      <button type="button" onClick={onNewConversation}>
+      <button type="button" className="guard-notice__action" onClick={onNewConversation}>
         {t("chat.context.new")}
       </button>
     </div>

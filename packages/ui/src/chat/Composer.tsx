@@ -1,3 +1,4 @@
+import { SendHorizontal, Square } from "lucide-react";
 import { useId, useState, type ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -23,11 +24,13 @@ export function Composer({ streaming, onSend, onStop }: ComposerProps): ReactEle
 
   return (
     <div className="composer">
-      <label htmlFor={id} className="composer__label">
+      <label htmlFor={id} className="composer__label visually-hidden">
         {t("chat.composer.label")}
       </label>
       <textarea
         id={id}
+        className="composer__input"
+        placeholder={t("chat.composer.label")}
         rows={2}
         value={text}
         onChange={(e) => setText(e.target.value)}
@@ -39,12 +42,14 @@ export function Composer({ streaming, onSend, onStop }: ComposerProps): ReactEle
         }}
       />
       {streaming ? (
-        <button type="button" onClick={onStop}>
-          {t("common.stop")}
+        <button type="button" className="button button--secondary" onClick={onStop}>
+          <Square aria-hidden="true" className="icon" />
+          <span>{t("common.stop")}</span>
         </button>
       ) : (
-        <button type="button" disabled={!canSend} onClick={send}>
-          {t("chat.send")}
+        <button type="button" className="button button--primary" disabled={!canSend} onClick={send}>
+          <SendHorizontal aria-hidden="true" className="icon icon-directional" />
+          <span>{t("chat.send")}</span>
         </button>
       )}
     </div>

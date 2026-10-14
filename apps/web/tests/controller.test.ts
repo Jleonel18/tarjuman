@@ -1,4 +1,4 @@
-import { MemoryStorage, SessionSecrets } from "@tarjuman/storage-web";
+import { MemoryStorage, SessionSecrets, ThemePreferenceStore, type LocalStorageLike } from "@tarjuman/storage-web";
 import {
   DEFAULT_MOCK_KEY,
   MOCK_MODELS,
@@ -17,9 +17,30 @@ const PASTED_KEY = "sk-ant-api03-PASTED-BY-MISTAKE-1234567890";
 const DRAFT = { mediationLanguage: "es", targetLanguage: "ja", level: "B1" as const, interests: ["cooking"] };
 const ANSWER = "Ser describes identity; estar describes state.";
 
+/** A `localStorage` double, so the theme preference and "delete all" can be checked without a browser. */
+class MapLocalStorage implements LocalStorageLike {
+  readonly items = new Map<string, string>();
+  get length(): number {
+    return this.items.size;
+  }
+  key(index: number): string | null {
+    return [...this.items.keys()][index] ?? null;
+  }
+  getItem(key: string): string | null {
+    return this.items.get(key) ?? null;
+  }
+  setItem(key: string, value: string): void {
+    this.items.set(key, value);
+  }
+  removeItem(key: string): void {
+    this.items.delete(key);
+  }
+}
+
 async function world(options: { provider?: MockProvider; storage?: MemoryStorage; storageAvailable?: boolean } = {}) {
   const provider = options.provider ?? new MockProvider();
-  const storage = options.storage ?? new MemoryStorage();
+  const local = new MapLocalStorage();
+  const storage = options.storage ?? new MemoryStorage({ localStorage: local });
   const services: AppServices = assembleServices({
     provider,
     modelIds: MOCK_MODELS.map((m) => m.id),
@@ -28,8 +49,11 @@ async function world(options: { provider?: MockProvider; storage?: MemoryStorage
     storageAvailable: options.storageAvailable ?? true,
     sessionSecrets: new SessionSecrets(),
     i18n: await createI18n({ locale: "en" }),
+    themes: new ThemePreferenceStore({ localStorage: local }),
   });
-  return { provider, storage, services, controller: new AppController(services) };
+  // Stands in for <html>: the controller applies the theme through its `data-theme` attribute.
+  const themeRoot = { dataset: {} as Record<string, string | undefined> };
+  return { provider, storage, services, local, themeRoot, controller: new AppController(services, { themeRoot }) };
 }
 
 const state = () => useAppStore.getState();
@@ -436,5 +460,60 @@ describe("key and data control (US7)", () => {
     const { controller } = await ready();
     controller.openKeySettings();
     expect(state().route).toBe("settings");
+  });
+});
+
+describe("theme (003 US1)", () => {
+  it("boot reads the saved preference", async () => {
+    const { services, local, themeRoot } = await world();
+    local.setItem("tarjuman.theme", "dark");
+    await new AppController(services, { themeRoot }).boot();
+    expect(state().theme).toBe("dark");
+  });
+
+  it('starts at "system" when nothing is saved', async () => {
+    const { controller } = await world();
+    await controller.boot();
+    expect(state().theme).toBe("system");
+  });
+
+  it('setTheme("dark") stores the choice and applies data-theme', async () => {
+    const { controller, local, themeRoot } = await world();
+    await controller.boot();
+    controller.setTheme("dark");
+    expect(local.getItem("tarjuman.theme")).toBe("dark");
+    expect(themeRoot.dataset["theme"]).toBe("dark");
+    expect(state().theme).toBe("dark");
+  });
+
+  it('setTheme("system") stores "system" and removes the attribute', async () => {
+    const { controller, local, themeRoot } = await world();
+    await controller.boot();
+    controller.setTheme("light");
+    controller.setTheme("system");
+    expect(local.getItem("tarjuman.theme")).toBe("system");
+    expect(themeRoot.dataset).not.toHaveProperty("theme");
+    expect(state().theme).toBe("system");
+  });
+
+  it("works before onboarding, with no profile or key", async () => {
+    const { controller, themeRoot } = await world();
+    await controller.boot();
+    expect(state().route).toBe("onboarding");
+    controller.setTheme("light");
+    expect(themeRoot.dataset["theme"]).toBe("light");
+  });
+
+  it('after a successful delete-all the attribute is gone and the store reads "system"', async () => {
+    const w = await world();
+    await w.controller.boot();
+    await w.controller.completeOnboarding(DRAFT);
+    await w.controller.enterKey(DEFAULT_MOCK_KEY, "session");
+    w.controller.setTheme("dark");
+    expect(await w.controller.deleteAllData()).toEqual({ ok: true });
+    expect(w.themeRoot.dataset).not.toHaveProperty("theme");
+    expect(w.local.getItem("tarjuman.theme")).toBeNull();
+    expect(w.services.themes.get()).toBe("system");
+    expect(state().theme).toBe("system");
   });
 });

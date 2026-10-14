@@ -46,7 +46,7 @@ async function expectStartsOnLeft(el: Locator): Promise<void> {
 }
 
 async function onboard(page: Page, mediation = "en", target = "ja"): Promise<void> {
-  const selects = page.locator("select");
+  const selects = page.locator("main select");
   await selects.nth(0).selectOption(mediation);
   await selects.nth(1).selectOption(target);
   await selects.nth(2).selectOption("B1");
@@ -70,13 +70,13 @@ test.describe("right-to-left layout with the pseudo locale", () => {
   test("onboarding and key entry mirror", async ({ page }) => {
     await page.goto("/?locale=ar-XB");
     await expectRtl(page);
-    await expectStartsOnRight(page.locator("label").first());
+    await expectStartsOnRight(page.locator("main label").first());
     await expectStartsOnRight(page.locator("h2").first());
 
     await onboard(page);
     await expect(page.locator('input[type="password"]')).toBeVisible();
     await expectRtl(page);
-    await expectStartsOnRight(page.locator("label").first());
+    await expectStartsOnRight(page.locator("main label").first());
   });
 
   test("chat, conversation list, stats panel, and the refusal and notice states mirror", async ({ page }) => {
@@ -111,22 +111,22 @@ test.describe("right-to-left layout with the pseudo locale", () => {
 
   test("the settings screen mirrors and the back chevron flips", async ({ page }) => {
     await page.goto("/");
-    await page.locator("select").nth(0).selectOption("en");
-    await page.locator("select").nth(1).selectOption("ja");
+    await page.locator("main select").nth(0).selectOption("en");
+    await page.locator("main select").nth(1).selectOption("ja");
     await page.getByRole("button", { name: "Next" }).click();
     await page.getByLabel("API key", { exact: true }).fill(VALID_KEY);
     await page.getByRole("radio", { name: "This session only" }).check();
     await page.getByRole("button", { name: "Save key" }).click();
 
     await page.getByRole("button", { name: "Settings" }).click();
-    await expectStartsOnLeft(page.locator("label").first());
+    await expectStartsOnLeft(page.locator("main label").first());
     const chevron = page.locator(".icon-directional");
     expect(await chevron.evaluate((el) => getComputedStyle(el).transform)).toBe("none");
 
     // Switch the interface to the test locale from the settings screen itself.
     await page.getByLabel("Interface language").selectOption("ar-XB");
     await expectRtl(page);
-    await expectStartsOnRight(page.locator("label").first());
+    await expectStartsOnRight(page.locator("main label").first());
     expect(await chevron.evaluate((el) => getComputedStyle(el).transform)).toBe("matrix(-1, 0, 0, 1, 0, 0)");
   });
 

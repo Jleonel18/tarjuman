@@ -33,25 +33,29 @@ function renderBlock(block: SafeBlock, key: number): ReactNode {
         </pre>
       );
     case "table":
+      // The wrapper scrolls a wide table inside its own box; `display: block` on the table itself
+      // would drop its table semantics in some screen readers.
       return (
-        <table key={key}>
-          <thead>
-            <tr>
-              {block.header.map((cell, i) => (
-                <th key={i}>{renderInlines(cell)}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {block.rows.map((row, i) => (
-              <tr key={i}>
-                {row.map((cell, j) => (
-                  <td key={j}>{renderInlines(cell)}</td>
+        <div key={key} className="safe-blocks__table">
+          <table>
+            <thead>
+              <tr>
+                {block.header.map((cell, i) => (
+                  <th key={i}>{renderInlines(cell)}</th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {block.rows.map((row, i) => (
+                <tr key={i}>
+                  {row.map((cell, j) => (
+                    <td key={j}>{renderInlines(cell)}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       );
     default:
       return null;

@@ -1,14 +1,21 @@
-import { AppShell, I18nextProvider, createI18n } from "@tarjuman/ui";
+import { AppShell, I18nextProvider, ThemeSwitcher, createI18n } from "@tarjuman/ui";
 import "@tarjuman/ui/styles/base.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createAppServices } from "./composition-root";
 import { AppController } from "./controller";
 import { Routes } from "./routes";
+import { useAppStore } from "./store";
 
 const container = document.getElementById("root");
 if (!container) throw new Error("Missing #root element");
 const root = createRoot(container);
+
+/** The compact theme control in the header, on every screen including onboarding (003 FR-003b). */
+function HeaderThemeSwitcher({ controller }: { controller: AppController }) {
+  const theme = useAppStore((s) => s.theme);
+  return <ThemeSwitcher variant="compact" value={theme} onChange={controller.setTheme} />;
+}
 
 async function start(): Promise<void> {
   const services = await createAppServices();
@@ -17,7 +24,7 @@ async function start(): Promise<void> {
   root.render(
     <StrictMode>
       <I18nextProvider i18n={services.i18n}>
-        <AppShell>
+        <AppShell headerActions={<HeaderThemeSwitcher controller={controller} />}>
           <Routes controller={controller} services={services} />
         </AppShell>
       </I18nextProvider>

@@ -1,5 +1,6 @@
 import { isContextWarning, type ProviderErrorCode } from "@tarjuman/core";
 import type { ReactElement } from "react";
+import { CircleAlert } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { describeProviderError } from "../errors/provider-error-messages";
 import { Composer } from "./Composer";
@@ -64,15 +65,13 @@ export function ChatView({
       </div>
 
       {failure ? (
-        <p role="alert" className="form__error">
-          {t(failure.messageKey, failure.params)}
+        <p role="alert" className="form__error form__error--panel">
+          <CircleAlert aria-hidden="true" className="icon" />
+          <span>{t(failure.messageKey, failure.params)}</span>
           {failure.action === "open_key_settings" ? (
-            <>
-              {" "}
-              <button type="button" onClick={onOpenKeySettings}>
-                {t("chat.open_key_settings")}
-              </button>
-            </>
+            <button type="button" className="button button--danger" onClick={onOpenKeySettings}>
+              {t("chat.open_key_settings")}
+            </button>
           ) : null}
         </p>
       ) : null}

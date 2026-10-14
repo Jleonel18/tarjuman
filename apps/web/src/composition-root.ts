@@ -17,6 +17,7 @@ import { ANTHROPIC_MODELS, AnthropicProvider, DEFAULT_MODEL_ID } from "@tarjuman
 import {
   IndexedDbStorage,
   MemoryStorage,
+  ThemePreferenceStore,
   WebCredentialStore,
   defaultSessionSecrets,
   type SessionSecrets,
@@ -44,6 +45,8 @@ export interface AppServices {
   data: DataController;
   /** Models a profile may use, and the one a new profile starts with. */
   models: { ids: readonly string[]; defaultId: string; list: readonly ModelInfo[] };
+  /** The light, dark, or follow-system choice, kept on the device (003). */
+  themes: ThemePreferenceStore;
 }
 
 /**
@@ -103,6 +106,8 @@ export interface AssembleOptions {
   i18n: I18n;
   /** True when the pseudo-RTL test locale is registered. Never true in a normal production build. */
   includeTestLocales?: boolean;
+  /** Defaults to a store over the browser's `localStorage`. */
+  themes?: ThemePreferenceStore;
 }
 
 /** Pure wiring: connects the pieces without reading the environment, so tests build the same graph. */
@@ -158,6 +163,7 @@ export function assembleServices(options: AssembleOptions): AppServices {
       defaultId: options.defaultModelId,
       list: provider.listModels().filter((model) => options.modelIds.includes(model.id)),
     },
+    themes: options.themes ?? new ThemePreferenceStore(),
   };
 }
 

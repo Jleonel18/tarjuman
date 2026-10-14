@@ -40,6 +40,11 @@ export default tseslint.config(
     files: ["**/*.{ts,tsx}"],
     rules: { "no-restricted-syntax": ["error", ...forbidInnerHtml] },
   },
+  // Classic scripts served as-is from `public/` (theme-init.js runs before the app, in the browser).
+  {
+    files: ["apps/web/public/**/*.js"],
+    languageOptions: { sourceType: "script", globals: { document: "readonly", localStorage: "readonly" } },
+  },
   {
     files: ["packages/ui/**/*.{ts,tsx}", "apps/web/**/*.{ts,tsx}"],
     plugins: { i18next },

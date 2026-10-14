@@ -1,6 +1,8 @@
 import type { DeleteAllOutcome } from "@tarjuman/core";
+import { TriangleAlert } from "lucide-react";
 import { useId, useState, type ReactElement } from "react";
 import { useTranslation } from "react-i18next";
+import { FormError } from "../forms/FormMessage";
 
 export interface DataControlsProps {
   /** Deletes everything on the device (`DataController.deleteAll`). On success the app returns to onboarding. */
@@ -32,32 +34,37 @@ export function DataControls({ onDeleteAll, disabled = false }: DataControlsProp
   }
 
   return (
-    <section className="form" aria-labelledby={titleId}>
-      <h2 id={titleId} className="stats__title">
+    <section className="form settings-card" aria-labelledby={titleId}>
+      <h2 id={titleId} className="stats__title settings-card__title">
         {t("settings.data.title")}
       </h2>
       <p className="form__hint">{t("settings.data.hint")}</p>
 
       {step === "confirming" || step === "deleting" ? (
-        <>
-          <p className="form__notice">
-            {t("settings.data.confirm_text")}
+        <div className="settings-danger">
+          <p className="settings-danger__text">
+            <TriangleAlert aria-hidden="true" className="icon" />
+            <span>{t("settings.data.confirm_text")}</span>
           </p>
           <div className="settings-actions">
-            <button type="button" disabled={step === "deleting"} onClick={() => void confirm()}>
+            <button
+              type="button"
+              className="button button--danger"
+              aria-busy={step === "deleting"}
+              disabled={step === "deleting"}
+              onClick={() => void confirm()}
+            >
               {step === "deleting" ? t("settings.data.deleting") : t("settings.data.confirm")}
             </button>
             <button type="button" disabled={step === "deleting"} onClick={() => setStep("idle")}>
               {t("common.cancel")}
             </button>
           </div>
-        </>
+        </div>
       ) : (
         <>
           {step === "failed" ? (
-            <p role="alert" className="form__error">
-              {t("settings.data.failed")}
-            </p>
+            <FormError>{t("settings.data.failed")}</FormError>
           ) : null}
           <div className="settings-actions">
             <button type="button" disabled={disabled} onClick={() => setStep("confirming")}>

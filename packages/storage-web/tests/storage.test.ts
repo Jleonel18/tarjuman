@@ -4,8 +4,9 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { COLLECTIONS, IndexedDbStorage, StorageNotEmptyError } from "../src/indexeddb-storage";
 import { SessionSecrets } from "../src/session-secrets";
 import { sealSecret } from "@tarjuman/core";
+import { FakeLocalStorage, throwingLocalStorage } from "./fake-local-storage";
 
-const noWebExtras = { cacheStorage: undefined, serviceWorker: undefined };
+const noWebExtras = { cacheStorage: undefined, serviceWorker: undefined, localStorage: undefined };
 
 beforeEach(() => {
   globalThis.indexedDB = new IDBFactory();
@@ -128,6 +129,27 @@ describe("IndexedDbStorage.clearAll (SC-007)", () => {
     const storage = new IndexedDbStorage(noWebExtras);
     await storage.put("profile", { id: "p" });
     await expect(storage.clearAll()).rejects.toThrow(/still exists/);
+  });
+
+  it("removes every tarjuman.* key from localStorage and leaves other keys alone (FR-003a)", async () => {
+    const local = new FakeLocalStorage({ "tarjuman.theme": "dark", "tarjuman.future": "x", "other-app": "keep" });
+    const storage = new IndexedDbStorage({ ...noWebExtras, localStorage: local });
+    await storage.put("profile", { id: "p" });
+    await storage.clearAll();
+    expect([...local.items.keys()]).toEqual(["other-app"]);
+  });
+
+  it("throws when a tarjuman.* key survives removal", async () => {
+    const local = new FakeLocalStorage({ "tarjuman.theme": "dark" });
+    local.stuck = true;
+    const storage = new IndexedDbStorage({ ...noWebExtras, localStorage: local });
+    await expect(storage.clearAll()).rejects.toThrow(/local storage entries remain/);
+    await expect(storage.clearAll()).rejects.toBeInstanceOf(StorageNotEmptyError);
+  });
+
+  it("treats blocked localStorage as empty, not as a failure", async () => {
+    const storage = new IndexedDbStorage({ ...noWebExtras, localStorage: throwingLocalStorage });
+    await expect(storage.clearAll()).resolves.toBeUndefined();
   });
 });
 

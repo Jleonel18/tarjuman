@@ -1,5 +1,5 @@
 import type { Conversation, CredentialStorageMode, LearnerProfile, ProviderErrorCode, UsageRecord } from "@tarjuman/core";
-import type { ChatMessage } from "@tarjuman/ui";
+import type { ChatMessage, ThemePreference } from "@tarjuman/ui";
 import { create } from "zustand";
 
 /**
@@ -27,6 +27,8 @@ export interface AppState {
   /** Set when the input guard withheld part of the last message (FR-011). */
   notice: { code: "key_shape_detected" } | undefined;
   error: { code: ProviderErrorCode; retryAfterSeconds?: number } | undefined;
+  /** The theme choice shown by both theme controls. Not part of the profile: it exists before onboarding. */
+  theme: ThemePreference;
   navigate: (route: RouteId) => void;
 }
 
@@ -43,6 +45,7 @@ const initialData = {
   streaming: false,
   notice: undefined,
   error: undefined,
+  theme: "system" as ThemePreference,
 };
 
 export const useAppStore = create<AppState>()((set) => ({

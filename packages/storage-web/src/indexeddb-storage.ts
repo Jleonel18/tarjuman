@@ -1,5 +1,6 @@
 import type { Collection, StoragePort, StorageQuery, StoredRecord } from "@tarjuman/core";
 import { deleteDB, openDB, type IDBPDatabase } from "idb";
+import { defaultLocalStorage, removeTarjumanKeys, tarjumanKeys, type LocalStorageLike } from "./local-storage";
 import { defaultSessionSecrets, type SessionSecrets } from "./session-secrets";
 
 export const DB_NAME = "tarjuman";
@@ -51,6 +52,8 @@ export interface IndexedDbStorageOptions {
   sessionSecrets?: SessionSecrets;
   cacheStorage?: CacheStorageLike | undefined;
   serviceWorker?: ServiceWorkerContainerLike | undefined;
+  /** Holds the `tarjuman.*` preferences, such as the theme. Defaults to the browser's `localStorage`. */
+  localStorage?: LocalStorageLike | undefined;
 }
 
 export class StorageNotEmptyError extends Error {
@@ -69,6 +72,7 @@ export class IndexedDbStorage implements StoragePort, CredentialRecordAccess {
   readonly #sessionSecrets: SessionSecrets;
   readonly #cacheStorage: CacheStorageLike | undefined;
   readonly #serviceWorker: ServiceWorkerContainerLike | undefined;
+  readonly #localStorage: LocalStorageLike | undefined;
 
   constructor(options: IndexedDbStorageOptions = {}) {
     this.#sessionSecrets = options.sessionSecrets ?? defaultSessionSecrets;
@@ -78,6 +82,7 @@ export class IndexedDbStorage implements StoragePort, CredentialRecordAccess {
       "serviceWorker" in options
         ? options.serviceWorker
         : (globalThis as { navigator?: { serviceWorker?: ServiceWorkerContainerLike } }).navigator?.serviceWorker;
+    this.#localStorage = "localStorage" in options ? options.localStorage : defaultLocalStorage();
   }
 
   #open(): Promise<IDBPDatabase> {
@@ -154,7 +159,8 @@ export class IndexedDbStorage implements StoragePort, CredentialRecordAccess {
 
   /**
    * Removes every trace of Tarjuman data and verifies it (FR-017, SC-007). Dropping the database
-   * also removes the wrapping CryptoKey, which lives inside it. Throws `StorageNotEmptyError`
+   * also removes the wrapping CryptoKey, which lives inside it. The `tarjuman.*` keys in
+   * `localStorage` (the theme preference, 003 FR-003a) go too. Throws `StorageNotEmptyError`
    * rather than reporting success it cannot confirm.
    */
   async clearAll(): Promise<void> {
@@ -172,6 +178,7 @@ export class IndexedDbStorage implements StoragePort, CredentialRecordAccess {
     if (this.#serviceWorker) {
       for (const registration of await this.#serviceWorker.getRegistrations()) await registration.unregister();
     }
+    removeTarjumanKeys(this.#localStorage);
 
     await this.#verifyEmpty();
   }
@@ -194,6 +201,9 @@ export class IndexedDbStorage implements StoragePort, CredentialRecordAccess {
     }
     if (this.#serviceWorker && (await this.#serviceWorker.getRegistrations()).length > 0) {
       throw new StorageNotEmptyError("service worker registrations remain");
+    }
+    if (tarjumanKeys(this.#localStorage).length > 0) {
+      throw new StorageNotEmptyError("local storage entries remain");
     }
   }
 }

@@ -1,0 +1,87 @@
+/*
+ * Design tokens (specs/003-visual-design/contracts/design-tokens.md). This is the only stylesheet
+ * allowed to hold raw color values; every other rule uses `var(--…)` (SC-001, Stylelint enforces it).
+ *
+ * Each color holds both themes as `light-dark(<light>, <dark>)`. `color-scheme` picks the value:
+ * `light dark` lets the device decide, and `data-theme` on <html> pins one theme when the learner
+ * chooses it (set before first paint by apps/web/public/theme-init.js).
+ */
+:root {
+  color-scheme: light dark;
+
+  /* Color roles. */
+  --color-canvas: light-dark(#f9f9ff, #0c1419);
+  --color-surface: light-dark(#ffffff, #151d22);
+  --color-surface-raised: light-dark(#e7eeff, #192126);
+  --color-surface-strong: light-dark(#dee8ff, #232b30);
+  --color-text: light-dark(#111c2d, #dbe4eb);
+  --color-text-muted: light-dark(#404944, #bbcabf);
+  --color-primary: light-dark(#003626, #4edea3);
+  --color-on-primary: light-dark(#ffffff, #003824);
+  --color-user-bubble: light-dark(#134e3a, #005236);
+  --color-on-user-bubble: light-dark(#ffffff, #dbe4eb);
+  --color-notice: light-dark(#fed65b, #e9c349);
+  --color-on-notice: light-dark(#574500, #3c2f00);
+  --color-danger: light-dark(#ba1a1a, #ffb4ab);
+  --color-danger-container: light-dark(#ffdad6, #93000a);
+  --color-on-danger-container: light-dark(#93000a, #ffdad6);
+  --color-border: light-dark(#707974, #86948a);
+  --color-divider: light-dark(#c0c9c2, #3c4a42);
+
+  /* Elevation. `light-dark()` takes colors only, so it wraps the shadow color; the offsets match in both themes. */
+  --shadow-1: 0 1px 2px light-dark(rgb(17 28 45 / 0.08), rgb(0 0 0 / 0.4));
+  --shadow-2: 0 4px 16px light-dark(rgb(17 28 45 / 0.12), rgb(0 0 0 / 0.5));
+
+  /* Typography. Sizes are in rem so browser font size and zoom scale everything. */
+  --font-body: "Inter Variable", "Noto Naskh Arabic Variable", system-ui, sans-serif;
+  --font-heading: "Plus Jakarta Sans Variable", "Noto Naskh Arabic Variable", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --leading-body: 1.7;
+  --leading-tight: 1.25;
+  --weight-regular: 400;
+  --weight-medium: 600;
+  --weight-bold: 700;
+
+  /* Spacing. 1-4 keep their 001 values. */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2rem;
+  --space-6: 3rem;
+
+  /* Radius. */
+  --radius-sm: 0.25rem;
+  --radius: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-pill: 999rem;
+
+  /* Motion. */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --easing-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Layout. The 64rem breakpoint is a literal in media queries, which cannot read custom properties. */
+  --measure-reading: 46rem;
+  --sidebar-inline-size: 18rem;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0.01ms;
+    --duration-base: 0.01ms;
+  }
+}

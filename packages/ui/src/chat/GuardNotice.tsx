@@ -1,3 +1,4 @@
+import { TriangleAlert } from "lucide-react";
 import type { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -18,8 +19,9 @@ export function GuardNotice({ code, onDismiss }: GuardNoticeProps): ReactElement
   const { t } = useTranslation();
   return (
     <div role="status" className="guard-notice">
+      <TriangleAlert aria-hidden="true" className="icon" />
       <p className="guard-notice__text">{t(MESSAGE_KEYS[code])}</p>
-      <button type="button" onClick={onDismiss}>
+      <button type="button" className="button button--quiet guard-notice__action" onClick={onDismiss}>
         {t("chat.guard.dismiss")}
       </button>
     </div>

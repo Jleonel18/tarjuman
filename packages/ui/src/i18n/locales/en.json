@@ -134,5 +134,12 @@
   "settings.data.confirm_text": "This removes your key, profile, settings and conversations from this device. It can't be undone.",
   "settings.data.confirm": "Yes, delete everything",
   "settings.data.deleting": "Deleting…",
-  "settings.data.failed": "Tarjuman couldn't confirm that all your data was removed. Try again, or clear this site's data in your browser settings."
+  "settings.data.failed": "Tarjuman couldn't confirm that all your data was removed. Try again, or clear this site's data in your browser settings.",
+  "theme.label": "Theme",
+  "theme.light": "Light",
+  "theme.dark": "Dark",
+  "theme.system": "Follow system",
+  "shell.sidebar.open": "Show conversations",
+  "shell.sidebar.close": "Hide conversations",
+  "chat.streaming": "Writing…"
 }

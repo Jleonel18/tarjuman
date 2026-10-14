@@ -1,6 +1,7 @@
 import type { ProfileIssue } from "@tarjuman/core";
 import { useId, useState, type ReactElement } from "react";
 import { useTranslation } from "react-i18next";
+import { FormError } from "../forms/FormMessage";
 import { OFFERED_LANGUAGES, languageName } from "../onboarding/languages";
 
 export interface LanguageValues {
@@ -56,8 +57,8 @@ export function LanguageSettings({
     ));
 
   return (
-    <section className="language-settings" aria-label={t("settings.language.label")}>
-      <h2 className="stats__title">{t("settings.language.title")}</h2>
+    <section className="language-settings settings-card" aria-label={t("settings.language.label")}>
+      <h2 className="stats__title settings-card__title">{t("settings.language.title")}</h2>
       <p className="form__hint">{t("settings.language.hint")}</p>
       <div className="form__field">
         <label htmlFor={ids.ui}>{t("common.language.ui")}</label>
@@ -99,9 +100,7 @@ export function LanguageSettings({
         </select>
       </div>
       {refused ? (
-        <p id={ids.error} role="alert" className="form__error">
-          {t("settings.language.same")}
-        </p>
+        <FormError id={ids.error}>{t("settings.language.same")}</FormError>
       ) : null}
     </section>
   );

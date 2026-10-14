@@ -73,7 +73,7 @@ describe("production bundle and the dev-only Ollama provider", () => {
  * hooks from the URL. A normal production build (no `VITE_PROVIDER`) must contain none of it.
  */
 describe("production bundle and the e2e mock provider", () => {
-  const MOCK_MARKERS = ["sk-ant-mock-valid-key", "mockLatencyMs", "HOSTILE-RENDER-TEST"];
+  const MOCK_MARKERS = ["sk-ant-mock-valid-key", "mockLatencyMs", "HOSTILE-RENDER-TEST", "LAYOUT-STRESS-TEST", "PROVIDER-ERROR-TEST"];
 
   it("contains no mock key, test hook, or scripted answer", async () => {
     delete process.env["VITE_PROVIDER"];

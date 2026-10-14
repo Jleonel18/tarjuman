@@ -5,6 +5,21 @@ import { ConversationList } from "../src/conversations/ConversationList";
 import { KeyEntry } from "../src/key/KeyEntry";
 import { Onboarding } from "../src/onboarding/Onboarding";
 import { render } from "./render";
+import { ChatView } from "../src/chat/ChatView";
+import { ContextNotice } from "../src/chat/ContextNotice";
+import { GuardNotice } from "../src/chat/GuardNotice";
+import { FormError, FormNotice } from "../src/forms/FormMessage";
+import onboardingSource from "../src/onboarding/Onboarding.tsx?raw";
+import keyEntrySource from "../src/key/KeyEntry.tsx?raw";
+import languageSettingsSource from "../src/settings/LanguageSettings.tsx?raw";
+import dataControlsSource from "../src/settings/DataControls.tsx?raw";
+
+const SOURCES = {
+  Onboarding: onboardingSource,
+  KeyEntry: keyEntrySource,
+  LanguageSettings: languageSettingsSource,
+  DataControls: dataControlsSource,
+};
 
 const noop = () => {};
 const onboarding = () =>
@@ -89,5 +104,47 @@ describe.each(["en", "es"])("screens in %s", (locale) => {
     );
     expect(missing).toEqual([]);
     expect(html).toContain("form__hint");
+  });
+});
+
+/** FR-010: every notice and error has an icon beside its words, so none relies on color alone. */
+describe("notices and errors carry a decorative icon (003 US3)", () => {
+  const iconThenText = (html: string, cls: string) => {
+    const element = new RegExp(`<[a-z]+[^>]*class="${cls}[^"]*"[^>]*>([\\s\\S]*?)</(p|div)>`).exec(html)?.[1] ?? "";
+    expect(element, cls).toMatch(/<svg[^>]*aria-hidden="true"/);
+    expect(element.replace(/<[^>]+>/g, "").trim().length, cls).toBeGreaterThan(0);
+  };
+
+  it("GuardNotice and ContextNotice", async () => {
+    iconThenText((await render(createElement(GuardNotice, { code: "key_shape_detected", onDismiss: noop }))).html, "guard-notice");
+    iconThenText((await render(createElement(ContextNotice, { ratio: 0.85, onNewConversation: noop }))).html, "guard-notice");
+  });
+
+  it("the provider error in ChatView", async () => {
+    const { html } = await render(
+      createElement(ChatView, {
+        messages: [],
+        streaming: false,
+        error: { code: "invalid_credential" },
+        onSend: noop,
+        onStop: noop,
+        onRetry: noop,
+        onOpenKeySettings: noop,
+      }),
+    );
+    iconThenText(html, "form__error");
+  });
+
+  it("FormError and FormNotice, and the storage-unavailable notice in KeyEntry", async () => {
+    iconThenText((await render(createElement(FormError, { children: "Wrong" }))).html, "form__error");
+    iconThenText((await render(createElement(FormNotice, { children: "Heads up" }))).html, "form__notice");
+    iconThenText((await render(keyEntry({ storageAvailable: false }))).html, "form__notice");
+  });
+
+  it("the screens draw their errors through FormError, never a bare form__error paragraph", () => {
+    for (const [name, source] of Object.entries(SOURCES)) {
+      expect(source, name).not.toContain('className="form__error"');
+      expect(source, name).toContain("<FormError");
+    }
   });
 });

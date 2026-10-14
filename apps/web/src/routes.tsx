@@ -1,4 +1,4 @@
-import { ChatView, ConversationList, DataControls, KeyEntry, KeySettings, LanguageSettings, ModelEffortSettings, Onboarding, StatsPanel, ToneSelector, useTranslation } from "@tarjuman/ui";
+import { BackIcon, ChatView, ConversationList, DataControls, KeyEntry, KeySettings, LanguageSettings, ModelEffortSettings, Onboarding, SettingsIcon, StatsPanel, ThemeSwitcher, ToneSelector, Workspace, useTranslation } from "@tarjuman/ui";
 import type { ReactElement } from "react";
 import type { AppController } from "./controller";
 import type { AppServices } from "./composition-root";
@@ -29,40 +29,50 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
       return <KeyEntry storageAvailable={services.storageAvailable} onEnter={controller.enterKey} />;
     case "chat":
       return (
-        <div className="workspace">
-          <div className="workspace__side">
-            <ConversationList
-              conversations={state.conversations}
-              activeId={state.activeConversationId}
-              onNew={controller.newConversation}
-              onOpen={(id) => void controller.openConversation(id)}
-              onDelete={(id) => void controller.deleteConversation(id)}
-            />
-            {state.profile ? (
-              <>
-                <button type="button" onClick={() => state.navigate("settings")}>
-                  {t("settings.open")}
-                </button>
-                <StatsPanel
-                  records={state.usage}
-                  configuredEffort={state.profile.configuredEffort}
-                  onApplyEffort={(effort) => void controller.updateModelSettings({ effort })}
-                />
-                <ModelEffortSettings
-                  models={services.models.list}
-                  modelId={state.profile.modelId}
-                  effort={state.profile.configuredEffort}
-                  disabled={state.streaming}
-                  onChange={(change) => void controller.updateModelSettings(change)}
-                />
-                <ToneSelector
-                  toneId={state.profile.toneId}
-                  disabled={state.streaming}
-                  onChange={(toneId) => void controller.updateTone(toneId)}
-                />
-              </>
-            ) : null}
-          </div>
+        <Workspace
+          sidebar={({ onNavigate }) => (
+            <>
+              <ConversationList
+                conversations={state.conversations}
+                activeId={state.activeConversationId}
+                onNew={() => {
+                  onNavigate();
+                  controller.newConversation();
+                }}
+                onOpen={(id) => {
+                  onNavigate();
+                  void controller.openConversation(id);
+                }}
+                onDelete={(id) => void controller.deleteConversation(id)}
+              />
+              {state.profile ? (
+                <>
+                  <button type="button" className="button button--secondary" onClick={() => state.navigate("settings")}>
+                    <SettingsIcon aria-hidden="true" className="icon" />
+                    <span>{t("settings.open")}</span>
+                  </button>
+                  <StatsPanel
+                    records={state.usage}
+                    configuredEffort={state.profile.configuredEffort}
+                    onApplyEffort={(effort) => void controller.updateModelSettings({ effort })}
+                  />
+                  <ModelEffortSettings
+                    models={services.models.list}
+                    modelId={state.profile.modelId}
+                    effort={state.profile.configuredEffort}
+                    disabled={state.streaming}
+                    onChange={(change) => void controller.updateModelSettings(change)}
+                  />
+                  <ToneSelector
+                    toneId={state.profile.toneId}
+                    disabled={state.streaming}
+                    onChange={(toneId) => void controller.updateTone(toneId)}
+                  />
+                </>
+              ) : null}
+            </>
+          )}
+        >
           <ChatView
             messages={state.messages}
             streaming={state.streaming}
@@ -77,18 +87,16 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
             onRetry={(id) => void controller.retry(id)}
             onOpenKeySettings={controller.openKeySettings}
           />
-        </div>
+        </Workspace>
       );
     case "settings":
       return (
         <div className="settings-screen">
-          <button type="button" onClick={() => state.navigate("chat")}>
-            <span aria-hidden="true" className="icon-directional">
-              ‹
-            </span>{" "}
-            {t("common.back")}
+          <button type="button" className="button button--quiet settings-screen__back" onClick={() => state.navigate("chat")}>
+            <BackIcon aria-hidden="true" className="icon icon-directional" />
+            <span>{t("common.back")}</span>
           </button>
-          <h2 className="stats__title">{t("common.settings")}</h2>
+          <h2 className="settings-screen__title">{t("common.settings")}</h2>
           {state.profile ? (
             <LanguageSettings
               uiLanguage={i18n.language}
@@ -100,6 +108,7 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
               onChange={(change) => void controller.updateLanguages(change)}
             />
           ) : null}
+          <ThemeSwitcher variant="full" value={state.theme} onChange={controller.setTheme} />
           {state.keyHint !== undefined ? (
             <KeySettings
               maskedHint={state.keyHint}

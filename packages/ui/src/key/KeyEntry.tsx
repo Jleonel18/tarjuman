@@ -2,6 +2,8 @@ import type { CredentialStorageMode, EnterKeyOutcome } from "@tarjuman/core";
 import { useId, useState, type ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import { describeProviderError } from "../errors/provider-error-messages";
+import { FormError, FormNotice } from "../forms/FormMessage";
+import { withKeyHint } from "./KeyHint";
 
 export interface KeyEntryProps {
   /** False in private mode or when the browser blocks storage: only session-only is offered. */
@@ -28,10 +30,10 @@ export function KeyEntry({ storageAvailable, maskedHint, onEnter, onReplace }: K
 
   if (maskedHint !== undefined) {
     return (
-      <section className="form">
-        <p>{t("key.saved", { hint: maskedHint })}</p>
+      <section className="form screen-card">
+        <p>{withKeyHint(t("key.saved", { hint: maskedHint }), maskedHint)}</p>
         {onReplace ? (
-          <button type="button" onClick={onReplace}>
+          <button type="button" className="button button--secondary form__submit" onClick={onReplace}>
             {t("key.replace")}
           </button>
         ) : null}
@@ -53,14 +55,15 @@ export function KeyEntry({ storageAvailable, maskedHint, onEnter, onReplace }: K
   }
 
   return (
-    <section className="form" aria-labelledby={`${ids.key}-title`}>
+    <section className="form screen-card" aria-labelledby={`${ids.key}-title`}>
       <h2 id={`${ids.key}-title`}>{t("key.title")}</h2>
-      <p>{t("key.intro")}</p>
+      <p className="screen-card__intro">{t("key.intro")}</p>
 
       <div className="form__field">
         <label htmlFor={ids.key}>{t("key.label")}</label>
         <input
           id={ids.key}
+          className="key-input"
           type="password"
           autoComplete="off"
           spellCheck={false}
@@ -70,9 +73,7 @@ export function KeyEntry({ storageAvailable, maskedHint, onEnter, onReplace }: K
       </div>
 
       {storageAvailable ? null : (
-        <p role="status" className="form__notice">
-          {t("key.storage_unavailable")}
-        </p>
+        <FormNotice role="status">{t("key.storage_unavailable")}</FormNotice>
       )}
 
       <fieldset className="form__field">
@@ -109,12 +110,16 @@ export function KeyEntry({ storageAvailable, maskedHint, onEnter, onReplace }: K
       </fieldset>
 
       {error ? (
-        <p role="alert" className="form__error">
-          {t(error.messageKey, error.params)}
-        </p>
+        <FormError>{t(error.messageKey, error.params)}</FormError>
       ) : null}
 
-      <button type="button" disabled={pending || key.trim() === "" || mode === undefined} onClick={() => void submit()}>
+      <button
+        type="button"
+        className="button button--primary form__submit"
+        aria-busy={pending}
+        disabled={pending || key.trim() === "" || mode === undefined}
+        onClick={() => void submit()}
+      >
         {pending ? t("key.checking") : t("key.save")}
       </button>
     </section>

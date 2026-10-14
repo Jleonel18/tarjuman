@@ -3,6 +3,7 @@ import { createElement } from "react";
 import { describe, expect, it } from "vitest";
 import { ChatView, type ChatViewProps } from "../src/chat/ChatView";
 import { GuardNotice } from "../src/chat/GuardNotice";
+import { MessageBubble } from "../src/chat/MessageBubble";
 import { SafeBlockRenderer } from "../src/chat/SafeBlockRenderer";
 import { render } from "./render";
 
@@ -147,3 +148,22 @@ describe.each(["en", "es"])("GuardNotice in %s", (locale) => {
     expect(without.html).not.toContain("guard-notice");
   });
 });
+
+describe.each(["en", "es"])("MessageBubble streaming indicator in %s (003 US2)", (locale) => {
+  const streaming = { id: "a", author: "assistant" as const, status: "streaming" as const, blocks: [para("Ser")] };
+
+  it("shows the streaming label with a decorative icon while the answer streams", async () => {
+    const { html, missing } = await render(createElement(MessageBubble, { message: streaming }), locale);
+    expect(missing).toEqual([]);
+    const indicator = /<p class="bubble__status"[^>]*>([\s\S]*?)<\/p>/.exec(html)?.[1] ?? "";
+    expect(indicator).toMatch(/<svg[^>]*aria-hidden="true"/);
+    expect(indicator.replace(/<[^>]+>/g, "").trim()).toBe(locale === "en" ? "Writing…" : "Escribiendo…");
+  });
+
+  it("is gone once the answer is complete", async () => {
+    const { html } = await render(createElement(MessageBubble, { message: { ...streaming, status: "complete" as const } }), locale);
+    expect(html).not.toContain("bubble__status");
+    expect(html).not.toContain("<svg");
+  });
+});
+

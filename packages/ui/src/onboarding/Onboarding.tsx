@@ -1,6 +1,8 @@
 import { LEVEL_INFO, type Level, type ProfileIssue } from "@tarjuman/core";
+import { X } from "lucide-react";
 import { useId, useState, type ReactElement } from "react";
 import { useTranslation } from "react-i18next";
+import { FormError } from "../forms/FormMessage";
 import { addInterest, removeInterest, type AddInterestFailure } from "./interests";
 import { OFFERED_LANGUAGES, languageName } from "./languages";
 
@@ -67,9 +69,9 @@ export function Onboarding({ defaultMediationLanguage, validate, onComplete }: O
   }
 
   return (
-    <section className="form" aria-labelledby={`${ids.mediation}-title`}>
+    <section className="form screen-card" aria-labelledby={`${ids.mediation}-title`}>
       <h2 id={`${ids.mediation}-title`}>{t("onboarding.title")}</h2>
-      <p>{t("onboarding.intro")}</p>
+      <p className="screen-card__intro">{t("onboarding.intro")}</p>
 
       <div className="form__field">
         <label htmlFor={ids.mediation}>{t("common.language.mediation")}</label>
@@ -94,9 +96,7 @@ export function Onboarding({ defaultMediationLanguage, validate, onComplete }: O
           {options(targetLanguage)}
         </select>
         {sameLanguage ? (
-          <p id={ids.error} role="alert" className="form__error">
-            {t("onboarding.error.same_language")}
-          </p>
+          <FormError id={ids.error}>{t("onboarding.error.same_language")}</FormError>
         ) : null}
       </div>
 
@@ -133,9 +133,7 @@ export function Onboarding({ defaultMediationLanguage, validate, onComplete }: O
         </div>
         <p className="form__hint">{t("onboarding.interests.hint")}</p>
         {interestError !== undefined ? (
-          <p role="alert" className="form__error">
-            {t(INTEREST_ERROR_KEY[interestError])}
-          </p>
+          <FormError>{t(INTEREST_ERROR_KEY[interestError])}</FormError>
         ) : null}
         {interests.length > 0 ? (
           <ul className="chips">
@@ -144,10 +142,11 @@ export function Onboarding({ defaultMediationLanguage, validate, onComplete }: O
                 <span>{interest}</span>
                 <button
                   type="button"
+                  className="button button--quiet button--icon chips__remove"
                   aria-label={t("onboarding.interests.remove", { interest })}
                   onClick={() => setInterests(removeInterest(interests, interest))}
                 >
-                  ×
+                  <X aria-hidden="true" className="icon" />
                 </button>
               </li>
             ))}
@@ -156,12 +155,10 @@ export function Onboarding({ defaultMediationLanguage, validate, onComplete }: O
       </div>
 
       {otherIssues ? (
-        <p role="alert" className="form__error">
-          {t("onboarding.error.invalid")}
-        </p>
+        <FormError>{t("onboarding.error.invalid")}</FormError>
       ) : null}
 
-      <button type="button" disabled={!canContinue} onClick={() => onComplete(draft)}>
+      <button type="button" className="button button--primary form__submit" disabled={!canContinue} onClick={() => onComplete(draft)}>
         {t("common.next")}
       </button>
     </section>
