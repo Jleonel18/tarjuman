@@ -1,0 +1,62 @@
+name: Nightly live
+
+# Behavioral checks against the real model (001 T148, quickstart §3): the guardrail suite (SC-003)
+# and the behavioral red-team layer. Each suite runs every case under every tone itself, and its
+# report gives the rates per tone. It spends the project-owned test key, so it runs on a schedule
+# and on demand, never on pull requests.
+#
+# The key is read from the CI secret `TARJUMAN_TEST_KEY` and only passed as an environment variable
+# to the two steps that need it. Nothing here prints it: no `set -x`, no echo of the environment,
+# and GitHub also masks secret values in logs. Without the secret the job says so and stops.
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly-live
+  cancel-in-progress: false
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check for the test key
+        id: key
+        env:
+          TARJUMAN_TEST_KEY: ${{ secrets.TARJUMAN_TEST_KEY }}
+        run: |
+          if [ -z "$TARJUMAN_TEST_KEY" ]; then
+            echo "::notice::TARJUMAN_TEST_KEY is not configured; skipping the live suites."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.key.outputs.present == 'true'
+        uses: actions/checkout@v4
+      - if: steps.key.outputs.present == 'true'
+        uses: pnpm/action-setup@v4
+      - if: steps.key.outputs.present == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - if: steps.key.outputs.present == 'true'
+        run: pnpm install --frozen-lockfile
+      - name: Guardrails against Claude, every tone (SC-003)
+        if: steps.key.outputs.present == 'true'
+        env:
+          TARJUMAN_PROVIDER: anthropic
+          TARJUMAN_TEST_KEY: ${{ secrets.TARJUMAN_TEST_KEY }}
+        run: pnpm test:live:guardrails
+      - name: Behavioral red-team against Claude, every tone
+        # Runs even when the guardrail step failed, so one night reports both rates.
+        if: ${{ !cancelled() && steps.key.outputs.present == 'true' }}
+        env:
+          TARJUMAN_PROVIDER: anthropic
+          TARJUMAN_TEST_KEY: ${{ secrets.TARJUMAN_TEST_KEY }}
+        run: pnpm test:live:redteam
