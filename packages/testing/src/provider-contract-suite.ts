@@ -1,4 +1,4 @@
-import type { ProviderErrorCode, ProviderPort, SecretHandle, StreamEvent } from "@tarjuman/core";
+import type { ProviderErrorCode, ProviderPort, SecretHandle, StreamEvent, ToolCallRecord } from "@tarjuman/core";
 import { describe, expect, it } from "vitest";
 
 /**
@@ -19,7 +19,11 @@ export type ContractScenario =
   /** Streams slowly so the caller can abort; resolves `started` after the first chunk. */
   | { kind: "slow-answer"; chunks: string[]; chunkDelayMs: number }
   /** Fails with a transport error whose raw message contains the secret. */
-  | { kind: "fail-leaking-secret" };
+  | { kind: "fail-leaking-secret" }
+  /** The model answers with one complete tool call and ends the step to wait for its result (005). */
+  | { kind: "tool-call"; call: ToolCallRecord; inputTokens: number; outputTokens: number }
+  /** The model starts a tool call whose input never parses as JSON (005). */
+  | { kind: "tool-call-bad-input" };
 
 export interface ProviderHarness {
   provider: ProviderPort;
@@ -37,6 +41,11 @@ export interface ProviderHarness {
 export interface ContractSuiteOptions {
   /** Error codes this adapter can produce for `fail` scenarios. Defaults to the full set. */
   errorCodes?: ProviderErrorCode[];
+  /**
+   * The adapter maps tool calls (some model reports `supportsTools: true`): also run the tool-call
+   * cases of contracts/provider-tool-calls.md. Adapters without tools leave it off.
+   */
+  tools?: boolean;
 }
 
 const ALL_CODES: ProviderErrorCode[] = [
@@ -54,6 +63,19 @@ async function collect(iterable: AsyncIterable<StreamEvent>): Promise<StreamEven
   for await (const event of iterable) events.push(event);
   return events;
 }
+
+const SEARCH_TOOL = {
+  name: "search_videos",
+  description: "Search for videos.",
+  inputSchema: { type: "object", properties: { query: { type: "string" } }, required: ["query"] },
+};
+
+const SEARCH_CALL: ToolCallRecord = {
+  id: "call_1",
+  name: "search_videos",
+  input: { query: "escalada" },
+  continuation: "opaque-continuation",
+};
 
 function request(modelId: string) {
   return {
@@ -160,6 +182,60 @@ export function runProviderContractSuite(
         if (!model.supportsEffort) expect(model.effortLevels).toEqual([]);
       }
     });
+
+    it("declares supportsTools on every model", async () => {
+      const h = await makeHarness();
+      for (const model of h.provider.listModels()) expect(typeof model.supportsTools).toBe("boolean");
+      if (options.tools) expect(h.provider.listModels().some((model) => model.supportsTools)).toBe(true);
+    });
+
+    if (options.tools) {
+      it("emits one complete tool_call before usage, then stops with tool_use", async () => {
+        const h = await makeHarness();
+        h.prepare({ kind: "tool-call", call: SEARCH_CALL, inputTokens: 40, outputTokens: 9 });
+        const events = await collect(
+          h.provider.stream({ ...request(h.modelId), tools: [SEARCH_TOOL] }, h.secret, new AbortController().signal),
+        );
+        const calls = events.filter((e) => e.type === "tool_call");
+        expect(calls).toEqual([{ type: "tool_call", ...SEARCH_CALL }]);
+        const types = events.map((e) => e.type);
+        expect(types.indexOf("tool_call")).toBeLessThan(types.indexOf("stop"));
+        expect(events.at(-1)).toEqual({ type: "stop", reason: "tool_use" });
+        expect(events.find((e) => e.type === "usage")).toMatchObject({ inputTokens: 40, outputTokens: 9 });
+      });
+
+      it("accepts the follow-up step that carries the call and its result", async () => {
+        const h = await makeHarness();
+        h.prepare({ kind: "answer", chunks: ["ACCEPT\nHere you go."], inputTokens: 80, outputTokens: 5 });
+        const events = await collect(
+          h.provider.stream(
+            {
+              ...request(h.modelId),
+              messages: [
+                { role: "user", content: "videos about climbing" },
+                { role: "assistant", content: "", toolCalls: [SEARCH_CALL] },
+                { role: "tool", toolCallId: SEARCH_CALL.id, name: SEARCH_CALL.name, content: "[results]" },
+              ],
+              tools: [SEARCH_TOOL],
+            },
+            h.secret,
+            new AbortController().signal,
+          ),
+        );
+        expect(events.some((e) => e.type === "error")).toBe(false);
+        expect(events.at(-1)).toEqual({ type: "stop", reason: "end" });
+      });
+
+      it("reports tool input that is not valid JSON as bad_request, with no tool_call", async () => {
+        const h = await makeHarness();
+        h.prepare({ kind: "tool-call-bad-input" });
+        const events = await collect(
+          h.provider.stream({ ...request(h.modelId), tools: [SEARCH_TOOL] }, h.secret, new AbortController().signal),
+        );
+        expect(events.some((e) => e.type === "tool_call")).toBe(false);
+        expect(events.at(-1)).toMatchObject({ type: "error", code: "bad_request" });
+      });
+    }
 
     it("validates a good key as ok", async () => {
       const h = await makeHarness();

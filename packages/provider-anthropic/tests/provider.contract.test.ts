@@ -27,6 +27,10 @@ function replyFor(scenario: ContractScenario, forValidation: boolean) {
       return { kind: "sse", events: answerEvents(scenario.chunks, 1, 1), chunkDelayMs: scenario.chunkDelayMs } as const;
     case "fail-leaking-secret":
       return { kind: "reject", error: new Error(`socket hang up (x-api-key: ${RAW_SECRET})`) } as const;
+    case "tool-call":
+    case "tool-call-bad-input":
+      // Wired with the Anthropic tool mapping; the suite runs these only when the adapter passes `tools: true`.
+      throw new Error("tool scenarios are not wired for this harness yet");
   }
 }
 

@@ -25,6 +25,7 @@ export const ANTHROPIC_MODELS: readonly ModelInfo[] = [
     maxOutput: 128_000,
     supportsEffort: true,
     effortLevels: EFFORTS,
+    supportsTools: true,
     pricing: { inputPerMTok: 2, outputPerMTok: 10, cacheReadPerMTok: 0.2, asOf: PRICES_AS_OF },
   },
   {
@@ -34,6 +35,7 @@ export const ANTHROPIC_MODELS: readonly ModelInfo[] = [
     maxOutput: 128_000,
     supportsEffort: true,
     effortLevels: EFFORTS,
+    supportsTools: true,
     pricing: { inputPerMTok: 4, outputPerMTok: 20, cacheReadPerMTok: 0.2, asOf: PRICES_AS_OF },
   },
   {
@@ -44,6 +46,7 @@ export const ANTHROPIC_MODELS: readonly ModelInfo[] = [
     maxOutput: 64_000,
     supportsEffort: false,
     effortLevels: [],
+    supportsTools: true,
     pricing: { inputPerMTok: 1, outputPerMTok: 5, cacheReadPerMTok: 0.1, asOf: PRICES_AS_OF },
   },
 ];

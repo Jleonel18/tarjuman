@@ -13,11 +13,13 @@ const PRICES_AS_OF = "2026-10-04";
 
 export const DEFAULT_OLLAMA_MODEL_ID = "gemma3:4b";
 
-const LOCAL: Pick<ModelInfo, "contextWindow" | "maxOutput" | "supportsEffort" | "effortLevels"> = {
+const LOCAL: Pick<ModelInfo, "contextWindow" | "maxOutput" | "supportsEffort" | "effortLevels" | "supportsTools"> = {
   contextWindow: 32_768,
   maxOutput: 8_192,
   supportsEffort: false,
   effortLevels: [],
+  // Local models are not asked for tools in this feature; the pipeline offers none (005 FR-009).
+  supportsTools: false,
 };
 const FREE = { inputPerMTok: 0, outputPerMTok: 0, asOf: PRICES_AS_OF };
 

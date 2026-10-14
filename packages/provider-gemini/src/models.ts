@@ -25,6 +25,7 @@ export const GEMINI_MODELS: readonly ModelInfo[] = [
     maxOutput: 65_536,
     supportsEffort: true,
     effortLevels: EFFORTS,
+    supportsTools: true,
     pricing: { inputPerMTok: 0.75, outputPerMTok: 3.75, cacheReadPerMTok: 0.075, asOf: PRICES_AS_OF },
   },
   {
@@ -34,6 +35,7 @@ export const GEMINI_MODELS: readonly ModelInfo[] = [
     maxOutput: 65_536,
     supportsEffort: true,
     effortLevels: EFFORTS,
+    supportsTools: true,
     pricing: { inputPerMTok: 0.3, outputPerMTok: 2.5, cacheReadPerMTok: 0.03, asOf: PRICES_AS_OF },
   },
   {
@@ -44,6 +46,7 @@ export const GEMINI_MODELS: readonly ModelInfo[] = [
     maxOutput: 32_768,
     supportsEffort: true,
     effortLevels: EFFORTS,
+    supportsTools: true,
     pricing: { inputPerMTok: 2, outputPerMTok: 10, cacheReadPerMTok: 0.1, asOf: PRICES_AS_OF },
   },
 ];

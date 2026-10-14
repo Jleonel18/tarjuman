@@ -9,6 +9,7 @@ const PRICED: ModelInfo = {
   maxOutput: 8_000,
   supportsEffort: true,
   effortLevels: ["low", "medium", "high"],
+  supportsTools: true,
   pricing: { inputPerMTok: 3, outputPerMTok: 15, cacheReadPerMTok: 0.3, asOf: "2026-10-01" },
 };
 

@@ -45,6 +45,8 @@ export interface ModelInfo {
   maxOutput: number;
   supportsEffort: boolean;
   effortLevels: Effort[];
+  /** When false the pipeline offers no tools for this model (contracts/provider-tool-calls.md). */
+  supportsTools: boolean;
   /** `null` means pricing is unavailable and the UI must say so. */
   pricing: ModelPricing | null;
 }
@@ -60,12 +62,6 @@ export interface PromptLayer {
   text: string;
 }
 
-/** A conversation turn with its trust-labeled segments already rendered into text. */
-export interface ProviderMessage {
-  role: "user" | "assistant";
-  content: string;
-}
-
 export type JsonValue =
   | string
   | number
@@ -73,6 +69,26 @@ export type JsonValue =
   | null
   | JsonValue[]
   | { [key: string]: JsonValue };
+
+/**
+ * A tool call the model made, replayed to it in the next step of the same turn. `continuation` is
+ * opaque: only the adapter that produced it reads it (Gemini: `thoughtSignature`).
+ */
+export interface ToolCallRecord {
+  id: string;
+  name: string;
+  input: JsonValue;
+  continuation?: string;
+}
+
+/**
+ * A conversation turn with its trust-labeled segments already rendered into text, or a step of the
+ * tool loop: an assistant message that made calls, and the `tool` message answering one call.
+ */
+export type ProviderMessage =
+  | { role: "user" | "assistant"; content: string }
+  | { role: "assistant"; content: string; toolCalls: ToolCallRecord[] }
+  | { role: "tool"; toolCallId: string; name: string; content: string };
 
 export type JsonSchema = { [key: string]: JsonValue };
 
@@ -91,7 +107,7 @@ export interface ModelRequest {
   maxTokens: number;
   /** Ignored by the adapter when the model does not support effort. */
   effort?: Effort;
-  /** Empty in this feature. */
+  /** Filled when the turn offers tools; only for models with `supportsTools`. */
   tools?: ModelTool[];
 }
 
@@ -107,6 +123,7 @@ export type StreamEvent =
       cacheReadTokens?: number;
       cacheWriteTokens?: number;
     }
+  | { type: "tool_call"; id: string; name: string; input: JsonValue; continuation?: string }
   | { type: "stop"; reason: StopReason }
   | { type: "error"; code: ProviderErrorCode; retryAfterSeconds?: number };
 

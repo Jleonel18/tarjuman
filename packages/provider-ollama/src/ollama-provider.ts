@@ -2,6 +2,7 @@ import type {
   AbortSignalLike,
   ModelInfo,
   ModelRequest,
+  ProviderMessage,
   ProviderPort,
   SecretHandle,
   StopReason,
@@ -163,6 +164,12 @@ function failed(code: MappedFailure["code"], ctx: ErrorContext): MappedFailure {
   return { code, diagnostic: { kind: "failed", baseUrl: ctx.baseUrl, ...(ctx.modelId ? { modelId: ctx.modelId } : {}) } };
 }
 
+function toChatMessage(m: ProviderMessage): { role: "user" | "assistant"; content: string } {
+  // Ollama models declare `supportsTools: false`, so the pipeline never sends tool messages.
+  if (m.role === "tool" || "toolCalls" in m) throw new Error("Ollama does not support tool messages");
+  return { role: m.role, content: m.content };
+}
+
 function toBody(req: ModelRequest) {
   const system = req.layers.map((layer) => layer.text).join("\n\n");
   return {
@@ -170,7 +177,7 @@ function toBody(req: ModelRequest) {
     // One system message is the most portable form across OpenAI-compatible servers (research R2).
     messages: [
       ...(req.layers.length > 0 ? [{ role: "system", content: system }] : []),
-      ...req.messages.map((m) => ({ role: m.role, content: m.content })),
+      ...req.messages.map(toChatMessage),
     ],
     max_tokens: req.maxTokens,
     stream: true,

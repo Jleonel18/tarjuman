@@ -24,6 +24,7 @@ describe("Gemini model table (research R8)", () => {
       maxOutput,
       supportsEffort: true,
       effortLevels: ["low", "medium", "high"],
+      supportsTools: true,
       pricing: { inputPerMTok: input, outputPerMTok: output, cacheReadPerMTok: cacheRead, asOf: "2026-10-14" },
     });
   });

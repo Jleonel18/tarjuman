@@ -2,6 +2,7 @@ import type {
   AbortSignalLike,
   ModelInfo,
   ModelRequest,
+  ProviderMessage,
   ProviderPort,
   SecretHandle,
   StopReason,
@@ -9,7 +10,7 @@ import type {
   ValidationResult,
 } from "@tarjuman/core";
 import { SecretStreamFilter, unsealSecret } from "@tarjuman/core/adapter";
-import type { MessageCreateParamsStreaming } from "@anthropic-ai/sdk/resources/messages";
+import type { MessageCreateParamsStreaming, MessageParam } from "@anthropic-ai/sdk/resources/messages";
 import { createClient, type AnthropicProviderOptions } from "./client";
 import { mapProviderError } from "./errors";
 import { ANTHROPIC_MODELS } from "./models";
@@ -113,6 +114,13 @@ export class AnthropicProvider implements ProviderPort {
   }
 }
 
+function toMessageParam(m: ProviderMessage): MessageParam {
+  // Tool-loop messages are mapped together with the `tools` request field; the pipeline sends
+  // none until then.
+  if (m.role === "tool" || "toolCalls" in m) throw new Error("tool messages are not mapped yet");
+  return { role: m.role, content: m.content };
+}
+
 function toParams(req: ModelRequest): MessageCreateParamsStreaming {
   const model = ANTHROPIC_MODELS.find((m) => m.id === req.modelId);
   const effort = req.effort && model?.supportsEffort && model.effortLevels.includes(req.effort) ? req.effort : undefined;
@@ -122,7 +130,7 @@ function toParams(req: ModelRequest): MessageCreateParamsStreaming {
     stream: true,
     // One block per layer keeps the precedence order visible to the model.
     system: req.layers.map((layer) => ({ type: "text" as const, text: layer.text })),
-    messages: req.messages.map((m) => ({ role: m.role, content: m.content })),
+    messages: req.messages.map(toMessageParam),
     ...(effort && { output_config: { effort } }),
   };
 }

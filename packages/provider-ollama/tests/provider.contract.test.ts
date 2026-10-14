@@ -30,6 +30,10 @@ function replyFor(scenario: ContractScenario, isValidation: boolean): Reply {
       return { kind: "sse", chunks: answerChunks(scenario.chunks, 1, 1), chunkDelayMs: scenario.chunkDelayMs };
     case "fail-leaking-secret":
       return { kind: "reject", error: new Error(`socket hang up (authorization: Bearer ${RAW_SECRET})`) };
+    case "tool-call":
+    case "tool-call-bad-input":
+      // Ollama declares supportsTools: false, so it never opts in to the tool cases.
+      throw new Error("Ollama models do not support tools");
   }
 }
 

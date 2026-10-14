@@ -21,6 +21,7 @@ A fixture is JSON with an ordered `steps` array. Steps are replayed one per stre
 |--------|--------|--------|
 | `text` | `delta` | Streams a text chunk |
 | `usage` | `inputTokens`, `outputTokens`, optional `cacheReadTokens`, `cacheWriteTokens` | Emits provider-reported usage exactly as written |
+| `tool_call` | `id`, `name`, `input` (any JSON), optional `continuation` | Emits one complete tool call (005); follow it with `stop` `tool_use` |
 | `stop` | `reason`: `end`, `max_tokens`, `tool_use`, `refusal`, `aborted` | Ends the stream |
 | `error` | `code` (a `ProviderErrorCode`), optional `retryAfterSeconds` | Emits an error event and ends the stream |
 | `delay` | `ms` | Pauses; lets tests abort mid-stream or measure first-token latency |

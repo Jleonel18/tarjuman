@@ -18,6 +18,7 @@ const MODEL: ModelInfo = {
   maxOutput: 2_000,
   supportsEffort: true,
   effortLevels: ["low", "medium", "high"],
+  supportsTools: true,
   pricing: { inputPerMTok: 3, outputPerMTok: 15, asOf: "2026-10-01" },
 };
 

@@ -269,6 +269,7 @@ describe("Pipeline: provider set (004 FR-003, FR-007, FR-019)", () => {
     maxOutput: 8_000,
     supportsEffort: false,
     effortLevels: [],
+    supportsTools: false,
     pricing: { inputPerMTok: 1, outputPerMTok: 2, asOf: "2026-10-14" },
   });
   const KEYS: Record<string, string> = {

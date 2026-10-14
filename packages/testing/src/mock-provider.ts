@@ -3,6 +3,7 @@ import type {
   ModelInfo,
   ModelRequest,
   ProviderErrorCode,
+  JsonValue,
   ProviderPort,
   SecretHandle,
   StopReason,
@@ -18,6 +19,7 @@ import { unsealSecret } from "@tarjuman/core/adapter";
 export type MockStep =
   | { type: "text"; delta: string }
   | { type: "usage"; inputTokens: number; outputTokens: number; cacheReadTokens?: number; cacheWriteTokens?: number }
+  | { type: "tool_call"; id: string; name: string; input: JsonValue; continuation?: string }
   | { type: "stop"; reason: StopReason }
   | { type: "error"; code: ProviderErrorCode; retryAfterSeconds?: number }
   /** Pauses the stream; useful to test abort and latency. */
@@ -39,6 +41,7 @@ export const MOCK_MODELS: ModelInfo[] = [
     maxOutput: 8_192,
     supportsEffort: true,
     effortLevels: ["low", "medium", "high"],
+    supportsTools: true,
     pricing: { inputPerMTok: 1, outputPerMTok: 5, asOf: "2026-10-02" },
   },
   {
@@ -48,6 +51,7 @@ export const MOCK_MODELS: ModelInfo[] = [
     maxOutput: 4_096,
     supportsEffort: false,
     effortLevels: [],
+    supportsTools: false,
     pricing: null,
   },
 ];
@@ -61,6 +65,7 @@ export const MOCK_ALT_MODELS: ModelInfo[] = [
     maxOutput: 8_192,
     supportsEffort: true,
     effortLevels: ["low", "medium", "high"],
+    supportsTools: true,
     pricing: { inputPerMTok: 2, outputPerMTok: 6, asOf: "2026-10-14" },
   },
 ];
@@ -319,6 +324,14 @@ export function parseFixture(value: unknown): MockScript {
       case "usage":
         if (typeof step["inputTokens"] !== "number" || typeof step["outputTokens"] !== "number") {
           throw new Error(`steps[${index}] usage needs numeric inputTokens and outputTokens`);
+        }
+        return step as unknown as MockStep;
+      case "tool_call":
+        if (typeof step["id"] !== "string") throw new Error(`steps[${index}].id must be a string`);
+        if (typeof step["name"] !== "string") throw new Error(`steps[${index}].name must be a string`);
+        if (!("input" in step)) throw new Error(`steps[${index}].input is required`);
+        if (step["continuation"] !== undefined && typeof step["continuation"] !== "string") {
+          throw new Error(`steps[${index}].continuation must be a string`);
         }
         return step as unknown as MockStep;
       case "stop":

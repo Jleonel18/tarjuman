@@ -31,6 +31,10 @@ function replyFor(scenario: ContractScenario, isValidation: boolean): Reply {
       return { kind: "sse", chunks: answerChunks(scenario.chunks, 1, 1), chunkDelayMs: scenario.chunkDelayMs };
     case "fail-leaking-secret":
       return { kind: "reject", error: new Error(`socket hang up (x-goog-api-key: ${RAW_SECRET})`) };
+    case "tool-call":
+    case "tool-call-bad-input":
+      // Wired with the Gemini tool mapping; the suite runs these only when the adapter passes `tools: true`.
+      throw new Error("tool scenarios are not wired for this harness yet");
   }
 }
 
