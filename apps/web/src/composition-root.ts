@@ -58,9 +58,13 @@ async function createProvider(): Promise<{ provider: ProviderPort; modelIds: str
     const { DEFAULT_MOCK_KEY, MockProvider, MOCK_MODELS, REPLACEMENT_MOCK_KEY, scopeAwareResponder } = await import(
       "@tarjuman/testing/mock-provider"
     );
+    // `?mockLatencyMs=` sets the delay before each streamed event, so the latency e2e can simulate a
+    // real network (T149). Clamped; the default keeps the other e2e tests fast.
+    const requested = Number(new URLSearchParams(window.location.search).get("mockLatencyMs") ?? "15");
+    const latencyMs = Number.isFinite(requested) ? Math.min(Math.max(requested, 0), 2000) : 15;
     return {
       provider: new MockProvider({
-        latencyMs: 15,
+        latencyMs,
         responder: scopeAwareResponder,
         validKeys: [DEFAULT_MOCK_KEY, REPLACEMENT_MOCK_KEY],
       }),
