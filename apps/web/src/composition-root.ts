@@ -3,6 +3,7 @@ import {
   CapabilityRegistry,
   availableUiLocales,
   ConversationService,
+  DataController,
   KeyManager,
   Pipeline,
   ProviderCredentialValidator,
@@ -39,6 +40,8 @@ export interface AppServices {
   conversations: ConversationService;
   pipeline: Pipeline;
   keys: KeyManager;
+  /** "Delete all my data". */
+  data: DataController;
   /** Models a profile may use, and the one a new profile starts with. */
   models: { ids: readonly string[]; defaultId: string; list: readonly ModelInfo[] };
 }
@@ -52,9 +55,15 @@ export interface AppServices {
 async function createProvider(): Promise<{ provider: ProviderPort; modelIds: string[]; defaultModelId: string }> {
   if (import.meta.env.VITE_PROVIDER === "mock") {
     // Subpath import: the package index also exports the contract suite, which needs vitest.
-    const { MockProvider, MOCK_MODELS, scopeAwareResponder } = await import("@tarjuman/testing/mock-provider");
+    const { DEFAULT_MOCK_KEY, MockProvider, MOCK_MODELS, REPLACEMENT_MOCK_KEY, scopeAwareResponder } = await import(
+      "@tarjuman/testing/mock-provider"
+    );
     return {
-      provider: new MockProvider({ latencyMs: 15, responder: scopeAwareResponder }),
+      provider: new MockProvider({
+        latencyMs: 15,
+        responder: scopeAwareResponder,
+        validKeys: [DEFAULT_MOCK_KEY, REPLACEMENT_MOCK_KEY],
+      }),
       modelIds: MOCK_MODELS.map((model) => model.id),
       defaultModelId: "mock-model",
     };
@@ -139,6 +148,7 @@ export function assembleServices(options: AssembleOptions): AppServices {
     conversations,
     pipeline,
     keys,
+    data: new DataController({ storage, credentials }),
     models: {
       ids: options.modelIds,
       defaultId: options.defaultModelId,

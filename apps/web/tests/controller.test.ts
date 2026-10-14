@@ -1,5 +1,11 @@
 import { MemoryStorage, SessionSecrets } from "@tarjuman/storage-web";
-import { DEFAULT_MOCK_KEY, MOCK_MODELS, MockProvider, type MockScript } from "@tarjuman/testing/mock-provider";
+import {
+  DEFAULT_MOCK_KEY,
+  MOCK_MODELS,
+  MockProvider,
+  REPLACEMENT_MOCK_KEY,
+  type MockScript,
+} from "@tarjuman/testing/mock-provider";
 import { createI18n } from "@tarjuman/ui";
 import { beforeEach, describe, expect, it } from "vitest";
 import { assembleServices, type AppServices } from "../src/composition-root";
@@ -360,5 +366,75 @@ describe("usage and model settings (US4)", () => {
   it("offers only the shipped interface languages unless test locales are switched on", async () => {
     const { services } = await world();
     expect(services.uiLocales).toEqual(["en", "es"]);
+  });
+});
+
+describe("key and data control (US7)", () => {
+  const twoKeys = () => new MockProvider({ validKeys: [DEFAULT_MOCK_KEY, REPLACEMENT_MOCK_KEY] });
+
+  it("boot shows where the key in use is kept", async () => {
+    const { services } = await ready();
+    resetAppStore();
+    await new AppController(services).boot();
+    expect(state()).toMatchObject({ keyHint: "sk-ant-…0000", keyMode: "session" });
+  });
+
+  it("replaces the key with a valid one and shows the new hint and mode", async () => {
+    const { controller, services } = await ready({ provider: twoKeys() });
+    const outcome = await controller.replaceKey(REPLACEMENT_MOCK_KEY, "persistent");
+    expect(outcome).toEqual({ ok: true, maskedHint: "sk-ant-…1111" });
+    expect(state()).toMatchObject({ keyHint: "sk-ant-…1111", keyMode: "persistent" });
+    expect(await services.credentials.describe()).toMatchObject({ maskedHint: "sk-ant-…1111", storageMode: "persistent" });
+  });
+
+  it("a rejected replacement keeps the old key and hint", async () => {
+    const { controller, services } = await ready();
+    const outcome = await controller.replaceKey("sk-ant-wrong", "persistent");
+    expect(outcome).toEqual({ ok: false, code: "invalid_credential" });
+    expect(state()).toMatchObject({ keyHint: "sk-ant-…0000", keyMode: "session" });
+    expect(await services.credentials.describe()).toMatchObject({ maskedHint: "sk-ant-…0000" });
+  });
+
+  it("deleting the key keeps the profile and asks for a key again", async () => {
+    const { controller, services, storage } = await ready();
+    await controller.removeKey();
+    expect(state()).toMatchObject({ route: "key", keyHint: undefined, keyMode: undefined });
+    expect(await services.credentials.describe()).toBeUndefined();
+    expect(await storage.get("profile", "profile")).toBeDefined();
+  });
+
+  it("delete all removes everything and returns to onboarding", async () => {
+    const { controller, services, storage } = await ready();
+    await controller.send("What is the difference between ser and estar?");
+    state().navigate("settings");
+    expect(await controller.deleteAllData()).toEqual({ ok: true });
+    expect(state()).toMatchObject({
+      ready: true,
+      route: "onboarding",
+      profile: undefined,
+      keyHint: undefined,
+      conversations: [],
+      messages: [],
+    });
+    expect(await storage.get("profile", "profile")).toBeUndefined();
+    expect(await services.conversations.list()).toEqual([]);
+    expect(await services.credentials.describe()).toBeUndefined();
+  });
+
+  it("a deletion that cannot be verified is reported and leaves the screen in place", async () => {
+    const storage = new MemoryStorage();
+    storage.clearAll = async () => {
+      throw new Error("not empty");
+    };
+    const { controller } = await ready({ storage });
+    state().navigate("settings");
+    expect(await controller.deleteAllData()).toEqual({ ok: false, code: "not_verified" });
+    expect(state().route).toBe("settings");
+  });
+
+  it("a key error sends the learner to the settings screen", async () => {
+    const { controller } = await ready();
+    controller.openKeySettings();
+    expect(state().route).toBe("settings");
   });
 });

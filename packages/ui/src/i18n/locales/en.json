@@ -122,5 +122,17 @@
   "settings.language.same": "The explanation language and the language you are learning must be different.",
   "conversations.languages": "Explained in {mediation}, learning {target}",
   "chat.context.nearly_full": "This conversation has used {percent} of the model's context. Nothing has been cut, but long conversations get slower, costlier and less reliable.",
-  "chat.context.new": "Start a new conversation"
+  "chat.context.new": "Start a new conversation",
+  "settings.key.title": "Your key",
+  "settings.key.in_use": "Key in use: {hint}",
+  "settings.key.mode.persistent": "Kept on this device, encrypted.",
+  "settings.key.mode.session": "Kept for this session only. It is forgotten when you close or reload the page.",
+  "settings.key.delete": "Delete key",
+  "settings.data.title": "Your data",
+  "settings.data.hint": "Everything Tarjuman keeps lives only on this device: your key, profile, settings and conversations.",
+  "settings.data.delete_all": "Delete all my data",
+  "settings.data.confirm_text": "This removes your key, profile, settings and conversations from this device. It can't be undone.",
+  "settings.data.confirm": "Yes, delete everything",
+  "settings.data.deleting": "Deleting…",
+  "settings.data.failed": "Tarjuman couldn't confirm that all your data was removed. Try again, or clear this site's data in your browser settings."
 }

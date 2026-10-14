@@ -281,17 +281,17 @@ pnpm monorepo, per plan.md. `packages/core` is framework-free: no DOM, React, No
 
 ### Tests for User Story 7 ⚠️
 
-- [ ] T133 [P] [US7] Key manager tests in `packages/core/tests/credentials/key-manager.test.ts`: `stored → replaced → validating`; the old key is irrecoverably removed only after the new key validates; `stored → deleted → absent`; a rejected replacement keeps the old key
-- [ ] T134 [P] [US7] Data controller tests in `packages/core/tests/credentials/data-controller.test.ts`: `deleteAll` clears storage, credential, and in-memory secrets and returns the app to first-run; a failed emptiness check surfaces an error and never reports success
-- [ ] T135 [P] [US7] Playwright e2e in `tests/e2e/key-and-data-control.spec.ts`: replace the key; delete the key; session-only key is gone after reload and the user is asked again; "delete all my data" requires confirmation, returns to onboarding, and `indexedDB.databases()` and Cache Storage are empty (SC-007)
+- [X] T133 [P] [US7] Key manager tests in `packages/core/tests/credentials/key-manager.test.ts`: `stored → replaced → validating`; the old key is irrecoverably removed only after the new key validates; `stored → deleted → absent`; a rejected replacement keeps the old key
+- [X] T134 [P] [US7] Data controller tests in `packages/core/tests/credentials/data-controller.test.ts`: `deleteAll` clears storage, credential, and in-memory secrets and returns the app to first-run; a failed emptiness check surfaces an error and never reports success
+- [X] T135 [P] [US7] Playwright e2e in `tests/e2e/key-and-data-control.spec.ts`: replace the key; delete the key; session-only key is gone after reload and the user is asked again; "delete all my data" requires confirmation, returns to onboarding, and `indexedDB.databases()` and Cache Storage are empty (SC-007)
 
 ### Implementation for User Story 7
 
-- [ ] T136 [US7] Extend `KeyManager` in `packages/core/src/credentials/key-manager.ts` with `replace()` and `remove()` (depends on T060, T133)
-- [ ] T137 [P] [US7] Implement `DataController.deleteAll()` in `packages/core/src/credentials/data-controller.ts`, calling `StoragePort.clearAll()`, `CredentialStore.remove()`, and clearing in-memory session secrets, then verifying emptiness (depends on T134)
-- [ ] T138 [P] [US7] Build key settings in `packages/ui/src/settings/KeySettings.tsx`: masked hint only, replace, delete, and the storage mode in effect
-- [ ] T139 [P] [US7] Build data controls in `packages/ui/src/settings/DataControls.tsx`: delete-all with an explicit confirmation step and a visible failure state
-- [ ] T140 [US7] Add the en/es catalog keys for key settings and data controls and wire both screens into `apps/web/src/routes.tsx`
+- [X] T136 [US7] Extend `KeyManager` in `packages/core/src/credentials/key-manager.ts` with `replace()` and `remove()` (depends on T060, T133)
+- [X] T137 [P] [US7] Implement `DataController.deleteAll()` in `packages/core/src/credentials/data-controller.ts`, calling `StoragePort.clearAll()`, `CredentialStore.remove()`, and clearing in-memory session secrets, then verifying emptiness (depends on T134)
+- [X] T138 [P] [US7] Build key settings in `packages/ui/src/settings/KeySettings.tsx`: masked hint only, replace, delete, and the storage mode in effect
+- [X] T139 [P] [US7] Build data controls in `packages/ui/src/settings/DataControls.tsx`: delete-all with an explicit confirmation step and a visible failure state
+- [X] T140 [US7] Add the en/es catalog keys for key settings and data controls and wire both screens into `apps/web/src/routes.tsx`
 
 **Checkpoint**: Stories 1–7 all work independently.
 

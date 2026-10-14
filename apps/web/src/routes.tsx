@@ -1,4 +1,4 @@
-import { ChatView, ConversationList, KeyEntry, LanguageSettings, ModelEffortSettings, Onboarding, StatsPanel, ToneSelector, useTranslation } from "@tarjuman/ui";
+import { ChatView, ConversationList, DataControls, KeyEntry, KeySettings, LanguageSettings, ModelEffortSettings, Onboarding, StatsPanel, ToneSelector, useTranslation } from "@tarjuman/ui";
 import type { ReactElement } from "react";
 import type { AppController } from "./controller";
 import type { AppServices } from "./composition-root";
@@ -100,6 +100,17 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
               onChange={(change) => void controller.updateLanguages(change)}
             />
           ) : null}
+          {state.keyHint !== undefined ? (
+            <KeySettings
+              maskedHint={state.keyHint}
+              storageMode={state.keyMode}
+              storageAvailable={services.storageAvailable}
+              disabled={state.streaming}
+              onReplace={controller.replaceKey}
+              onDelete={() => void controller.removeKey()}
+            />
+          ) : null}
+          <DataControls disabled={state.streaming} onDeleteAll={controller.deleteAllData} />
         </div>
       );
   }

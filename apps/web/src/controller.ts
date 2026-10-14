@@ -11,6 +11,7 @@ import {
   WITHHELD_MARKER,
   validateProfile,
   type CredentialStorageMode,
+  type DeleteAllOutcome,
   type Effort,
   type EnterKeyOutcome,
   type LearnerProfile,
@@ -21,7 +22,7 @@ import {
 } from "@tarjuman/core";
 import type { ChatMessage, LanguageValues, OnboardingDraft } from "@tarjuman/ui";
 import type { AppServices } from "./composition-root";
-import { useAppStore } from "./store";
+import { resetAppStore, useAppStore } from "./store";
 
 const CAPABILITY_ID = "language-qa";
 const PENDING_USER_ID = "pending-user";
@@ -85,6 +86,7 @@ export class AppController {
       ready: true,
       profile,
       keyHint: key?.maskedHint,
+      keyMode: key?.storageMode,
       conversations: list,
       activeConversationId: latest?.conversation.id,
       messages: latest ? toChatMessages(latest.messages, this.#withheldLabel()) : [],
@@ -110,12 +112,42 @@ export class AppController {
 
   enterKey = async (key: string, mode: CredentialStorageMode): Promise<EnterKeyOutcome> => {
     const outcome = await this.#services.keys.enter(key, mode);
-    if (outcome.ok) useAppStore.setState({ keyHint: outcome.maskedHint, route: "chat", error: undefined });
+    if (outcome.ok) useAppStore.setState({ keyHint: outcome.maskedHint, keyMode: mode, route: "chat", error: undefined });
     return outcome;
   };
 
+  /** Replaces the key from the settings screen. A rejected key keeps the old one (US7-1). */
+  replaceKey = async (key: string, mode: CredentialStorageMode): Promise<EnterKeyOutcome> => {
+    const outcome = await this.#services.keys.replace(key, mode);
+    if (outcome.ok) useAppStore.setState({ keyHint: outcome.maskedHint, keyMode: mode, error: undefined });
+    return outcome;
+  };
+
+  /** Deletes the key. The profile and history stay; the app asks for a key again. */
+  removeKey = async (): Promise<void> => {
+    if (useAppStore.getState().streaming) return;
+    await this.#services.keys.remove();
+    useAppStore.setState({ keyHint: undefined, keyMode: undefined, route: "key", error: undefined });
+  };
+
+  /**
+   * "Delete all my data" (FR-017). On success the screen state is dropped too and the app is back
+   * at first-run onboarding. A deletion that could not be verified leaves the screen as it is, so
+   * the settings screen can say so.
+   */
+  deleteAllData = async (): Promise<DeleteAllOutcome> => {
+    if (useAppStore.getState().streaming) return { ok: false, code: "not_verified" };
+    const outcome = await this.#services.data.deleteAll();
+    if (outcome.ok) {
+      resetAppStore();
+      useAppStore.setState({ ready: true, route: "onboarding" });
+    }
+    return outcome;
+  };
+
+  /** Where a key error sends the learner: the settings screen, to replace the key. */
   openKeySettings = (): void => {
-    useAppStore.setState({ route: "key" });
+    useAppStore.setState({ route: "settings" });
   };
 
   newConversation = (): void => {

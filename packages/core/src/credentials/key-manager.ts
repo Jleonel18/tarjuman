@@ -40,26 +40,59 @@ export class KeyManager {
 
   /** `mode` is required and has no default: the user chooses where the key lives (FR-016). */
   async enter(rawKey: string, mode: CredentialStorageMode): Promise<EnterKeyOutcome> {
+    return this.#validateAndStore(rawKey, mode, { replacing: false });
+  }
+
+  /**
+   * Replaces the stored key (US7-1): `stored → validating → stored`. The old key is removed only
+   * once the new one validates, then the new one is stored. A rejected replacement keeps the old
+   * key, so the learner is never left without a working key by a typo.
+   */
+  async replace(rawKey: string, mode: CredentialStorageMode): Promise<EnterKeyOutcome> {
+    return this.#validateAndStore(rawKey, mode, { replacing: true });
+  }
+
+  /** Deletes the stored key irrecoverably: `stored → absent`. The app then asks for a key again. */
+  async remove(): Promise<void> {
+    await this.#deps.store.remove();
+    this.#state = "absent";
+  }
+
+  async #validateAndStore(
+    rawKey: string,
+    mode: CredentialStorageMode,
+    { replacing }: { replacing: boolean },
+  ): Promise<EnterKeyOutcome> {
+    // A failed replacement leaves the old key in place, so the state goes back to `stored`.
+    const failedState: KeyState = replacing ? "stored" : "rejected";
     const key = rawKey.trim();
     if (key === "") {
-      this.#state = "rejected";
+      this.#state = failedState;
       return { ok: false, code: "invalid_credential" };
     }
 
     this.#state = "validating";
     const handle = sealSecret(key);
+    let oldKeyRemoved = false;
     try {
       const result = await this.#deps.validator.validate(handle);
       if (!result.ok) {
-        this.#state = "rejected";
+        this.#state = failedState;
         return { ok: false, code: result.code };
       }
       const maskedHint = maskKey(key);
+      // Explicit removal, so no adapter can keep the old key next to the new one (for example
+      // when the storage mode changes).
+      if (replacing) {
+        oldKeyRemoved = true;
+        await this.#deps.store.remove();
+      }
       await this.#deps.store.save(key, mode, { providerId: this.#deps.providerId, maskedHint });
       this.#state = "stored";
       return { ok: true, maskedHint };
     } catch (error) {
-      this.#state = "rejected";
+      // Once the old key is gone, a failed save leaves no key at all.
+      this.#state = oldKeyRemoved ? "absent" : failedState;
       throw error;
     } finally {
       destroySecret(handle);

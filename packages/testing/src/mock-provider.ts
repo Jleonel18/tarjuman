@@ -28,6 +28,8 @@ export interface MockScript {
 }
 
 export const DEFAULT_MOCK_KEY = "sk-ant-mock-valid-key-0000";
+/** A second accepted key, so the e2e build can replace one valid key with another (US7). */
+export const REPLACEMENT_MOCK_KEY = "sk-ant-mock-valid-key-1111";
 
 export const MOCK_MODELS: ModelInfo[] = [
   {

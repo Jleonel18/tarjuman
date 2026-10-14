@@ -122,5 +122,17 @@
   "settings.language.same": "El idioma de las explicaciones y el idioma que aprendes deben ser distintos.",
   "conversations.languages": "Explicado en {mediation}, aprendiendo {target}",
   "chat.context.nearly_full": "Esta conversación ha usado el {percent} del contexto del modelo. No se ha cortado nada, pero las conversaciones largas son más lentas, más caras y menos fiables.",
-  "chat.context.new": "Empezar una conversación nueva"
+  "chat.context.new": "Empezar una conversación nueva",
+  "settings.key.title": "Tu clave",
+  "settings.key.in_use": "Clave en uso: {hint}",
+  "settings.key.mode.persistent": "Guardada en este dispositivo, cifrada.",
+  "settings.key.mode.session": "Guardada solo para esta sesión. Se olvida al cerrar o recargar la página.",
+  "settings.key.delete": "Borrar clave",
+  "settings.data.title": "Tus datos",
+  "settings.data.hint": "Todo lo que guarda Tarjuman está solo en este dispositivo: tu clave, tu perfil, tus ajustes y tus conversaciones.",
+  "settings.data.delete_all": "Borrar todos mis datos",
+  "settings.data.confirm_text": "Esto borra tu clave, tu perfil, tus ajustes y tus conversaciones de este dispositivo. No se puede deshacer.",
+  "settings.data.confirm": "Sí, borrar todo",
+  "settings.data.deleting": "Borrando…",
+  "settings.data.failed": "Tarjuman no pudo confirmar que se borraron todos tus datos. Vuelve a intentarlo o borra los datos de este sitio desde la configuración del navegador."
 }

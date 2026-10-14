@@ -1,4 +1,4 @@
-import type { Conversation, LearnerProfile, ProviderErrorCode, UsageRecord } from "@tarjuman/core";
+import type { Conversation, CredentialStorageMode, LearnerProfile, ProviderErrorCode, UsageRecord } from "@tarjuman/core";
 import type { ChatMessage } from "@tarjuman/ui";
 import { create } from "zustand";
 
@@ -16,6 +16,8 @@ export interface AppState {
   profile: LearnerProfile | undefined;
   /** Masked hint of the stored key; never the key. */
   keyHint: string | undefined;
+  /** Where the key in use is kept. */
+  keyMode: CredentialStorageMode | undefined;
   conversations: Conversation[];
   activeConversationId: string | undefined;
   messages: ChatMessage[];
@@ -33,6 +35,7 @@ const initialData = {
   route: "onboarding" as RouteId,
   profile: undefined,
   keyHint: undefined,
+  keyMode: undefined,
   conversations: [],
   activeConversationId: undefined,
   messages: [],
@@ -47,7 +50,7 @@ export const useAppStore = create<AppState>()((set) => ({
   navigate: (route) => set({ route }),
 }));
 
-/** Puts the store back to its first-run state. Tests use it between cases. */
+/** Puts the store back to its first-run state: after "delete all my data", and between test cases. */
 export function resetAppStore(): void {
   useAppStore.setState(initialData);
 }

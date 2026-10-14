@@ -343,6 +343,12 @@ body {
   gap: var(--space-3);
 }
 
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
 /* A glyph that points the way the text runs flips under right-to-left (FR-032). */
 [dir="rtl"] .icon-directional {
   display: inline-block;
