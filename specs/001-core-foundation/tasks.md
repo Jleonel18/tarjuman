@@ -324,12 +324,12 @@ pnpm monorepo, per plan.md. `packages/core` is framework-free: no DOM, React, No
 
 **Purpose**: Release gates and documentation that span stories.
 
-- [ ] T148 [P] Add `.github/workflows/nightly-live.yml` running `test:live:guardrails` and `test:live:redteam` per tone with the CI secret `TARJUMAN_TEST_KEY` (never echoed to logs)
-- [ ] T149 [P] Write `tests/e2e/latency-and-onboarding.spec.ts`: first streamed token visible within 2 s at p95 against the mock provider with realistic latency (SC-002), and a scripted onboarding-to-first-answer run under 3 minutes (SC-001)
-- [ ] T150 [P] Write `tests/e2e/network-assertions.spec.ts`: across every flow, Playwright network logs show requests only to same-origin and the provider origin; no telemetry (FR-039, FR-040)
-- [ ] T151 [P] Write the root `README.md` (setup, scripts, package map, security model summary) and `docs/adding-a-capability.md` (declaration walkthrough using the dummy capability as the example)
-- [ ] T152 Run the full `specs/001-core-foundation/quickstart.md` validation (automated gates, then the manual scenarios per story) and record the results in `specs/001-core-foundation/checklists/validation.md`
-- [ ] T153 Final security review of the branch (`/security-review`) and confirm the plan's Threat Analysis residual risks are still accurate
+- [X] T148 [P] Add `.github/workflows/nightly-live.yml` running `test:live:guardrails` and `test:live:redteam` per tone with the CI secret `TARJUMAN_TEST_KEY` (never echoed to logs)
+- [X] T149 [P] Write `tests/e2e/latency-and-onboarding.spec.ts`: first streamed token visible within 2 s at p95 against the mock provider with realistic latency (SC-002), and a scripted onboarding-to-first-answer run under 3 minutes (SC-001)
+- [X] T150 [P] Write `tests/e2e/network-assertions.spec.ts`: across every flow, Playwright network logs show requests only to same-origin and the provider origin; no telemetry (FR-039, FR-040)
+- [X] T151 [P] Write the root `README.md` (setup, scripts, package map, security model summary) and `docs/adding-a-capability.md` (declaration walkthrough using the dummy capability as the example)
+- [X] T152 Run the full `specs/001-core-foundation/quickstart.md` validation (automated gates, then the manual scenarios per story) and record the results in `specs/001-core-foundation/checklists/validation.md`
+- [X] T153 Final security review of the branch (`/security-review`) and confirm the plan's Threat Analysis residual risks are still accurate
 
 ---
 

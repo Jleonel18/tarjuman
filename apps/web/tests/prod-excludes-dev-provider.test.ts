@@ -67,3 +67,23 @@ describe("production bundle and the dev-only Ollama provider", () => {
     expect(output.includes("[tarjuman dev provider]")).toBe(true);
   }, 120_000);
 });
+
+/**
+ * T153: the e2e build swaps in the mock provider, which accepts fixed test keys and reads test
+ * hooks from the URL. A normal production build (no `VITE_PROVIDER`) must contain none of it.
+ */
+describe("production bundle and the e2e mock provider", () => {
+  const MOCK_MARKERS = ["sk-ant-mock-valid-key", "mockLatencyMs", "HOSTILE-RENDER-TEST"];
+
+  it("contains no mock key, test hook, or scripted answer", async () => {
+    delete process.env["VITE_PROVIDER"];
+    const output = await buildApp();
+    for (const marker of MOCK_MARKERS) expect(output.includes(marker), marker).toBe(false);
+  }, 120_000);
+
+  it("positive control: the e2e build does contain them", async () => {
+    process.env["VITE_PROVIDER"] = "mock";
+    const output = await buildApp();
+    expect(output.includes("sk-ant-mock-valid-key")).toBe(true);
+  }, 120_000);
+});
