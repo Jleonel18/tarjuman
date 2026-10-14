@@ -21,10 +21,12 @@ your interests, and it answers your questions about the language at the right di
 
 ## Status
 
-**Early development. There is no usable app yet.**
+**Feature-complete for the first release, not released yet.** The app works end to end against a
+mock provider and a free local model. It has **never run against the real Anthropic API**: the
+maintainer has no key, so the Anthropic adapter is built and tested against synthetic fixtures only.
+Do not trust it with a real key until a release says otherwise.
 
 The project follows Spec-Driven Development with [GitHub Spec Kit](https://github.com/github/spec-kit).
-Everything is specified and planned; implementation has just started.
 
 | Stage | State |
 |-------|-------|
@@ -32,18 +34,24 @@ Everything is specified and planned; implementation has just started.
 | Specification (`001-core-foundation`) | Done |
 | Plan, data model, contracts | Done |
 | Task list (153 tasks, 11 phases) | Done |
-| Implementation | **Phase 2 of 11 done** (foundation: ports, storage, mock provider, i18n, app shell). No user-facing feature yet |
+| Implementation | **Phases 1-10 of 11 done** (all eight user stories). Phase 11 (polish and release checks) is next |
 
-What exists today: the monorepo, lint/type/architecture checks and a CI workflow, the typed
-contracts, encrypted local storage, a mock provider for testing without a key, English and Spanish
-catalogs, and an app shell with a strict Content-Security-Policy. What does **not** exist yet: the
-chat, onboarding, the security pipeline, the Anthropic adapter, the guardrails, and the stats
-panel. `pnpm --filter @tarjuman/web dev` serves a placeholder page.
+What works today: onboarding, key entry with a choice of where the key is kept, a streaming chat
+with saved conversations, the security pipeline (key withholding, untrusted-content isolation,
+safe rendering), scope guardrails with courteous refusals, the token and cost stats panel, model
+and effort settings, tone presets, English and Spanish interfaces with right-to-left support,
+replacing or deleting the key, and "delete all my data". Capabilities are added by declaration
+and checked by a permission broker.
+
+What is still open (Phase 11): a nightly run against a live model, latency and network-origin
+end-to-end tests, a final security review, and the full manual validation. The guardrail fixtures
+were recorded with a local non-Claude model, so how well Claude itself keeps to scope (SC-003) is
+not measured yet.
 
 Progress is tracked by the checkboxes in
 [specs/001-core-foundation/tasks.md](specs/001-core-foundation/tasks.md).
 
-## How it will work
+## How it works
 
 ```
  you ─► web app ─► Pipeline ─► Anthropic API (directly from your browser, with your key)
@@ -70,6 +78,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the full picture.
 |------|------------|
 | `packages/core` | Framework-free TypeScript core: conversation, pipeline, guardrails, stats, ports |
 | `packages/provider-anthropic` | Adapter for the Anthropic API (the only package that imports the SDK) |
+| `packages/provider-ollama` | Development-only adapter for a free local model ([docs/local-model.md](docs/local-model.md)); never in a production build |
 | `packages/storage-web` | Adapter for IndexedDB storage and WebCrypto key encryption |
 | `packages/capabilities/language-qa` | The first capability: answering questions about your target language |
 | `packages/ui` | React components, translation catalogs, logical-property styles |
@@ -88,22 +97,30 @@ pnpm install
 pnpm typecheck      # TypeScript project references
 pnpm lint           # ESLint (bans dangerouslySetInnerHTML, enforces i18n and import boundaries)
 pnpm lint:css       # Stylelint: logical CSS properties only
-pnpm lint:arch      # dependency-cruiser: package boundary rules
-pnpm test           # Vitest
-pnpm --filter @tarjuman/web dev   # empty placeholder page for now
+pnpm lint:arch      # package boundaries (dependency-cruiser) and ProviderPort import check
+pnpm lint:i18n      # catalog parity between English and Spanish
+pnpm lint:rules     # guardrail rule versions and recorded fixtures
+pnpm test           # Vitest, all projects
+pnpm test:redteam   # adversarial suite only, with a summary
+pnpm test:e2e       # Playwright against the production build and the mock provider
 ```
 
-Other scripts (`test:e2e`, `test:redteam`, `test:live:*`, `lint:i18n`) are wired up but have
-little or nothing to run until their phases are implemented.
+Running the app without an Anthropic key:
 
-Some tooling (the provider spike and the live-model test suites) needs a throwaway API key. Copy
-[.env.example](.env.example) to `.env` (git-ignored) and fill it in. End users never use this:
-they enter their own key in the app.
+```bash
+VITE_PROVIDER=mock pnpm --filter @tarjuman/web dev     # deterministic mock; key: sk-ant-mock-valid-key-0000
+VITE_PROVIDER=ollama pnpm --filter @tarjuman/web dev   # free local model, see docs/local-model.md
+```
+
+The live-model suites (`test:live:*`) and `record:guardrails` use Ollama by default. Pointed at
+Anthropic they need a throwaway key: copy [.env.example](.env.example) to `.env` (git-ignored) and
+fill it in. End users never use this: they enter their own key in the app.
 
 ## Documentation
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) — how the pieces fit and which rules keep them apart
 - [SECURITY.md](SECURITY.md) — security model and how to report a problem
+- [docs/local-model.md](docs/local-model.md) — running and testing with a free local model
 - [CLAUDE.md](CLAUDE.md) — instructions for AI coding agents working in this repo
 - [.specify/memory/constitution.md](.specify/memory/constitution.md) — the non-negotiable principles
 - [specs/001-core-foundation/](specs/001-core-foundation/) — spec, plan, data model, contracts, tasks

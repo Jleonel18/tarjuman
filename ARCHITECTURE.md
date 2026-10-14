@@ -1,18 +1,14 @@
 # Architecture
 
-How Tarjuman is put together and which rules keep it that way. This document describes the
-**target design** from [specs/001-core-foundation/plan.md](specs/001-core-foundation/plan.md) and
-marks what is built today. The authoritative sources are the
+How Tarjuman is put together and which rules keep it that way. This document describes the design
+from [specs/001-core-foundation/plan.md](specs/001-core-foundation/plan.md) as built. The authoritative sources are the
 [constitution](.specify/memory/constitution.md) (principles) and the feature specs (requirements);
 if this file disagrees with them, they win.
 
-**Implementation status:** Phases 1 and 2 of 11 are done. Built and tested today: the monorepo
-and boundary rules; in `core`, the ports, domain types, `SecretHandle`, and the capability
-registry; `storage-web` (IndexedDB storage and encrypted key storage); the mock provider and the
-provider contract suite in `testing`; the i18n setup, base styles, and app shell in `ui`; and the
-web app's composition root with its Content-Security-Policy. **Not built yet:** the pipeline
-stages, the Anthropic adapter, the `language-qa` capability, guardrails, stats, and every screen.
-Sections below describe the target design.
+**Implementation status:** Phases 1-10 of 11 are done: everything below is built and tested.
+Phase 11 (nightly live runs, latency and network-origin tests, final security review) is open.
+Two limits: the Anthropic adapter has only been tested against synthetic fixtures, never the live
+API, and the pipeline has no tool-call path yet (section 6).
 
 ## 1. Shape of the system
 
@@ -43,6 +39,7 @@ is that `core` stays portable.
 |---------|------|-----------|
 | `core` | Domain logic and **ports** (interfaces) | `zod`, `markdown-it` only |
 | `provider-anthropic` | Implements `ProviderPort`; owns the SDK and the model/price table | `core`, `@anthropic-ai/sdk` |
+| `provider-ollama` | Dev-only `ProviderPort` for a free local model; dropped from production builds | `core` |
 | `storage-web` | Implements `StoragePort` and `CredentialStore` | `core`, `idb` |
 | `capabilities/language-qa` | First capability, pure data | `core` types |
 | `ui` | React components, i18next catalogs, logical CSS | `core`, React, i18next |
@@ -54,6 +51,8 @@ These rules are **enforced mechanically**, not by convention:
 - `packages/core` imports no capability, adapter, UI, app, React, SDK, or Node/DOM built-in.
 - Only `provider-anthropic` imports `@anthropic-ai/sdk`.
 - A concrete provider is instantiated only in `apps/web/src/composition-root.ts`.
+- Only the pipeline module, the provider adapters, the composition root, and tests may name
+  `ProviderPort` at all, even as a type. The two provider adapters never import each other.
 - Capabilities cannot import pipeline internals.
 - Only adapters may unseal a secret (`SecretHandle`).
 - Circular dependencies are errors.
@@ -63,8 +62,10 @@ forbid every importer except adapters while the rest of the core still passes `S
 values around. A type-level assertion in `ports/provider.ts` also fails the build if any field of
 `ModelRequest` could carry one.
 
-Enforcement lives in [.dependency-cruiser.cjs](.dependency-cruiser.cjs) (authoritative) and
-[eslint.config.js](eslint.config.js) (fast feedback in the editor). Run `pnpm lint:arch`.
+Enforcement lives in [.dependency-cruiser.cjs](.dependency-cruiser.cjs) (authoritative),
+[scripts/provider-port-imports.ts](scripts/provider-port-imports.ts) (the `ProviderPort` rule,
+which needs imported names rather than module paths), and [eslint.config.js](eslint.config.js)
+(fast feedback in the editor). `pnpm lint:arch` runs the first two.
 
 ## 3. Ports
 
@@ -96,9 +97,10 @@ InputGuard → ContextAssembler → ModelCall → OutputGuard → Metrics
 | OutputGuard | Parse the domain verdict; convert Markdown to a restricted `SafeBlock` tree; check tool calls against permissions and taint |
 | Metrics | Record provider-reported token usage; raise the 80 % context notice |
 
-The stage order is a fixed tuple in code and is neither exported nor injectable. Only the
-pipeline module (the `Pipeline` class and `CredentialValidator`) can reach a `ProviderPort`;
-capabilities never receive one.
+The stage order is fixed inside `Pipeline.run` and is neither exported nor injectable. `Pipeline`
+and `CapabilityRegistry` freeze their instances and prototypes, so no method can be swapped at
+run time. Only the pipeline module (the `Pipeline` class and `CredentialValidator`) can reach a
+`ProviderPort`; capabilities never receive one.
 
 ### Instruction hierarchy
 
@@ -127,10 +129,23 @@ enforcement costs no extra request on the user's key.
 
 A capability is a plain object declaring its tools, permissions, domain rules, prompt fragments,
 and i18n strings ([contracts/capability-contract.md](specs/001-core-foundation/contracts/capability-contract.md)).
-The registry validates it; a permission broker denies anything not declared. Adding one must not
-require touching `core`. A test-only dummy capability proves this.
+The registry validates it with Zod and keeps a frozen copy. Adding one does not require touching
+`core`: a test-only dummy capability under `tests/fixtures/` runs a full turn to prove it (SC-008).
 
-Only `language-qa` ships now. It declares no tools.
+Tools run only through the **permission broker** and the OutputGuard:
+
+1. The broker denies a tool the capability did not declare, even if the learner confirmed.
+2. The taint gate holds a side-effecting tool in a turn that contains untrusted content until the
+   learner confirms.
+3. An allowed tool gets a frozen, least-privilege `ToolContext` built from that tool's own
+   permissions: `net.fetch` to allowlisted `https` hosts, storage scoped to declared collections
+   and access, and the notice surface. It holds no provider, secret, stage, or raw storage.
+
+Every denial is a typed `PermissionDeniedError` plus a `permission_denied` metrics event.
+
+Only `language-qa` ships now. It declares no tools, and no provider is asked for tools in this
+feature, so the pipeline never calls the broker yet: `OutputGuard.checkToolCall` is the one place
+a future tool-call path must go through.
 
 ## 7. Languages
 
@@ -150,8 +165,13 @@ pseudo-RTL test locale and with Arabic/Hebrew content.
 - On the web: encrypted with a non-extractable WebCrypto key in IndexedDB, or held in memory only
   for "this session only". The user chooses on first entry; there is no silent default.
 - Never placed in model context, logs, telemetry, errors, or any Tarjuman service.
-- Displayed only as a masked hint.
-- "Delete all my data" removes everything and verifies it.
+- Displayed only as a masked hint. Settings show it with the storage mode in effect.
+- Replacing it validates the new key first and only then removes the old one; a rejected
+  replacement keeps the old key. Deleting it keeps the profile and asks for a key again.
+- "Delete all my data" (`DataController`, behind a confirmation step) removes the key and checks it
+  is gone, then drops the whole IndexedDB database, Cache Storage, and service workers, and verifies
+  that nothing is left. A failed check is shown as a failure, never as success. On success the app
+  returns to onboarding.
 
 An honest limit: a non-extractable key stops key material from being copied, but a compromised
 script on the same origin could still *use* it. That is why the app ships a strict CSP and no
@@ -162,11 +182,11 @@ third-party scripts. See [SECURITY.md](SECURITY.md) and the threat analysis in t
 | Layer | Tool | When | Cost |
 |-------|------|------|------|
 | Unit and integration | Vitest | every PR | free |
-| Architecture rules | dependency-cruiser, ESLint | every PR | free |
+| Architecture rules | dependency-cruiser, `ProviderPort` import check, ESLint, Vitest | every PR | free |
 | i18n and RTL checks | lint script, Playwright | every PR | free |
 | Adversarial suite, structural | Vitest, mock provider | every PR, blocks merge | free |
 | End to end | Playwright against the mock provider | every PR | free |
-| Guardrail and adversarial, behavioral | Vitest against the real model | nightly / pre-release | uses a test key |
+| Guardrail and adversarial, behavioral | Vitest against a live model | on demand (nightly planned, T148) | free with Ollama; uses a test key with Anthropic |
 
 The per-PR gate relies on **structural** assertions (the assembled request never contains the key;
 hostile output cannot render an image) because those do not depend on model behavior. Behavioral

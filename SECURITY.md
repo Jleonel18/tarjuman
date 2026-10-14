@@ -16,8 +16,9 @@ behave.
   labeled, isolated from the instruction layers, and has the lowest authority.
 - **Output is rendered safely.** Model output becomes a restricted block tree: no images, no raw
   HTML, links inert and showing their destination.
-- **Least privilege.** Capabilities declare their permissions; anything undeclared is denied.
-  Network access is limited to an allowlist.
+- **Least privilege.** Capabilities declare their permissions; anything undeclared is denied by a
+  permission broker. A tool gets only its own declared permissions, and network access is limited
+  to an allowlist of `https` hosts.
 - **Delete everything in one action**, verified.
 
 The full threat analysis is in
@@ -31,13 +32,16 @@ The full threat analysis is in
 - Someone with full access to the user's browser profile can run the app as the user. A
   passphrase-protected mode is a possible future hardening.
 - The model may still be influenced in prose by hostile pasted text. It has no tools and cannot
-  see the key, which bounds the damage. Behavioral rates are measured against the real model on a
-  schedule.
+  see the key, which bounds the damage. Behavioral rates have so far been measured only against a
+  local non-Claude model; runs against Claude are planned.
 
 ## Status
 
-Early development: most of this is **designed and specified, not yet implemented**. Do not rely on
-any of it for real keys until a release says otherwise.
+Everything in the model above is **implemented and covered by tests**, including a structural
+adversarial suite of 57 cases that runs on every pull request. It has **not been released or
+independently reviewed**, the final security review is still open, and the Anthropic adapter has
+never been run against the live API. Do not rely on it for real keys until a release says
+otherwise.
 
 ## Reporting a vulnerability
 

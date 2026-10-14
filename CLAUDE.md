@@ -96,13 +96,14 @@ pnpm install
 pnpm typecheck     # tsc -b
 pnpm lint          # ESLint
 pnpm lint:css      # Stylelint (logical properties)
-pnpm lint:arch     # dependency-cruiser (package boundaries)
-pnpm lint:i18n     # catalog parity (placeholder until T038)
+pnpm lint:arch     # dependency-cruiser (package boundaries) + ProviderPort import check
+pnpm lint:i18n     # catalog parity (en/es)
 pnpm lint:rules    # rule versions vs base branch, and recorded guardrail fixtures vs rules and prompts
 pnpm test          # Vitest, all projects
 pnpm test:redteam  # adversarial project only
 pnpm test:e2e      # Playwright
 pnpm --filter @tarjuman/web dev
+VITE_PROVIDER=mock pnpm --filter @tarjuman/web dev     # mock provider; key sk-ant-mock-valid-key-0000
 VITE_PROVIDER=ollama pnpm --filter @tarjuman/web dev   # dev-only free local model
 pnpm test:live:ollama                                    # live smoke test, needs Ollama running
 pnpm record:guardrails                                   # re-record guardrail fixtures (Ollama by default)
@@ -117,6 +118,7 @@ Run `pnpm typecheck && pnpm lint && pnpm lint:arch && pnpm test` before declarin
 
 - `packages/core` — domain logic and ports
 - `packages/provider-anthropic` — Anthropic adapter and model/price table
+- `packages/provider-ollama` — dev-only local-model adapter (feature 002)
 - `packages/storage-web` — IndexedDB and WebCrypto adapters
 - `packages/capabilities/language-qa` — first capability
 - `packages/ui` — React components, i18n catalogs, styles
@@ -138,11 +140,15 @@ Run `pnpm typecheck && pnpm lint && pnpm lint:arch && pnpm test` before declarin
 
 ## Current state
 
-Phases 1-4 of 11 are done for feature 001: tooling, ports and types, encrypted storage, the mock
-provider and contract suite, i18n, the app shell with its CSP, User Story 1 (the MVP chat), and
-User Story 2 (guardrails: scope rules, first-line verdict, refusal in the explanation language,
-recorder and live runner). The guardrail fixtures were recorded with a non-Claude model, so the
-mechanics are verified and SC-003 is not. Phase 5 (User Story 3, injection defense) is next.
+Phases 1-10 of 11 are done for feature 001 (T001-T147): all eight user stories, from the MVP
+chat and guardrails through injection defense, stats, tone, languages and RTL, key and data
+control, and the capability permission broker. Phase 11 (Polish, T148-T153) is next: the nightly
+live workflow, latency and network-origin e2e tests, the README and capability guide, the
+quickstart validation, and the final security review. The guardrail fixtures were recorded with a
+non-Claude model, so the mechanics are verified and SC-003 is not.
+
+The pipeline has no tool-call path: no provider is asked for tools in this feature. The permission
+broker and `OutputGuard.checkToolCall` are built and tested but not called by the pipeline yet.
 
 The provider spike (T018) was done without a key because the owner has no Anthropic key and will
 not buy one; its results are in `research.md` -> Spike Results, and what it could not confirm is
@@ -166,6 +172,13 @@ Gotchas learned so far:
   missing or malformed one is refused. Mock scripts and fixtures therefore start with `ACCEPT\n`.
 - Changing a rule file needs a `version` bump, and changing a rule or any prompt layer makes
   `lint:rules` fail until `pnpm record:guardrails` is run again (`.recorded-hash`).
+- `ProviderPort` may be named only by the pipeline module, provider adapters, the composition root,
+  and tests; `lint:arch` checks imported names (`scripts/provider-port-imports.ts`).
+- `Pipeline` and `CapabilityRegistry` freeze their instances and prototypes: do not monkeypatch or
+  `vi.spyOn` their methods in tests; use the ports instead.
+- `DataController.deleteAll` checks the key before `clearAll`, because reading storage afterwards
+  would recreate the deleted database. Chromium can list a just-deleted database for a moment, so
+  e2e polls `indexedDB.databases()`.
 - `VITE_PROVIDER=ollama` is dev-only: it is guarded by `import.meta.env.DEV` and stripped from
   production builds. Ollama silently drops the start of a prompt larger than its context, where
   the security layer sits, so `OLLAMA_CONTEXT_LENGTH=32768` is required.
