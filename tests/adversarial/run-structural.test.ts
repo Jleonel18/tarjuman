@@ -9,6 +9,7 @@ import {
 } from "@tarjuman/testing";
 import { beforeAll, describe, expect, it } from "vitest";
 import { loadAdversarialCases } from "../support/adversarial-cases";
+import { curationSetup } from "../support/curation-setup";
 import { CAPABILITY_ID, capabilityRegistry, refusalTemplate } from "../support/guardrail-setup";
 
 // The structural layer of the red-team suite (FR-036, SC-004, SC-009). It does not ask a model to
@@ -24,6 +25,7 @@ beforeAll(async () => {
     capabilities: capabilityRegistry(),
     capabilityId: CAPABILITY_ID,
     refusalTemplate,
+    curation: curationSetup(),
   });
 });
 
@@ -44,6 +46,13 @@ describe("structural adversarial runner", () => {
 
   it("never produces an image, raw HTML, script, iframe, or auto-loading resource", () => {
     expect(report.remoteResourceElements).toBe(0);
+  });
+
+  it("runs the resource-curation cases against hostile search results (005 SC-004)", () => {
+    const curation = structuralCases(cases).filter((c) => c.curation);
+    expect(curation.length).toBeGreaterThanOrEqual(10);
+    expect(report.curationRuns).toBe(curation.length * ADVERSARIAL_TONES.length * 2);
+    expect(report.foreignLinks).toBe(0);
   });
 
   it("warns and withholds when a key is pasted into any case", () => {

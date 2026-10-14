@@ -5,9 +5,9 @@ import { bundleOriginProblems, type BundleFile } from "../../scripts/bundle-orig
 // bundle may reference only its own origin and the AI provider. CSP is what enforces it in the
 // browser; this check catches drift before it ships, such as a font from a CDN or a tracker.
 
-const PROVIDER = ["https://api.anthropic.com", "https://generativelanguage.googleapis.com"];
+const PROVIDER = ["https://api.anthropic.com", "https://generativelanguage.googleapis.com", "https://www.googleapis.com"];
 const CSP =
-  "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' https://api.anthropic.com https://generativelanguage.googleapis.com; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'self'";
+  "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' https://api.anthropic.com https://generativelanguage.googleapis.com https://www.googleapis.com; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; worker-src 'self'";
 
 const html = (head = "", csp = CSP): BundleFile => ({
   path: "index.html",
@@ -15,7 +15,8 @@ const html = (head = "", csp = CSP): BundleFile => ({
 });
 const js = (content: string): BundleFile => ({ path: "assets/app.js", content });
 const css = (content: string): BundleFile => ({ path: "assets/app.css", content });
-const check = (...files: BundleFile[]) => bundleOriginProblems(files, { providerOrigins: PROVIDER });
+const LINKS = ["https://www.youtube.com", "https://policies.google.com"];
+const check = (...files: BundleFile[]) => bundleOriginProblems(files, { providerOrigins: PROVIDER, linkOrigins: LINKS });
 
 describe("bundleOriginProblems", () => {
   it("accepts a bundle that talks only to itself and the providers", () => {
@@ -23,9 +24,28 @@ describe("bundleOriginProblems", () => {
     expect(check(html(), js('fetch("https://generativelanguage.googleapis.com/v1beta/models")'), css(""))).toEqual([]);
   });
 
-  it("rejects another Google host: only the Gemini API origin is allowed (004 FR-011)", () => {
-    const problems = check(html(), js('fetch("https://aistudio.google.com/apikey")'), css(""));
-    expect(problems).toEqual([expect.stringContaining("aistudio.google.com")]);
+  it("accepts the YouTube Data API origin (005)", () => {
+    expect(check(html(), js('fetch("https://www.googleapis.com/youtube/v3/search")'), css(""))).toEqual([]);
+  });
+
+  it("rejects another Google host: only the exact API origins are allowed (004 FR-011, 005)", () => {
+    for (const host of ["aistudio.google.com", "youtube.googleapis.com", "console.cloud.google.com", "m.youtube.com"]) {
+      const problems = check(html(), js(`fetch("https://${host}/x")`), css(""));
+      expect(problems, host).toEqual([expect.stringContaining(host)]);
+    }
+  });
+
+  it("accepts a link origin in the JavaScript, where a click can only navigate to it (005)", () => {
+    const code = 'const link="https://www.youtube.com/watch?v="; const terms="https://policies.google.com/privacy";';
+    expect(check(html(), js(code), css(""))).toEqual([]);
+    // Without being declared as a link origin, the same strings are a problem.
+    expect(bundleOriginProblems([html(), js(code), css("")], { providerOrigins: PROVIDER })).not.toEqual([]);
+  });
+
+  it("never accepts a link origin in the HTML, the CSS, or the CSP", () => {
+    expect(check(html('<img src="https://www.youtube.com/x.png">'), js(""), css(""))).not.toEqual([]);
+    expect(check(html(), js(""), css("a{background:url(https://www.youtube.com/x.png)}"))).not.toEqual([]);
+    expect(check(html("", CSP.replace("connect-src 'self'", "connect-src 'self' https://www.youtube.com")), js(""), css(""))).not.toEqual([]);
   });
 
   it("accepts the documentation and namespace strings libraries carry, which are never fetched", () => {

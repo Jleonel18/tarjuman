@@ -1099,3 +1099,121 @@ fieldset.form__field {
     forced-color-adjust: auto;
   }
 }
+
+/* Resource cards (005): text only, on the assistant bubble's surface. No image, no frame. */
+.resources {
+  margin-block-start: var(--space-3);
+}
+
+.resources__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resource {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-inline-size: 0;
+  padding-block: var(--space-3);
+  padding-inline: var(--space-3);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius);
+  overflow-wrap: anywhere;
+}
+
+.resource__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-tight);
+}
+
+.resource__source,
+.resource__note {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.resource__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.resource__fit {
+  margin: 0;
+}
+
+.resource__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+/* The search consent dialog (005): a native modal, so focus is trapped and Escape cancels. */
+.consent {
+  inline-size: min(36rem, calc(100% - var(--space-4)));
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-2);
+}
+
+.consent::backdrop {
+  background: var(--color-scrim);
+  opacity: 0.5;
+}
+
+.consent__title {
+  margin-block: 0 var(--space-2);
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+}
+
+.consent__heading {
+  margin-block: var(--space-3) var(--space-1);
+  font-size: var(--text-md);
+}
+
+.consent__list {
+  margin-block: var(--space-1);
+  padding-inline-start: var(--space-4);
+}
+
+.consent__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-block-start: var(--space-4);
+}
+
+.saved__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.saved__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: flex-start;
+}

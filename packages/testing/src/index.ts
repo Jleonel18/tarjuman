@@ -8,3 +8,5 @@ export * from "./record-fixtures";
 export * from "./hash";
 export * from "./assert-no-secret";
 export * from "./adversarial-runner";
+export * from "./mock-search";
+export * from "./fixtures/hostile-search";

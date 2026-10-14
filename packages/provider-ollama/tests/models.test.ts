@@ -16,6 +16,7 @@ describe("OLLAMA_MODELS", () => {
     expect(model.maxOutput).toBe(8192);
     expect(model.supportsEffort).toBe(false);
     expect(model.effortLevels).toEqual([]);
+    expect(model.supportsTools).toBe(false);
     expect(model.pricing).toEqual({ inputPerMTok: 0, outputPerMTok: 0, asOf: "2026-10-04" });
   });
 

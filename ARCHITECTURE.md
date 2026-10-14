@@ -43,7 +43,9 @@ is that `core` stays portable.
 | `provider-gemini` | Implements `ProviderPort` for Google Gemini with native `fetch` (no SDK); owns its model/price table | `core` |
 | `provider-ollama` | Dev-only `ProviderPort` for a free local model; dropped from production builds | `core` |
 | `storage-web` | Implements `StoragePort` and `CredentialStore`; keeps the theme preference | `core`, `idb` |
+| `search-youtube` | Implements `SearchPort` for the YouTube Data API with native `fetch`; validates and caps everything it returns | `core`, `zod` |
 | `capabilities/language-qa` | First capability, pure data | `core` types |
+| `capabilities/resource-curation` | Second capability: finds videos and songs in the target language (contract 1.1.0, shared by all conversations) | `core` types |
 | `ui` | React components, i18next catalogs, design tokens and logical CSS, bundled fonts and icons | `core`, React, i18next, Fontsource font files, `lucide-react` |
 | `testing` | Mock provider, fixtures, runners | `core` |
 | `apps/web` | Wires adapters, capabilities, UI, and pipeline together | everything |
@@ -55,6 +57,9 @@ These rules are **enforced mechanically**, not by convention:
 - A concrete provider is instantiated only in `apps/web/src/composition-root.ts`.
 - Only the pipeline module, the provider adapters, the composition root, and tests may name
   `ProviderPort` at all, even as a type. The provider adapters never import each other.
+- Likewise only the search broker (and the search credential validator), the search adapters, the
+  composition root, and tests may name `SearchPort`; a concrete search source is instantiated only
+  in the composition root; a search adapter imports only the core.
 - Capabilities cannot import pipeline internals.
 - Only adapters may unseal a secret (`SecretHandle`).
 - Circular dependencies are errors.
@@ -76,6 +81,8 @@ The core talks to the outside world only through interfaces it owns
 
 - **`ProviderPort`**: stream a model response, validate a credential, list models. Adding another
   AI provider means writing another adapter, with no change to `core` or capabilities.
+- **`SearchPort`** (feature 005): search a source such as YouTube, validate its key, and fetch the
+  current details of known ids. Only `SearchBroker` holds one.
 - **`StoragePort` / `CredentialStore`**: persistence and encrypted key storage. Web uses
   IndexedDB and WebCrypto; a desktop shell would use SQLite and the OS keychain.
 
@@ -102,6 +109,32 @@ in settings. `ProviderPort` did not change. Instead:
   key shaped for another provider is rejected locally before any request. Dev and test providers
   have no known shape and accept any key.
 
+### Searching for resources (feature 005)
+
+The learner asks for videos or songs; the model searches YouTube and the app shows cards. Four
+pieces make that safe, and none of them trusts the model or the source:
+
+- **Tool calls through `ProviderPort`.** `StreamEvent` has a `tool_call`; `ProviderMessage` has
+  assistant-with-`toolCalls` and `tool` forms; `ModelInfo.supportsTools` says whether a model can
+  use them. `continuation` is opaque adapter data (Gemini's thought signature) that the pipeline
+  sends back unchanged and never stores or shows. The type-level proof that a `ModelRequest`
+  cannot carry a `SecretHandle` still holds. Ollama declares `supportsTools: false`.
+- **`SearchBroker`.** The only holder of `SearchPort`s. Each call checks the on/off switch and the
+  learner's consent (per source, per version of its terms), validates the query (at most 120
+  characters, no key shape) and the ids, loads the key, makes **one** request, and cleans what comes
+  back (ids, lengths, key-shaped text). It never retries and never passes the key anywhere.
+- **Credential ids.** Provider ids and search source ids share one key space: the same
+  `CredentialStore`, `KeyManager` and "delete all my data" cover `youtube`. A key shape maps to a
+  *set* of ids: an `AIza…` key is valid for `gemini` and `youtube`, `AQ.…` only for `gemini`.
+- **The step loop** (below). Cards are built by the app from search data plus the model's choice of
+  ids; the model never supplies a title, link or label.
+
+Saved resources (`saved_resources`, IndexedDB version 3) are written only by the learner's click.
+YouTube data is not kept longer than 30 days, in saved items or in conversations: `ResourceRetention`
+runs at every start and strips an old card to its source, id and fetch time; **Refresh** fetches it
+again with one request. The CSP `connect-src` gained exactly `https://www.googleapis.com`; the
+YouTube and Google policy pages appear in the bundle only as links opened by a click.
+
 ## 4. The pipeline
 
 Every model interaction, for every capability present or future, runs through one fixed sequence
@@ -123,6 +156,27 @@ The stage order is fixed inside `Pipeline.run` and is neither exported nor injec
 and `CapabilityRegistry` freeze their instances and prototypes, so no method can be swapped at
 run time. Only the pipeline module (the `Pipeline` class and `CredentialValidator`) can reach a
 `ProviderPort`; capabilities never receive one.
+
+### The step loop (feature 005)
+
+A turn is no longer one model call. `Pipeline.run` makes up to **4 steps**: the model may ask for
+tools, the pipeline runs them, and the results go back to it. For each call, in order:
+
+1. `OutputGuard.checkToolCall`: the permission broker (an undeclared tool is denied) and the taint
+   gate (a side-effecting tool after search results waits for the learner).
+2. Per-turn limits: 2 searches, 1 `show_resources`. Over the limit is an error result.
+3. A *presentation* tool (`show_resources`) is validated against the turn's results and kept, not run.
+4. Consent: a search without consent ends the turn as `consent_required`, with nothing sent and the
+   question and empty answer discarded. The app asks; on Agree the same message is sent as a **new
+   turn** (the learner's action, not a retry).
+5. Anything else runs under the broker. Its result reaches the model as an `untrusted_data` block,
+   and later segments of the turn count as untrusted.
+
+Only the **last** step's text is shown and gives the verdict; earlier text is dropped (a step is
+buffered while tools are on offer). The last step is offered no tools. A `TurnSearchSession` numbers
+results `r1…r16` across the turn's searches. In a turn that searched, a link in the prose is
+clickable only if it equals a card's own link; others become text that shows the destination.
+Tokens are summed over the steps, and the steps and searches are recorded.
 
 ### Instruction hierarchy
 
@@ -165,9 +219,14 @@ Tools run only through the **permission broker** and the OutputGuard:
 
 Every denial is a typed `PermissionDeniedError` plus a `permission_denied` metrics event.
 
-Only `language-qa` ships now. It declares no tools, and no provider is asked for tools in this
-feature, so the pipeline never calls the broker yet: `OutputGuard.checkToolCall` is the one place
-a future tool-call path must go through.
+Contract **1.1.0** (feature 005) adds, all optional: a `search` permission (which sources a tool may
+use through `ctx.search`), `presentation` tools (data for the UI, no handler), `availability:
+"all_conversations"` (at most one such capability), and prompt fragments tied to a search state
+(`whenSearch`: available, off, no key, model cannot search), so the model is told only what is true.
+`ctx.search.videos` fills in the learner's target language itself; a tool cannot choose it.
+
+Two capabilities ship: `language-qa` (no tools, contract 1.0.0, unchanged) and `resource-curation`
+(`search_videos`, `show_resources`). The pipeline calls the broker for every tool call.
 
 ## 7. Languages
 

@@ -1,8 +1,9 @@
-import type { Capability } from "../capabilities/types";
+import type { Capability, SearchState } from "../capabilities/types";
 import type { Message, Segment } from "../conversation/types";
 import type { LayerId, PromptLayer, ProviderMessage } from "../ports/provider";
 import { getTonePreset } from "../profile/tone-presets";
 import type { LearnerProfile } from "../profile/types";
+import { isExpired } from "../search/resource-card";
 import type { UntrustedMaterial } from "./types";
 import { neutralize, wrapUntrusted } from "./untrusted-block";
 
@@ -10,6 +11,13 @@ import { neutralize, wrapUntrusted } from "./untrusted-block";
 export interface AssembleInput {
   profile: LearnerProfile;
   capability: Readonly<Capability>;
+  /** Capabilities available in every conversation (005), added after the conversation's own. */
+  sharedCapabilities?: readonly Readonly<Capability>[] | undefined;
+  /**
+   * What this turn can do with search. Fragments tied to a state (`whenSearch`) are included only
+   * when it matches; with no state given, state-bound fragments are left out.
+   */
+  searchState?: SearchState | undefined;
   /** Filled in by the domain-scope work (US2). */
   domainScope?: string | undefined;
   /** Messages already in the conversation, before this turn. */
@@ -49,7 +57,13 @@ export class ContextAssembler {
     };
 
     add("domain_scope", input.domainScope);
-    add("capability", capabilityText(input.capability, profile.mediationLanguage));
+    add(
+      "capability",
+      [input.capability, ...(input.sharedCapabilities ?? [])]
+        .map((capability) => capabilityText(capability, profile.mediationLanguage, input.searchState))
+        .filter((text) => text !== "")
+        .join("\n"),
+    );
     add("tone", getTonePreset(profile.toneId).guidance);
     add("user_preferences", preferencesText(profile));
 
@@ -57,9 +71,10 @@ export class ContextAssembler {
   }
 }
 
-function capabilityText(capability: Readonly<Capability>, mediation: string): string {
+function capabilityText(capability: Readonly<Capability>, mediation: string, searchState: SearchState | undefined): string {
   const base = mediation.split("-")[0] ?? mediation;
   return Object.values(capability.promptFragments)
+    .filter((fragment) => fragment.whenSearch === undefined || (searchState !== undefined && fragment.whenSearch.includes(searchState)))
     .map((fragment) => fragment.text[mediation] ?? fragment.text[base] ?? fragment.text["en"] ?? "")
     .filter((text) => text !== "")
     .join("\n");
@@ -86,7 +101,9 @@ function conversationMessages(input: AssembleInput): ProviderMessage[] {
   const messages: ProviderMessage[] = [];
   for (const message of input.history) {
     if (message.author === "system") continue;
-    const content = renderSegments(message.segments, message.author === "user");
+    const content = [renderSegments(message.segments, message.author === "user"), resourceContext(message)]
+      .filter((part) => part !== "")
+      .join("\n\n");
     if (content === "") continue;
     messages.push({ role: message.author, content });
   }
@@ -94,6 +111,18 @@ function conversationMessages(input: AssembleInput): ProviderMessage[] {
   const content = [input.turn.userText, ...material].filter((text) => text !== "").join("\n\n");
   messages.push({ role: "user", content });
   return messages;
+}
+
+/**
+ * The cards shown with an earlier answer, as data the learner can point at ("the second one"):
+ * ref, title, channel, and type only. No link, no fit note. Expired cards contribute nothing, and
+ * tool messages of earlier turns are never replayed (provider-tool-calls.md → History).
+ */
+function resourceContext(message: Message): string {
+  const live = (message.resources ?? []).filter((card) => !isExpired(card));
+  if (message.author !== "assistant" || live.length === 0) return "";
+  const lines = live.map((card, i) => `${card.ref === "" ? `#${i + 1}` : card.ref}: ${card.title} - ${card.channel} (${card.type})`);
+  return wrapUntrusted("external", lines.join("\n"));
 }
 
 /**

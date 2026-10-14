@@ -10,7 +10,8 @@
     "./pseudo-rtl": "./src/pseudo-rtl.ts",
     "./mock-provider": "./src/mock-provider.ts",
     "./provenance": "./src/provenance.ts",
-    "./hash": "./src/hash.ts"
+    "./hash": "./src/hash.ts",
+    "./mock-search": "./src/mock-search.ts"
   },
   "dependencies": {
     "@tarjuman/core": "workspace:*",

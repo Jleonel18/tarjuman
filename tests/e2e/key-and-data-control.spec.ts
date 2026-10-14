@@ -133,4 +133,38 @@ test.describe("delete all my data", () => {
     await expect(page.getByLabel("Explanation language")).toBeVisible();
     await expect(page.getByText(MOCK_ANSWER)).toHaveCount(0);
   });
+
+  test("also removes the search key, the saved resources, and the search choices (005)", async ({ page }) => {
+    await start(page, "Remember on this device");
+    await openSettings(page);
+    const search = page.getByRole("region", { name: "Internet search" });
+    await search.getByRole("button", { name: "Add search key" }).click();
+    await search.getByLabel("Search API key").fill("AIzaMOCKsearchKEY0000000000000000000000");
+    await search.getByRole("radio", { name: "Remember on this device" }).check();
+    await search.getByRole("button", { name: "Save search key" }).click();
+    await expect(search).toContainText("AIza…0000");
+    await page.getByRole("button", { name: "Back" }).click();
+    await page.getByRole("textbox", { name: "Message" }).fill("Find videos about climbing");
+    await page.getByRole("button", { name: "Send" }).click();
+    await page.getByRole("dialog", { name: "Search YouTube?" }).getByRole("button", { name: "Agree and search" }).click();
+    await page.locator("li.resource").first().getByRole("button", { name: "Save" }).click();
+    await expect(page.locator("li.resource").first().getByRole("button", { name: "Saved" })).toBeVisible();
+
+    await openSettings(page);
+    await dataControls(page).getByRole("button", { name: "Delete all my data" }).click();
+    await dataControls(page).getByRole("button", { name: "Yes, delete everything" }).click();
+    await expect(page.getByLabel("Explanation language")).toBeVisible();
+    await expect
+      .poll(() => page.evaluate(async () => (await indexedDB.databases()).map((db) => db.name)))
+      .toEqual([]);
+
+    // Starting over finds no search key, no saved resource, and asks for consent again.
+    await start(page, "Remember on this device");
+    await openSettings(page);
+    await expect(search).not.toContainText("AIza…0000");
+    await expect(search.getByRole("button", { name: "Add search key" })).toBeVisible();
+    await page.getByRole("button", { name: "Back" }).click();
+    await page.getByRole("button", { name: "Saved resources" }).click();
+    await expect(page.getByRole("region", { name: "Saved resources" })).toContainText("Nothing saved yet");
+  });
 });

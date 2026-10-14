@@ -193,10 +193,128 @@ describe("ToolContext shape", () => {
     const { ctx } = world();
     const tools = ctx("everything");
     expect(Object.isFrozen(tools)).toBe(true);
-    expect(Object.keys(tools).sort()).toEqual(["capabilityId", "net", "storage", "ui"]);
+    expect(Object.keys(tools).sort()).toEqual(["capabilityId", "net", "search", "storage", "ui"]);
+    expect(Object.keys(tools.search)).toEqual(["videos"]);
     expect(Object.keys(tools.net)).toEqual(["fetch"]);
     expect(Object.keys(tools.storage).sort()).toEqual(["get", "put"]);
     expect(Object.keys(tools.ui)).toEqual(["notice"]);
     expect(tools.capabilityId).toBe("brokered");
+  });
+});
+
+/** 005: ctx.search.videos is brokered like every other helper (capability-contract-1.1.md). */
+describe("ToolContext.search", () => {
+  const SEARCH: Permission = { kind: "search", sources: ["youtube"] };
+
+  function searchWorld(options: { withService?: boolean } = {}) {
+    const denials: PermissionDenial[] = [];
+    const requests: { sourceId: string; req: unknown }[] = [];
+    const services: BrokerServices = {
+      ...(options.withService === false
+        ? {}
+        : {
+            targetLanguage: "ja",
+            search: async (sourceId, req) => {
+              requests.push({ sourceId, req });
+              return {
+                ok: true as const,
+                results: [
+                  {
+                    ref: "r1",
+                    title: "A video",
+                    channel: "A channel",
+                    descriptionExcerpt: "About things.",
+                    durationSeconds: 60,
+                    hasCaptions: true,
+                    audioLanguage: "ja",
+                    type: "video" as const,
+                  },
+                ],
+              };
+            },
+          }),
+    };
+    const cap = new CapabilityRegistry().register({
+      id: "finder",
+      version: "1.0.0",
+      contractVersion: "1.1.0",
+      tools: [tool("searcher", [SEARCH]), tool("bare", [])],
+      permissions: [SEARCH],
+      domainRules: [],
+      promptFragments: {},
+      i18n: {},
+    });
+    const broker = new PermissionBroker({ capability: cap, services, onDenial: (d) => denials.push(d) });
+    const ctx = (name: string): ToolContext => {
+      const decision = broker.authorize(name);
+      if (!decision.ok) throw new Error(`unexpected denial of ${name}`);
+      return broker.contextFor(decision.tool);
+    };
+    return { ctx, denials, requests };
+  }
+
+  it("denies a tool that did not declare a search permission, with a metrics event", async () => {
+    const { ctx, denials, requests } = searchWorld();
+    const denial = await denied(ctx("bare").search.videos({ query: "escalada", kind: "any" }));
+    expect(denial).toEqual({
+      type: "permission_denied",
+      capabilityId: "finder",
+      toolName: "bare",
+      permission: "search",
+      reason: "undeclared_permission",
+    });
+    expect(denials).toEqual([denial]);
+    expect(requests).toEqual([]);
+  });
+
+  it("denies a search permission that does not list the source", async () => {
+    const other: Permission = { kind: "search", sources: ["vimeo"] };
+    const cap = new CapabilityRegistry({ searchSources: ["youtube", "vimeo"] }).register({
+      id: "finder",
+      version: "1.0.0",
+      contractVersion: "1.1.0",
+      tools: [tool("vimeo_only", [other])],
+      permissions: [other],
+      domainRules: [],
+      promptFragments: {},
+      i18n: {},
+    });
+    const denials: PermissionDenial[] = [];
+    const broker = new PermissionBroker({
+      capability: cap,
+      services: { search: async () => ({ ok: true, results: [] }) },
+      onDenial: (d) => denials.push(d),
+    });
+    const decision = broker.authorize("vimeo_only");
+    if (!decision.ok) throw new Error("unexpected denial");
+    const denial = await denied(broker.contextFor(decision.tool).search.videos({ query: "x", kind: "any" }));
+    expect(denial).toMatchObject({ permission: "search", reason: "source_not_allowed" });
+  });
+
+  it("sends an allowed search to the host with the profile's target language, and returns refs without links", async () => {
+    const { ctx, requests } = searchWorld();
+    const outcome = await ctx("searcher").search.videos({ query: "escalada", kind: "music", captionsOnly: true });
+    expect(requests).toEqual([
+      { sourceId: "youtube", req: { query: "escalada", kind: "music", captionsOnly: true, targetLanguage: "ja" } },
+    ]);
+    expect(outcome.ok && outcome.results[0]?.ref).toBe("r1");
+    expect(JSON.stringify(outcome)).not.toMatch(/https?:|link|AIza|sk-ant/);
+  });
+
+  it("defaults captionsOnly to false and ignores any language or source the tool tries to set", async () => {
+    const { ctx, requests } = searchWorld();
+    await ctx("searcher").search.videos({
+      query: "q",
+      kind: "any",
+      targetLanguage: "xx",
+      sourceId: "evil",
+      maxResults: 99,
+    } as never);
+    expect(requests).toEqual([{ sourceId: "youtube", req: { query: "q", kind: "any", captionsOnly: false, targetLanguage: "ja" } }]);
+  });
+
+  it("fails like the other helpers when the host offers no search service", async () => {
+    const { ctx } = searchWorld({ withService: false });
+    await expect(ctx("searcher").search.videos({ query: "q", kind: "any" })).rejects.toThrow("no search service");
   });
 });

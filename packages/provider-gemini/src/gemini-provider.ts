@@ -13,6 +13,7 @@ import { mapErrorBody, type MappedError } from "./errors";
 import { DEFAULT_GEMINI_MODEL_ID, GEMINI_MODELS } from "./models";
 import { GEMINI_API_ORIGIN } from "./origin";
 import { readSse, SseParseError } from "./sse";
+import { readFunctionCall, toContents, toToolDeclarations, type ReadCall } from "./tools";
 
 export interface GeminiProviderOptions {
   /** Replaces the global `fetch`. Tests use it to run the adapter without a network. */
@@ -40,7 +41,8 @@ interface Usage {
  *
  * The key is unsealed only here, only to set the `x-goog-api-key` header. It is never put in a URL
  * (FR-008), a body, a log, an error, or an event. One request per call, never retried. Never sent
- * (research R3): safety settings, tools, sampling parameters, cached content, thought options.
+ * (research R3): safety settings, sampling parameters, cached content, thought options. Tools are
+ * sent only when the request carries them (005).
  */
 export class GeminiProvider implements ProviderPort {
   readonly id = "gemini";
@@ -96,6 +98,7 @@ export class GeminiProvider implements ProviderPort {
     let usage: Usage | undefined;
     let stopReason: StopReason | undefined;
     let failure: MappedError | undefined;
+    let sawCall = false;
 
     try {
       const response = await this.#fetch(`${API_BASE}/${encodeURIComponent(req.modelId)}:streamGenerateContent?alt=sse`, {
@@ -120,6 +123,10 @@ export class GeminiProvider implements ProviderPort {
             const safe = filter.push(text);
             if (safe !== "") yield { type: "text", delta: safe };
           }
+          for (const call of chunk.calls) {
+            sawCall = true;
+            yield { type: "tool_call", ...call };
+          }
           if (chunk.usage) usage = chunk.usage;
           if (chunk.stopReason) stopReason = chunk.stopReason;
         }
@@ -143,7 +150,8 @@ export class GeminiProvider implements ProviderPort {
       yield { type: "error", code: "network" };
     } else {
       if (usage) yield { type: "usage", ...usage };
-      yield { type: "stop", reason: stopReason };
+      // A step that ended after function calls waits for their results (contracts/provider-tool-calls.md).
+      yield { type: "stop", reason: sawCall && stopReason === "end" ? "tool_use" : stopReason };
     }
   }
 }
@@ -151,10 +159,12 @@ export class GeminiProvider implements ProviderPort {
 function toBody(req: ModelRequest) {
   const model = GEMINI_MODELS.find((m) => m.id === req.modelId);
   const effort = req.effort && model?.supportsEffort && model.effortLevels.includes(req.effort) ? req.effort : undefined;
+  const tools = toToolDeclarations(req.tools);
   return {
     // One part per layer keeps the precedence order visible to the model.
     ...(req.layers.length > 0 && { systemInstruction: { parts: req.layers.map((layer) => ({ text: layer.text })) } }),
-    contents: req.messages.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] })),
+    contents: toContents(req.messages),
+    ...(tools && { tools }),
     generationConfig: {
       maxOutputTokens: req.maxTokens,
       ...(effort && { thinkingConfig: { thinkingLevel: effort } }),
@@ -164,6 +174,7 @@ function toBody(req: ModelRequest) {
 
 interface ReadChunk {
   texts: string[];
+  calls: ReadCall[];
   usage?: Usage;
   stopReason?: StopReason;
   error?: MappedError;
@@ -171,21 +182,26 @@ interface ReadChunk {
 
 /** Reads only the fields the adapter uses; anything else in the chunk is ignored. */
 function readChunk(raw: unknown): ReadChunk {
-  if (!isRecord(raw)) return { texts: [], error: { code: "unknown" } };
+  if (!isRecord(raw)) return { texts: [], calls: [], error: { code: "unknown" } };
   const error = raw["error"];
   if (error !== undefined) {
     const status = isRecord(error) && typeof error["code"] === "number" ? error["code"] : 500;
-    return { texts: [], error: mapErrorBody(status, raw) };
+    return { texts: [], calls: [], error: mapErrorBody(status, raw) };
   }
 
-  const out: ReadChunk = { texts: [] };
+  const out: ReadChunk = { texts: [], calls: [] };
   const candidate = Array.isArray(raw["candidates"]) ? raw["candidates"][0] : undefined;
   if (isRecord(candidate)) {
     const content = candidate["content"];
     const parts = isRecord(content) && Array.isArray(content["parts"]) ? content["parts"] : [];
     for (const part of parts) {
       // A thought part is the model's reasoning: never shown or stored (research R3).
-      if (isRecord(part) && part["thought"] !== true && typeof part["text"] === "string" && part["text"] !== "") {
+      if (!isRecord(part)) continue;
+      if (part["functionCall"] !== undefined) {
+        const call = readFunctionCall(part, out.calls.length);
+        if (call) out.calls.push(call);
+        else out.error = { code: "bad_request" };
+      } else if (part["thought"] !== true && typeof part["text"] === "string" && part["text"] !== "") {
         out.texts.push(part["text"]);
       }
     }

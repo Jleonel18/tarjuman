@@ -46,6 +46,8 @@ export interface ContractSuiteOptions {
    * cases of contracts/provider-tool-calls.md. Adapters without tools leave it off.
    */
   tools?: boolean;
+  /** The adapter carries an opaque `continuation` on tool calls (Gemini's thought signature). */
+  continuation?: boolean;
 }
 
 const ALL_CODES: ProviderErrorCode[] = [
@@ -192,12 +194,15 @@ export function runProviderContractSuite(
     if (options.tools) {
       it("emits one complete tool_call before usage, then stops with tool_use", async () => {
         const h = await makeHarness();
-        h.prepare({ kind: "tool-call", call: SEARCH_CALL, inputTokens: 40, outputTokens: 9 });
+        const call: ToolCallRecord = options.continuation
+          ? SEARCH_CALL
+          : { id: SEARCH_CALL.id, name: SEARCH_CALL.name, input: SEARCH_CALL.input };
+        h.prepare({ kind: "tool-call", call, inputTokens: 40, outputTokens: 9 });
         const events = await collect(
           h.provider.stream({ ...request(h.modelId), tools: [SEARCH_TOOL] }, h.secret, new AbortController().signal),
         );
         const calls = events.filter((e) => e.type === "tool_call");
-        expect(calls).toEqual([{ type: "tool_call", ...SEARCH_CALL }]);
+        expect(calls).toEqual([{ type: "tool_call", ...call }]);
         const types = events.map((e) => e.type);
         expect(types.indexOf("tool_call")).toBeLessThan(types.indexOf("stop"));
         expect(events.at(-1)).toEqual({ type: "stop", reason: "tool_use" });

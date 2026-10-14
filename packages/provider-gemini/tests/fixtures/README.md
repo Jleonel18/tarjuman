@@ -12,6 +12,10 @@ that follow each `data:` line (Gemini sends no `[DONE]`); the test helper adds t
 - `stream-safety-after-text.json`: text, then `finishReason: "SAFETY"`.
 - `stream-prompt-blocked.json`: `promptFeedback.blockReason` and no candidate.
 - `stream-max-tokens.json`, `stream-truncated.json` (no finish reason), `stream-error-midway.json`.
+- `stream-tool-call.json`, `stream-two-tool-calls.json`, `stream-tool-call-bad-args.json` (005):
+  `functionCall` parts with `id`, `name`, `args`, and a `thoughtSignature` on the part, **shaped after
+  the live capture of 2026-10-14** (005 research R8). The ids, args, and signatures are made up. In
+  a parallel call only the first part carries a signature.
 - `errors.json`: error bodies by case. The 400 `API_KEY_INVALID`, 401
   `ACCESS_TOKEN_TYPE_UNSUPPORTED`, 403 `PERMISSION_DENIED`, and 503 `UNAVAILABLE` shapes were seen
   live; the others follow Google's documented `google.rpc.Status` form.

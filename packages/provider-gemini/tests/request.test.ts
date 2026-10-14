@@ -91,10 +91,13 @@ describe("GeminiProvider: the streaming request", () => {
     expect((await send(request({ effort: "max" }))).body?.["generationConfig"]).toEqual({ maxOutputTokens: 1024 });
   });
 
-  it("never sends safety settings, tools, sampling parameters, cached content, or thought options", async () => {
-    const call = await send(request({ effort: "high", tools: [{ name: "x", description: "x", inputSchema: {} }] }));
+  it("never sends safety settings, tool config, sampling parameters, cached content, or thought options", async () => {
+    // `tools` is sent only when the request carries tools (005); see tools.test.ts.
+    const call = await send(request({ effort: "high" }));
     expect(Object.keys(call.body ?? {}).sort()).toEqual(["contents", "generationConfig", "systemInstruction"]);
-    for (const forbidden of ["safetySettings", "tools", "toolConfig", "cachedContent", "temperature", "topP", "topK", "includeThoughts", "thinkingBudget"]) {
+    const withTools = await send(request({ effort: "high", tools: [{ name: "x", description: "x", inputSchema: {} }] }));
+    expect(Object.keys(withTools.body ?? {}).sort()).toEqual(["contents", "generationConfig", "systemInstruction", "tools"]);
+    for (const forbidden of ["safetySettings", "toolConfig", "cachedContent", "temperature", "topP", "topK", "includeThoughts", "thinkingBudget"]) {
       expect(call.rawBody, forbidden).not.toContain(forbidden);
     }
   });

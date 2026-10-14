@@ -71,4 +71,74 @@ describe.skipIf(KEY === "")(`GeminiProvider against the real API (${MODEL_ID})`,
     expect(usage).toMatchObject({ inputTokens: expect.any(Number), outputTokens: expect.any(Number) });
     expect(last).toEqual({ type: "stop", reason: "end" });
   });
+
+  it("round-trips a tool call: the call arrives with a continuation, and the result lets the answer stream (005)", async () => {
+    const tool = {
+      name: "lookup_word",
+      description: "Looks up one word and returns its meaning.",
+      inputSchema: {
+        type: "object",
+        additionalProperties: false,
+        properties: { word: { type: "string", description: "The word to look up." } },
+        required: ["word"],
+      },
+    };
+    const base = {
+      modelId: MODEL_ID,
+      layers: [{ id: "security" as const, text: "Always call lookup_word before answering. Then answer in one short sentence." }],
+      maxTokens: 512,
+      effort: "low" as const,
+      tools: [tool],
+    };
+    const provider = new GeminiProvider();
+
+    const first: StreamEvent[] = [];
+    for await (const event of provider.stream(
+      { ...base, messages: [{ role: "user", content: "What does the Spanish word 'ser' mean?" }] },
+      sealSecret(KEY),
+      new AbortController().signal,
+    )) {
+      first.push(event);
+    }
+    const call = first.find((e) => e.type === "tool_call");
+    console.info(`[gemini live] tool round trip, step 1: ${JSON.stringify(first.map((e) => (e.type === "tool_call" ? { type: e.type, name: e.name, hasContinuation: e.continuation !== undefined } : e.type)))}`);
+    const failure = first.at(-1);
+    if (failure?.type === "error" && (failure.code === "rate_limited" || failure.code === "overloaded")) {
+      console.info(`[gemini live] the service answered ${failure.code}; nothing was retried.`);
+      return;
+    }
+    // The model is not forced to call the tool (tool_choice is never sent), so report instead of failing.
+    if (!call || call.type !== "tool_call") {
+      console.info("[gemini live] the model answered without calling the tool; the round trip was not exercised.");
+      return;
+    }
+    expect(call.name).toBe("lookup_word");
+    expect(call.continuation, "Gemini returns a thought signature that must be sent back").toBeDefined();
+    expect(first.at(-1)).toEqual({ type: "stop", reason: "tool_use" });
+
+    const second: StreamEvent[] = [];
+    for await (const event of provider.stream(
+      {
+        ...base,
+        messages: [
+          { role: "user", content: "What does the Spanish word 'ser' mean?" },
+          { role: "assistant", content: "", toolCalls: [{ id: call.id, name: call.name, input: call.input, ...(call.continuation !== undefined && { continuation: call.continuation }) }] },
+          { role: "tool", toolCallId: call.id, name: call.name, content: "ser: to be (identity, origin, characteristics)" },
+        ],
+      },
+      sealSecret(KEY),
+      new AbortController().signal,
+    )) {
+      second.push(event);
+    }
+    const text = second.map((e) => (e.type === "text" ? e.delta : "")).join("");
+    console.info(`[gemini live] tool round trip, step 2: text ${JSON.stringify(text)} last ${JSON.stringify(second.at(-1))}`);
+    expect(JSON.stringify([first, second])).not.toContain(KEY);
+    const last = second.at(-1);
+    if (last?.type === "error" && (last.code === "rate_limited" || last.code === "overloaded")) return;
+    // Sending the call back without its signature fails with a 400; with it, the answer streams.
+    expect(second.some((e) => e.type === "error")).toBe(false);
+    expect(text.length).toBeGreaterThan(0);
+    expect(last).toEqual({ type: "stop", reason: "end" });
+  });
 });

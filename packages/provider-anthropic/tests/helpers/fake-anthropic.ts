@@ -113,6 +113,20 @@ export function answerEvents(chunks: string[], inputTokens: number, outputTokens
   ];
 }
 
+/** One tool_use block whose input arrives in two fragments, ending the step with `tool_use`. */
+export function toolCallEvents(id: string, name: string, inputJson: string, inputTokens: number, outputTokens: number): SseEvent[] {
+  const cut = Math.floor(inputJson.length / 2);
+  return [
+    answerEvents([], inputTokens, outputTokens)[0] as SseEvent,
+    { event: "content_block_start", data: { type: "content_block_start", index: 0, content_block: { type: "tool_use", id, name, input: {} } } },
+    { event: "content_block_delta", data: { type: "content_block_delta", index: 0, delta: { type: "input_json_delta", partial_json: inputJson.slice(0, cut) } } },
+    { event: "content_block_delta", data: { type: "content_block_delta", index: 0, delta: { type: "input_json_delta", partial_json: inputJson.slice(cut) } } },
+    { event: "content_block_stop", data: { type: "content_block_stop", index: 0 } },
+    { event: "message_delta", data: { type: "message_delta", delta: { stop_reason: "tool_use", stop_sequence: null }, usage: { output_tokens: outputTokens } } },
+    { event: "message_stop", data: { type: "message_stop" } },
+  ];
+}
+
 /** A non-streaming `messages.create` reply, as used by credential validation. */
 export function messageJson(text = "OK") {
   return {

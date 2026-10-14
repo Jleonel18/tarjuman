@@ -85,7 +85,7 @@ describe("stages cannot be reordered, skipped, or replaced", () => {
 
   it("the registry has no method that touches stages, and cannot be patched", () => {
     const { registry } = registered();
-    expect(ownNames(CapabilityRegistry.prototype)).toEqual(["constructor", "domainRules", "get", "has", "list", "register"]);
+    expect(ownNames(CapabilityRegistry.prototype)).toEqual(["constructor", "domainRules", "forTurn", "get", "has", "list", "register"]);
     expect(Object.isFrozen(CapabilityRegistry.prototype)).toBe(true);
     expect(Object.isFrozen(registry)).toBe(true);
     expect(() => {

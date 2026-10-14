@@ -1,5 +1,7 @@
+import type { PermissionDenial } from "../capabilities/permission-broker";
 import type { Verdict } from "../conversation/types";
 import type { AbortSignalLike, ProviderErrorCode } from "../ports/provider";
+import type { ResourceCard } from "../search/resource-card";
 import type { UsageRecord } from "../stats/types";
 
 /**
@@ -19,9 +21,22 @@ export interface TurnInput {
   untrustedMaterial?: UntrustedMaterial[];
 }
 
-export type NoticeCode = "context_80" | "interrupted" | "provider_refusal";
+export type NoticeCode =
+  | "context_80"
+  | "interrupted"
+  | "provider_refusal"
+  /** A later search failed after an earlier one worked: the cards come from what was found (005). */
+  | "search_incomplete"
+  /** A search was refused for its key: missing, rejected, or the API not enabled (005 FR-010). */
+  | "search_key_error"
+  /** The source's daily allowance ran out (005). */
+  | "search_quota";
 
-export type TurnStatus = "complete" | "interrupted" | "refused";
+/**
+ * `consent_required`: the model asked to search a source the learner has not agreed to. Nothing was
+ * sent and nothing is kept; the app asks, and on agreement sends the same message as a new turn (005).
+ */
+export type TurnStatus = "complete" | "interrupted" | "refused" | "consent_required";
 
 export type TurnEvent =
   /** The input guard found a key-shaped string and withheld it from the model. */
@@ -31,7 +46,13 @@ export type TurnEvent =
   | { type: "render"; blocks: SafeBlock[] }
   | { type: "usage"; record: UsageRecord }
   | { type: "notice"; code: NoticeCode }
-  | { type: "done"; status: TurnStatus }
+  /** A tool is running and the learner waits (005): "Searching…". */
+  | { type: "status"; code: "searching" }
+  /** The resource cards of the answer, once, after the last step and only for an accepted answer. */
+  | { type: "resources"; cards: ResourceCard[] }
+  /** A tool call was refused by the permission broker. Metrics only; it names no payload. */
+  | { type: "permission_denied"; denial: PermissionDenial }
+  | { type: "done"; status: TurnStatus; /** Set with `consent_required`. */ sourceId?: string }
   | { type: "error"; code: ProviderErrorCode; retryAfterSeconds?: number };
 
 export interface Pipeline {

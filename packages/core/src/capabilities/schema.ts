@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CAPABILITY_CONTRACT_VERSION } from "./types";
+import { SUPPORTED_CONTRACT_VERSIONS } from "./types";
 
 const SEMVER = /^\d+\.\d+\.\d+$/;
 const KEBAB_ID = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
@@ -17,6 +17,7 @@ export const permissionSchema = z.discriminatedUnion("kind", [
     })
     .strict(),
   z.object({ kind: z.literal("ui"), surface: z.literal("notice") }).strict(),
+  z.object({ kind: z.literal("search"), sources: z.array(z.string().min(1)).min(1) }).strict(),
 ]);
 
 const localizedText = z.record(z.string().min(1), z.string().min(1));
@@ -55,14 +56,23 @@ const toolSchema = z
     }),
     requiredPermissions: z.array(permissionSchema),
     sideEffecting: z.boolean(),
-    handler: z.custom<(...args: never[]) => unknown>((v) => typeof v === "function", {
-      message: "Tool handler must be a function",
-    }),
+    presentation: z.literal("resources").optional(),
+    handler: z
+      .custom<(...args: never[]) => unknown>((v) => typeof v === "function", {
+        message: "Tool handler must be a function",
+      })
+      .optional(),
   })
   .strict();
 
 /** The only layer a capability may target; any other value is rejected (FR-008). */
-const fragmentSchema = z.object({ layer: z.literal("capability"), text: localizedText }).strict();
+const fragmentSchema = z
+  .object({
+    layer: z.literal("capability"),
+    text: localizedText,
+    whenSearch: z.array(z.enum(["available", "off", "no_key", "model_cannot_search"])).min(1).optional(),
+  })
+  .strict();
 
 function sameJson(a: unknown, b: unknown): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
@@ -72,7 +82,8 @@ export const capabilitySchema = z
   .object({
     id: z.string().regex(KEBAB_ID),
     version: z.string().regex(SEMVER),
-    contractVersion: z.literal(CAPABILITY_CONTRACT_VERSION),
+    contractVersion: z.enum(SUPPORTED_CONTRACT_VERSIONS),
+    availability: z.enum(["own_conversations", "all_conversations"]).optional(),
     tools: z.array(toolSchema),
     permissions: z.array(permissionSchema),
     domainRules: z.array(domainRuleSchema),
@@ -93,6 +104,30 @@ export const capabilitySchema = z
         }
       });
     });
+
+    // A presentation tool is data for the UI: it cannot act, and it needs no handler. Every other
+    // tool needs one.
+    cap.tools.forEach((tool, ti) => {
+      if (tool.presentation !== undefined) {
+        if (tool.sideEffecting) {
+          ctx.addIssue({ code: "custom", path: ["tools", ti, "sideEffecting"], message: `Tool "${tool.name}": a presentation tool must not be side-effecting` });
+        }
+        if (tool.requiredPermissions.length > 0) {
+          ctx.addIssue({ code: "custom", path: ["tools", ti, "requiredPermissions"], message: `Tool "${tool.name}": a presentation tool must not require permissions` });
+        }
+      } else if (tool.handler === undefined) {
+        ctx.addIssue({ code: "custom", path: ["tools", ti, "handler"], message: `Tool "${tool.name}" needs a handler` });
+      }
+    });
+
+    // The 1.1.0 additions are gated by the version the capability declares.
+    if (cap.contractVersion === "1.0.0") {
+      const needs = (path: (string | number)[], what: string) =>
+        ctx.addIssue({ code: "custom", path, message: `${what} needs contractVersion 1.1.0` });
+      if (cap.availability !== undefined) needs(["availability"], "availability");
+      cap.permissions.forEach((p, pi) => p.kind === "search" && needs(["permissions", pi], "A search permission"));
+      cap.tools.forEach((t, ti) => t.presentation !== undefined && needs(["tools", ti, "presentation"], "A presentation tool"));
+    }
 
     const toolNames = new Set<string>();
     cap.tools.forEach((tool, ti) => {

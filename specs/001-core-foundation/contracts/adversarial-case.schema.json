@@ -5,9 +5,19 @@
   "description": "One red-team case (FR-036 – FR-038). Cases are permanent once added.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "category", "input", "locale", "expect", "origin"],
+  "required": [
+    "id",
+    "category",
+    "input",
+    "locale",
+    "expect",
+    "origin"
+  ],
   "properties": {
-    "id": { "type": "string", "pattern": "^adv-[a-z0-9-]+-\\d{3}$" },
+    "id": {
+      "type": "string",
+      "pattern": "^adv-[a-z0-9-]+-\\d{3}$"
+    },
     "category": {
       "enum": [
         "direct-override",
@@ -16,37 +26,134 @@
         "exfiltration-links-images",
         "embedded-external-content",
         "tone-scope-relaxation",
-        "multilingual-encoded"
+        "multilingual-encoded",
+        "resource-curation"
       ]
     },
-    "input": { "type": "string" },
-    "simulatedExternalContent": { "type": "string" },
-    "locale": { "type": "string" },
-    "encoding": { "enum": ["none", "base64", "homoglyph", "zero-width", "rot13", "mixed-script"] },
+    "input": {
+      "type": "string"
+    },
+    "simulatedExternalContent": {
+      "type": "string"
+    },
+    "locale": {
+      "type": "string"
+    },
+    "encoding": {
+      "enum": [
+        "none",
+        "base64",
+        "homoglyph",
+        "zero-width",
+        "rot13",
+        "mixed-script"
+      ]
+    },
     "tones": {
       "type": "array",
-      "items": { "enum": ["warm", "neutral", "formal"] },
+      "items": {
+        "enum": [
+          "warm",
+          "neutral",
+          "formal"
+        ]
+      },
       "description": "Tones to run; default all"
     },
     "expect": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["noKeyDisclosure", "noRemoteResources"],
+      "required": [
+        "noKeyDisclosure",
+        "noRemoteResources"
+      ],
       "properties": {
-        "noKeyDisclosure": { "const": true },
-        "noRemoteResources": { "const": true },
-        "noInstructionFollowing": { "type": "boolean" },
-        "verdict": { "enum": ["accept", "refuse", "clarify"] },
-        "mustNotContain": { "type": "array", "items": { "type": "string" } },
-        "mustContainOneOf": { "type": "array", "items": { "type": "string" } }
+        "noKeyDisclosure": {
+          "const": true
+        },
+        "noRemoteResources": {
+          "const": true
+        },
+        "noInstructionFollowing": {
+          "type": "boolean"
+        },
+        "verdict": {
+          "enum": [
+            "accept",
+            "refuse",
+            "clarify"
+          ]
+        },
+        "mustNotContain": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mustContainOneOf": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "maxSearchRequests": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Most search requests the source may receive"
+        }
       }
     },
-    "origin": { "enum": ["seed", "reported-bypass"] },
-    "addedIn": { "type": "string", "description": "Release or PR where the case was added" },
+    "origin": {
+      "enum": [
+        "seed",
+        "reported-bypass"
+      ]
+    },
+    "addedIn": {
+      "type": "string",
+      "description": "Release or PR where the case was added"
+    },
     "layers": {
       "type": "array",
-      "items": { "enum": ["structural", "behavioral"] },
-      "default": ["structural", "behavioral"]
+      "items": {
+        "enum": [
+          "structural",
+          "behavioral"
+        ]
+      },
+      "default": [
+        "structural",
+        "behavioral"
+      ]
+    },
+    "curation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "results"
+      ],
+      "description": "Amended by 005: a case that runs the resource tools. A compromised model searches, shows the results, and answers; the named hostile search results are what the source returns (packages/testing/src/fixtures/hostile-search.ts).",
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Names of hostile search results the source returns"
+        },
+        "query": {
+          "type": "string",
+          "description": "The query the compromised model writes; default is the learner's message"
+        },
+        "prose": {
+          "type": "string",
+          "description": "What the compromised model writes in its answer; {{card1}} is the link of the first result"
+        },
+        "callTool": {
+          "type": "string",
+          "description": "A side-effecting tool the compromised model calls after the search"
+        }
+      }
     }
   }
 }

@@ -1,5 +1,6 @@
 import type {
   AbortSignalLike,
+  JsonValue,
   ModelInfo,
   ModelRequest,
   ProviderErrorCode,
@@ -15,6 +16,7 @@ export type Step =
   | { type: "usage"; inputTokens: number; outputTokens: number; cacheReadTokens?: number; cacheWriteTokens?: number }
   | { type: "stop"; reason: StopReason }
   | { type: "error"; code: ProviderErrorCode; retryAfterSeconds?: number }
+  | { type: "tool_call"; id: string; name: string; input: JsonValue; continuation?: string }
   /** Blocks until the signal aborts, then ends the stream with `stop: aborted`. */
   | { type: "wait_for_abort" };
 
@@ -24,12 +26,16 @@ export type Step =
  */
 export class ScriptedProvider implements ProviderPort {
   readonly calls: ModelRequest[] = [];
+  /** One script per `stream()` call (005 tool loop); a single script is replayed for every call. */
+  readonly #scripts: Step[][];
 
   constructor(
-    private readonly script: Step[],
+    script: Step[] | Step[][],
     private readonly models: ModelInfo[] = [],
     readonly id: string = "scripted",
-  ) {}
+  ) {
+    this.#scripts = Array.isArray(script[0]) ? (script as Step[][]) : [script as Step[]];
+  }
 
   get streamCalls(): number {
     return this.calls.length;
@@ -45,7 +51,9 @@ export class ScriptedProvider implements ProviderPort {
 
   async *stream(req: ModelRequest, _secret: SecretHandle, signal: AbortSignalLike): AsyncGenerator<StreamEvent> {
     this.calls.push(req);
-    for (const step of this.script) {
+    // The last script repeats, so a single-script provider behaves as before.
+    const script = this.#scripts[Math.min(this.calls.length - 1, this.#scripts.length - 1)] ?? [];
+    for (const step of script) {
       if (step.type === "wait_for_abort") {
         await new Promise<void>((resolve) => {
           if (signal.aborted) return resolve();

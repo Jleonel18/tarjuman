@@ -1,22 +1,31 @@
 import languageQa from "@tarjuman/capability-language-qa";
+import resourceCuration from "@tarjuman/capability-resource-curation";
 import {
   CapabilityRegistry,
+  CompositeCredentialValidator,
+  SearchBroker,
+  SearchCredentialValidator,
+  SearchSettingsStore,
   availableUiLocales,
   ConversationService,
   DataController,
   KeyManager,
   Pipeline,
   ProviderCredentialValidator,
+  ResourceRetention,
+  SavedResourcesStore,
   type CredentialStore,
   readStoredProfile,
   type LearnerProfile,
   type ModelInfo,
   type ProviderPort,
+  type SearchPort,
   type StoragePort,
   type StoredProfile,
 } from "@tarjuman/core";
 import { AnthropicProvider, DEFAULT_MODEL_ID } from "@tarjuman/provider-anthropic";
 import { DEFAULT_GEMINI_MODEL_ID, GeminiProvider } from "@tarjuman/provider-gemini";
+import { YouTubeSearch } from "@tarjuman/search-youtube";
 import {
   IndexedDbStorage,
   MemoryStorage,
@@ -50,6 +59,16 @@ export interface AppServices {
   providers: readonly ProviderOffer[];
   /** The light, dark, or follow-system choice, kept on the device (003). */
   themes: ThemePreferenceStore;
+  /** Search on/off and consent per source (005). */
+  searchSettings: SearchSettingsStore;
+  /** Holds the search sources; the controller asks it for terms versions and card refreshes (005). */
+  search: SearchBroker;
+  /** The search sources this build offers, which are also credential ids. Empty: no search. */
+  searchSourceIds: readonly string[];
+  /** The saved list (005 US4). */
+  saved: SavedResourcesStore;
+  /** The 30-day rule for everything fetched from a search source (005 FR-021). */
+  retention: ResourceRetention;
 }
 
 /** One provider the build offers, as the UI and the controller see it: no `ProviderPort` (004). */
@@ -119,9 +138,23 @@ async function createProviders(): Promise<ProviderEntry[]> {
   ];
 }
 
+/**
+ * Builds the search sources the app offers (005). The e2e build swaps in a scripted double that
+ * answers by the words of the query; the product searches YouTube.
+ */
+async function createSearchSources(): Promise<SearchPort[]> {
+  if (import.meta.env.VITE_PROVIDER === "mock") {
+    const { e2eSearchResponder, MockSearchPort } = await import("@tarjuman/testing/mock-search");
+    return [new MockSearchPort({ respond: e2eSearchResponder })];
+  }
+  return [new YouTubeSearch()];
+}
+
 export interface AssembleOptions {
   /** In display order. Ids must be unique; the pipeline checks it. */
   providers: readonly ProviderEntry[];
+  /** The search sources (005). Without any, no search tool is offered and the curation capability is not registered. */
+  searchSources?: readonly SearchPort[];
   storage: StoragePort & CredentialRecordAccess;
   storageAvailable: boolean;
   sessionSecrets: SessionSecrets;
@@ -138,10 +171,20 @@ export function assembleServices(options: AssembleOptions): AppServices {
   const providers = options.providers.map((entry) => entry.provider);
   const credentials = new WebCredentialStore({ records: storage, sessionSecrets: options.sessionSecrets });
 
-  const registry = new CapabilityRegistry();
-  registry.register(languageQa);
-  // Capability strings are namespaced `capability.<id>.*`, so they cannot replace core strings.
-  for (const [locale, catalog] of Object.entries(languageQa.i18n)) registerCatalog(i18n, locale, catalog);
+  const searchPorts = options.searchSources ?? [];
+  const searchSourceIds = searchPorts.map((port) => port.id);
+  const registry = new CapabilityRegistry({ searchSources: searchSourceIds });
+  const capabilities = searchPorts.some((port) => port.id === "youtube") ? [languageQa, resourceCuration] : [languageQa];
+  for (const capability of capabilities) {
+    registry.register(capability);
+    // Capability strings are namespaced `capability.<id>.*`, so they cannot replace core strings.
+    for (const [locale, catalog] of Object.entries(capability.i18n)) registerCatalog(i18n, locale, catalog);
+  }
+  const now = () => new Date().toISOString();
+  const searchSettings = new SearchSettingsStore({ storage, now });
+  const search = new SearchBroker({ ports: searchPorts, settings: searchSettings, credentials });
+  const saved = new SavedResourcesStore({ storage, now });
+  const retention = new ResourceRetention({ storage, search, now });
 
   const conversations = new ConversationService({
     storage,
@@ -164,8 +207,15 @@ export function assembleServices(options: AssembleOptions): AppServices {
     capabilities: registry,
     getProfile,
     refusalTemplate,
+    search,
   });
-  const keys = new KeyManager({ validator: new ProviderCredentialValidator(providers), store: credentials });
+  const keys = new KeyManager({
+    validator: new CompositeCredentialValidator([
+      new ProviderCredentialValidator(providers),
+      new SearchCredentialValidator(searchPorts),
+    ]),
+    store: credentials,
+  });
 
   return {
     storage,
@@ -177,13 +227,18 @@ export function assembleServices(options: AssembleOptions): AppServices {
     conversations,
     pipeline,
     keys,
-    data: new DataController({ storage, credentials, providerIds: providers.map((p) => p.id) }),
+    data: new DataController({ storage, credentials, credentialIds: [...providers.map((p) => p.id), ...searchSourceIds] }),
     providers: options.providers.map(({ provider, defaultModelId }) => ({
       id: provider.id,
       models: provider.listModels(),
       defaultModelId,
     })),
     themes: options.themes ?? new ThemePreferenceStore(),
+    searchSettings,
+    search,
+    searchSourceIds,
+    saved,
+    retention,
   };
 }
 
@@ -211,12 +266,16 @@ export async function createAppServices(): Promise<AppServices> {
     }
   }
 
-  return assembleServices({
+  const services = assembleServices({
     providers: await createProviders(),
+    searchSources: await createSearchSources(),
     storage: storageAvailable ? indexedDb : new MemoryStorage(),
     storageAvailable,
     sessionSecrets: defaultSessionSecrets,
     i18n,
     includeTestLocales,
   });
+  // The 30-day rule runs at every start, before anything is read for the screen (005 FR-021).
+  await services.retention.purgeExpired();
+  return services;
 }

@@ -136,6 +136,49 @@ test.describe("right-to-left layout with the pseudo locale", () => {
   });
 });
 
+test.describe("resource cards and the search dialog (005)", () => {
+  const SEARCH_KEY = "AIzaMOCKsearchKEY0000000000000000000000";
+
+  test("the consent dialog and the cards mirror, and titles follow their own direction", async ({ page }) => {
+    // Set up in English, where the labels are readable, then switch to the test locale.
+    await page.goto("/");
+    await page.locator("main select").nth(0).selectOption("en");
+    await page.locator("main select").nth(1).selectOption("ja");
+    await page.getByRole("button", { name: "Next" }).click();
+    await page.getByLabel("API key", { exact: true }).fill(VALID_KEY);
+    await page.getByRole("radio", { name: "This session only" }).check();
+    await page.getByRole("button", { name: "Save key" }).click();
+    await page.getByRole("button", { name: "Settings" }).click();
+    const search = page.getByRole("region", { name: "Internet search" });
+    await search.getByRole("button", { name: "Add search key" }).click();
+    await search.getByLabel("Search API key").fill(SEARCH_KEY);
+    await search.getByRole("radio", { name: "This session only" }).check();
+    await search.getByRole("button", { name: "Save search key" }).click();
+    await expect(search).toContainText("AIza…0000");
+    await page.getByLabel("Interface language").selectOption("ar-XB");
+    await page.locator(".settings-screen__back").click();
+
+    await ask(page, "Find videos about climbing");
+    const dialog = page.locator("dialog.consent");
+    await expect(dialog).toBeVisible();
+    await expectRtl(page);
+    await expectStartsOnRight(dialog.locator("h2"), true);
+    await dialog.locator(".consent__actions button").first().click();
+
+    const cards = page.locator("li.resource");
+    await expect(cards).toHaveCount(3);
+    await expectRtl(page);
+    // The card's own text mirrors; a Latin title and note follow their own direction (dir="auto").
+    await expectStartsOnRight(cards.first().locator(".resource__source"), true);
+    await expect(cards.first().locator(".resource__title")).toHaveAttribute("dir", "auto");
+    await expect(cards.first().locator(".resource__fit")).toHaveAttribute("dir", "auto");
+    // dir="auto" resolves from the text itself: a Latin title reads left to right inside an RTL card.
+    const direction = await cards.first().locator(".resource__title").evaluate((el) => getComputedStyle(el).direction);
+    expect(direction).toBe("ltr");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+  });
+});
+
 test.describe("mixed-direction messages", () => {
   test("Arabic and Hebrew inside an English message are isolated and the base direction follows the first letter", async ({
     page,

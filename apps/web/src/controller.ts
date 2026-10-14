@@ -4,6 +4,7 @@ import {
   DEFAULT_TONE_ID,
   DEFAULT_UI_LOCALE,
   guardInput,
+  isExpired,
   isShippedUiLocale,
   renderSafeBlocks,
   TEST_ONLY_LOCALES,
@@ -15,6 +16,8 @@ import {
   type DeleteAllOutcome,
   type Effort,
   type EnterKeyOutcome,
+  type ExpiredResourceCard,
+  type ResourceCard,
   type LearnerProfile,
   type Message,
   type Segment,
@@ -29,6 +32,10 @@ import { resetAppStore, useAppStore } from "./store";
 const CAPABILITY_ID = "language-qa";
 const PENDING_USER_ID = "pending-user";
 const PENDING_REPLY_ID = "pending-reply";
+/** The search source of this build, and the credential id of its key (005). */
+const SEARCH_SOURCE_ID = "youtube";
+
+const SEARCH_NOTICES: ReadonlySet<string> = new Set(["search_incomplete", "search_key_error", "search_quota"]);
 
 /**
  * What the learner typed, as shown back to them. Pasted material is not part of it, and a token the
@@ -54,7 +61,20 @@ export function toChatMessages(messages: readonly Message[], withheldLabel?: str
       const text = message.segments.map((segment) => segment.text).join("");
       // A turn that failed before any text arrived leaves an empty message; the error says why.
       if (text === "" && message.status !== "streaming") continue;
-      result.push({ id: message.id, author: "assistant", status: message.status, blocks: renderSafeBlocks(text) });
+      // A turn that searched shows only its cards' own links as links (005 FR-013).
+      const blocks =
+        message.searchCount !== undefined && message.searchCount > 0
+          ? renderSafeBlocks(text, {
+              allowedLinks: new Set((message.resources ?? []).flatMap((card) => (isExpired(card) ? [] : [card.link]))),
+            })
+          : renderSafeBlocks(text);
+      result.push({
+        id: message.id,
+        author: "assistant",
+        status: message.status,
+        blocks,
+        ...(message.resources !== undefined && { resources: message.resources }),
+      });
     }
   }
   return result;
@@ -106,8 +126,42 @@ export class AppController {
       route: profile === undefined ? "onboarding" : key === undefined ? "key" : "chat",
       // theme-init.js has already applied it before first paint; this lets the controls show it.
       theme: this.#services.themes.get(),
+      searchEnabled: await this.#services.searchSettings.isEnabled(),
+      ...(await this.#savedState()),
     });
   }
+
+  /** The saved list and the ids marked on cards. */
+  async #savedState() {
+    const saved = await this.#services.saved.list();
+    return { saved, savedIds: new Set(saved.map((item) => item.id)) as ReadonlySet<string> };
+  }
+
+  /** Keeps a card for later. Only the learner's click does this; no tool can (005 US4). */
+  saveResource = async (card: ResourceCard): Promise<void> => {
+    await this.#services.saved.save(card);
+    useAppStore.setState(await this.#savedState());
+  };
+
+  removeSavedResource = async (item: { sourceId: string; externalId: string }): Promise<void> => {
+    await this.#services.saved.remove(item);
+    useAppStore.setState(await this.#savedState());
+  };
+
+  openSaved = async (): Promise<void> => {
+    useAppStore.setState({ route: "saved", refreshFailed: false, ...(await this.#savedState()) });
+  };
+
+  /**
+   * Fetches an expired card again: one request, by the learner's own action, never retried. Whatever
+   * the outcome, the screen shows what storage holds afterwards.
+   */
+  refreshResource = async (card: ExpiredResourceCard): Promise<void> => {
+    const outcome = await this.#services.retention.refresh(card.sourceId, card.externalId, new AbortController().signal);
+    const conversationId = useAppStore.getState().activeConversationId;
+    useAppStore.setState({ refreshFailed: !outcome.ok, ...(await this.#savedState()) });
+    if (conversationId !== undefined) await this.#refresh(conversationId);
+  };
 
   /**
    * Light, dark, or follow the device (003 FR-003). Takes effect at once, with no reload, and does
@@ -317,6 +371,61 @@ export class AppController {
     useAppStore.setState({ notice: undefined });
   };
 
+  dismissSearchNotice = (): void => {
+    useAppStore.setState({ searchNotice: undefined });
+  };
+
+  /** Turns search on or off (005 FR-018). Off means no search request is made at all. */
+  setSearchEnabled = async (enabled: boolean): Promise<void> => {
+    // The switch moves at once; the choice is stored right after.
+    useAppStore.setState({ searchEnabled: enabled });
+    await this.#services.searchSettings.setEnabled(enabled);
+  };
+
+  /** Validates and stores the search key (credential id `youtube`); no other credential sees it. */
+  enterSearchKey = async (key: string, mode: CredentialStorageMode): Promise<EnterKeyOutcome> => {
+    const outcome = await this.#services.keys.enter(SEARCH_SOURCE_ID, key, mode);
+    if (outcome.ok) useAppStore.setState({ storedKeys: await this.#storedKeys() });
+    return outcome;
+  };
+
+  /** Replaces the search key; a rejected key keeps the old one. */
+  replaceSearchKey = async (key: string, mode: CredentialStorageMode): Promise<EnterKeyOutcome> => {
+    const outcome = await this.#services.keys.replace(SEARCH_SOURCE_ID, key, mode);
+    if (outcome.ok) useAppStore.setState({ storedKeys: await this.#storedKeys() });
+    return outcome;
+  };
+
+  removeSearchKey = async (): Promise<void> => {
+    if (useAppStore.getState().streaming) return;
+    await this.#services.keys.remove(SEARCH_SOURCE_ID);
+    useAppStore.setState({ storedKeys: await this.#storedKeys() });
+  };
+
+  /**
+   * The learner agrees to send searches to the source the model asked for (005 FR-019). Consent is
+   * recorded against the source's current terms version, and the same message is sent again as a
+   * new turn: the learner's own action, not a retry.
+   */
+  agreeToSearch = async (): Promise<void> => {
+    const request = useAppStore.getState().consentRequest;
+    if (!request) return;
+    const version = this.#services.search.termsVersionOf(request.sourceId);
+    if (version !== undefined) await this.#services.searchSettings.recordConsent(request.sourceId, version);
+    useAppStore.setState({ consentRequest: undefined });
+    await this.send(request.text);
+  };
+
+  /** The learner declines: nothing is sent or searched, and a short note says so. */
+  declineSearch = (): void => {
+    useAppStore.setState({ consentRequest: undefined, searchNotice: { code: "search_declined" } });
+  };
+
+  /** Where a search-key problem sends the learner: the settings screen. */
+  openSearchSettings = (): void => {
+    useAppStore.setState({ route: "settings", searchNotice: undefined });
+  };
+
   stop = (): void => {
     this.#abort?.abort();
   };
@@ -333,7 +442,7 @@ export class AppController {
 
     const abort = new AbortController();
     this.#abort = abort;
-    useAppStore.setState({ streaming: true, error: undefined, notice: undefined });
+    useAppStore.setState({ streaming: true, error: undefined, notice: undefined, searchNotice: undefined });
     let conversationId = state.activeConversationId;
     try {
       if (conversationId === undefined) {
@@ -361,9 +470,25 @@ export class AppController {
         if (event.type === "render") {
           useAppStore.setState((s) => ({
             messages: s.messages.map((m) =>
-              m.id === PENDING_REPLY_ID && m.author === "assistant" ? { ...m, blocks: event.blocks } : m,
+              m.id === PENDING_REPLY_ID && m.author === "assistant" ? { ...m, blocks: event.blocks, searching: false } : m,
             ),
           }));
+        } else if (event.type === "status") {
+          useAppStore.setState((s) => ({
+            messages: s.messages.map((m) =>
+              m.id === PENDING_REPLY_ID && m.author === "assistant" ? { ...m, searching: true } : m,
+            ),
+          }));
+        } else if (event.type === "resources") {
+          useAppStore.setState((s) => ({
+            messages: s.messages.map((m) =>
+              m.id === PENDING_REPLY_ID && m.author === "assistant" ? { ...m, resources: event.cards } : m,
+            ),
+          }));
+        } else if (event.type === "notice" && SEARCH_NOTICES.has(event.code)) {
+          useAppStore.setState({ searchNotice: { code: event.code as "search_incomplete" | "search_key_error" | "search_quota" } });
+        } else if (event.type === "done" && event.status === "consent_required" && event.sourceId !== undefined) {
+          useAppStore.setState({ consentRequest: { sourceId: event.sourceId, text } });
         } else if (event.type === "guard_warning") {
           useAppStore.setState({ notice: { code: event.code } });
         } else if (event.type === "error") {

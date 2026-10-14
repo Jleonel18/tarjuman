@@ -18,6 +18,12 @@
  */
 export const PROVIDER_ORIGINS = ["https://api.anthropic.com", "https://generativelanguage.googleapis.com"] as const;
 
+/**
+ * Origins a search key may be sent to, one per search source (005). Must match `YOUTUBE_API_ORIGIN`
+ * in `@tarjuman/search-youtube`; `tests/csp.test.ts` fails if they drift apart.
+ */
+export const SEARCH_ORIGINS = ["https://www.googleapis.com"] as const;
+
 export type CspMode = "production" | "development";
 
 export function buildCsp(mode: CspMode): string {
@@ -28,7 +34,7 @@ export function buildCsp(mode: CspMode): string {
     "style-src": dev ? ["'self'", "'unsafe-inline'"] : ["'self'"],
     "img-src": ["'self'"],
     "font-src": ["'self'"],
-    "connect-src": ["'self'", ...PROVIDER_ORIGINS, ...(dev ? ["ws://localhost:*", "http://localhost:*"] : [])],
+    "connect-src": ["'self'", ...PROVIDER_ORIGINS, ...SEARCH_ORIGINS, ...(dev ? ["ws://localhost:*", "http://localhost:*"] : [])],
     "object-src": ["'none'"],
     "base-uri": ["'none'"],
     "form-action": ["'none'"],

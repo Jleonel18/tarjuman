@@ -1,5 +1,6 @@
 import type { StoragePort } from "../ports/storage";
 import type { LanguageCode } from "../profile/types";
+import type { StoredResourceCard } from "../search/resource-card";
 import type { UsageRecord } from "../stats/types";
 import type { Conversation, Message, MessageStatus, Segment, Verdict } from "./types";
 
@@ -27,6 +28,8 @@ export type FinalStatus = Exclude<MessageStatus, "streaming">;
 export interface FinishDetails {
   verdict?: Verdict;
   ruleIds?: string[];
+  resources?: StoredResourceCard[];
+  searchCount?: number;
 }
 
 /**
@@ -128,10 +131,20 @@ export class ConversationService {
       status,
       verdict: details.verdict ?? message.verdict,
       ruleIds: details.ruleIds ?? message.ruleIds,
+      ...(details.resources !== undefined && details.resources.length > 0 && { resources: details.resources }),
+      ...(details.searchCount !== undefined && details.searchCount > 0 && { searchCount: details.searchCount }),
     };
     await this.#storage.put("messages", updated);
     await this.#saveConversation(await this.#requireConversation(message.conversationId));
     return updated;
+  }
+
+  /**
+   * Removes a message that must leave no trace, such as the question and the empty answer of a turn
+   * that stopped to ask for consent (005): the learner agrees and sends it again as a new turn.
+   */
+  async discard(messageId: string): Promise<void> {
+    await this.#storage.delete("messages", messageId);
   }
 
   /**

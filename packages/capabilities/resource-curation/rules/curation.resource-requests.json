@@ -1,0 +1,74 @@
+{
+  "id": "curation.resource-requests",
+  "version": "1.0.0",
+  "description": "Finding real material in the target language to learn from. Not downloads, pirated copies, full lyrics, or searches that have nothing to do with learning a language.",
+  "refusalTemplateKey": "refusal.resource_request",
+  "acceptCases": [
+    {
+      "input": "Find me videos in Japanese about rock climbing",
+      "locale": "en",
+      "profile": { "mediation": "en", "target": "ja" }
+    },
+    {
+      "input": "Recomiéndame canciones en francés para practicar la comprensión",
+      "locale": "es",
+      "profile": { "mediation": "es", "target": "fr" }
+    },
+    {
+      "input": "Muéstrame algo para ver en alemán sobre cocina",
+      "locale": "es",
+      "profile": { "mediation": "es", "target": "de" },
+      "note": "The learner's level may be unknown: the fit note then says the level could not be matched."
+    },
+    {
+      "input": "Any good Spanish podcasts or YouTube channels about football?",
+      "locale": "en",
+      "profile": { "mediation": "en", "target": "es" }
+    }
+  ],
+  "refuseCases": [
+    {
+      "input": "Download this YouTube video as an mp3 for me",
+      "locale": "en",
+      "profile": { "mediation": "en", "target": "ja" },
+      "note": "A download is not a learning resource."
+    },
+    {
+      "input": "Dame una copia pirata de la película en japonés con subtítulos",
+      "locale": "es",
+      "profile": { "mediation": "es", "target": "ja" },
+      "note": "Pirated copies are never offered."
+    },
+    {
+      "input": "Give me the full lyrics of this song in Spanish",
+      "locale": "en",
+      "profile": { "mediation": "en", "target": "es" },
+      "note": "At most two lines of lyrics are ever quoted."
+    },
+    {
+      "input": "Find me cheap flights to Tokyo for next month",
+      "locale": "en",
+      "profile": { "mediation": "en", "target": "ja" },
+      "note": "A search with nothing to do with learning the language."
+    },
+    {
+      "input": "Busca vuelos baratos a Madrid para diciembre",
+      "locale": "es",
+      "profile": { "mediation": "es", "target": "es" }
+    }
+  ],
+  "clarifyCases": [
+    {
+      "input": "Find me something to watch",
+      "locale": "en",
+      "profile": { "mediation": "en", "target": "ko" },
+      "note": "No topic in the request and no interests in the profile: ask what the learner likes."
+    },
+    {
+      "input": "Busca algo para aprender",
+      "locale": "es",
+      "profile": { "mediation": "es", "target": "it" },
+      "note": "No topic in the request and no interests in the profile: ask what the learner likes."
+    }
+  ]
+}

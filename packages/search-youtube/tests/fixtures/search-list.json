@@ -1,0 +1,51 @@
+{
+  "kind": "youtube#searchListResponse",
+  "etag": "synthetic",
+  "regionCode": "US",
+  "pageInfo": {
+    "totalResults": 4,
+    "resultsPerPage": 4
+  },
+  "items": [
+    {
+      "kind": "youtube#searchResult",
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "aaaaaaaaaaa"
+      },
+      "snippet": {
+        "title": "Escalada para principiantes"
+      }
+    },
+    {
+      "kind": "youtube#searchResult",
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "bbbbbbbbbbb"
+      },
+      "snippet": {
+        "title": "Boulder &amp; cuerda"
+      }
+    },
+    {
+      "kind": "youtube#searchResult",
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "not an id/../"
+      },
+      "snippet": {
+        "title": "Bad id"
+      }
+    },
+    {
+      "kind": "youtube#searchResult",
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "ccccccccccc"
+      },
+      "snippet": {
+        "title": "Removed before details"
+      }
+    }
+  ]
+}

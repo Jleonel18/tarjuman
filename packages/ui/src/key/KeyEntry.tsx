@@ -19,12 +19,15 @@ export interface KeyEntryProps {
   providerId?: string | undefined;
   /** Names the provider on screen; the app sets it when the learner had a choice. */
   showProvider?: boolean | undefined;
+  /** `search` is the key of a search source (005): its own title, intro, and wrong-key message. */
+  purpose?: "model" | "search" | undefined;
 }
 
 /** Where to get a key, per product provider. Written out so the catalog-key check sees them. */
 const HELP_KEYS: Readonly<Record<string, string>> = {
   anthropic: "key.help.anthropic",
   gemini: "key.help.gemini",
+  youtube: "key.help.youtube",
 };
 /** What the provider may do with what is sent (004 FR-020): only Gemini's free tier needs saying. */
 const DISCLOSURE_KEYS: Readonly<Record<string, string>> = {
@@ -35,7 +38,15 @@ const DISCLOSURE_KEYS: Readonly<Record<string, string>> = {
  * Where the learner brings their own API key. The storage choice has no preselected option and
  * a plain-language trade-off for each (FR-016); the key is never shown again after entry.
  */
-export function KeyEntry({ storageAvailable, maskedHint, onEnter, onReplace, providerId, showProvider = false }: KeyEntryProps): ReactElement {
+export function KeyEntry({
+  storageAvailable,
+  maskedHint,
+  onEnter,
+  onReplace,
+  providerId,
+  showProvider = false,
+  purpose = "model",
+}: KeyEntryProps): ReactElement {
   const { t } = useTranslation();
   const ids = { key: useId(), mode: useId() };
   const [key, setKey] = useState("");
@@ -65,7 +76,10 @@ export function KeyEntry({ storageAvailable, maskedHint, onEnter, onReplace, pro
       if (outcome.ok) setKey("");
       // Recognized locally as another provider's key: it was sent nowhere (004 FR-007).
       else if (outcome.code === "wrong_provider") {
-        setError({ messageKey: "key.wrong_provider", params: { provider: providerName(t, outcome.expectedProviderId) } });
+        setError({
+          messageKey: purpose === "search" ? "key.wrong_provider_search" : "key.wrong_provider",
+          params: { provider: providerName(t, outcome.expectedProviderId) },
+        });
       } else setError(describeProviderError(outcome.code));
     } finally {
       setPending(false);
@@ -74,8 +88,8 @@ export function KeyEntry({ storageAvailable, maskedHint, onEnter, onReplace, pro
 
   return (
     <section className="form screen-card" aria-labelledby={`${ids.key}-title`}>
-      <h2 id={`${ids.key}-title`}>{t("key.title")}</h2>
-      <p className="screen-card__intro">{t("key.intro")}</p>
+      <h2 id={`${ids.key}-title`}>{t(purpose === "search" ? "key.search.title" : "key.title")}</h2>
+      <p className="screen-card__intro">{t(purpose === "search" ? "key.search.intro" : "key.intro")}</p>
       {providerId !== undefined && showProvider ? (
         <p>{t("key.provider_in_use", { provider: providerName(t, providerId) })}</p>
       ) : null}
@@ -87,7 +101,7 @@ export function KeyEntry({ storageAvailable, maskedHint, onEnter, onReplace, pro
       ) : null}
 
       <div className="form__field">
-        <label htmlFor={ids.key}>{t("key.label")}</label>
+        <label htmlFor={ids.key}>{t(purpose === "search" ? "key.search.label" : "key.label")}</label>
         <input
           id={ids.key}
           className="key-input"
@@ -147,7 +161,7 @@ export function KeyEntry({ storageAvailable, maskedHint, onEnter, onReplace, pro
         disabled={pending || key.trim() === "" || mode === undefined}
         onClick={() => void submit()}
       >
-        {pending ? t("key.checking") : t("key.save")}
+        {pending ? t("key.checking") : t(purpose === "search" ? "key.search.save" : "key.save")}
       </button>
     </section>
   );

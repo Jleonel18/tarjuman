@@ -1,7 +1,8 @@
 import { ANTHROPIC_API_ORIGIN } from "@tarjuman/provider-anthropic";
 import { GEMINI_API_ORIGIN } from "@tarjuman/provider-gemini";
+import { YOUTUBE_API_ORIGIN } from "@tarjuman/search-youtube";
 import { describe, expect, it } from "vitest";
-import { PROVIDER_ORIGINS, buildCsp } from "../csp";
+import { PROVIDER_ORIGINS, SEARCH_ORIGINS, buildCsp } from "../csp";
 
 function directive(csp: string, name: string): string[] {
   const entry = csp.split(";").map((d) => d.trim()).find((d) => d.startsWith(`${name} `));
@@ -23,13 +24,23 @@ describe("production CSP", () => {
     expect(directive(csp, "img-src")).toEqual(["'self'"]);
   });
 
-  it("limits connections to this origin and the two AI providers, and nothing else (004 FR-011)", () => {
-    expect(directive(csp, "connect-src")).toEqual(["'self'", ANTHROPIC_API_ORIGIN, GEMINI_API_ORIGIN]);
+  it("limits connections to this origin, the two AI providers, and the YouTube Data API, and nothing else (004 FR-011, 005)", () => {
+    expect(directive(csp, "connect-src")).toEqual(["'self'", ANTHROPIC_API_ORIGIN, GEMINI_API_ORIGIN, YOUTUBE_API_ORIGIN]);
   });
 
-  it("stays in sync with the provider adapters' origins", () => {
+  it("stays in sync with the adapters' origins", () => {
     expect(PROVIDER_ORIGINS).toEqual([ANTHROPIC_API_ORIGIN, GEMINI_API_ORIGIN]);
+    expect(SEARCH_ORIGINS).toEqual([YOUTUBE_API_ORIGIN]);
     expect(GEMINI_API_ORIGIN).toBe("https://generativelanguage.googleapis.com");
+    expect(YOUTUBE_API_ORIGIN).toBe("https://www.googleapis.com");
+  });
+
+  it("never opens the wider googleapis.com family: only the two exact hosts", () => {
+    expect(directive(csp, "connect-src").filter((o) => o.includes("googleapis"))).toEqual([
+      GEMINI_API_ORIGIN,
+      YOUTUBE_API_ORIGIN,
+    ]);
+    expect(csp).not.toContain("*.googleapis.com");
   });
 
   it("denies plugins, base-uri changes, forms, and frames", () => {

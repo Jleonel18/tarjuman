@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { AnthropicProvider } from "../src/anthropic-provider";
 import cacheStream from "./fixtures/stream-answer.json";
 import overloadedMidway from "./fixtures/stream-overloaded-midway.json";
-import { answerEvents, errorReply, FakeAnthropic, messageJson, replyForCode, type SseEvent } from "./helpers/fake-anthropic";
+import { answerEvents, toolCallEvents, errorReply, FakeAnthropic, messageJson, replyForCode, type SseEvent } from "./helpers/fake-anthropic";
 
 const RAW_SECRET = "sk-ant-api03-SYNTHETIC-KEY-FOR-CONTRACT-TESTS-0001";
 
@@ -28,9 +28,9 @@ function replyFor(scenario: ContractScenario, forValidation: boolean) {
     case "fail-leaking-secret":
       return { kind: "reject", error: new Error(`socket hang up (x-api-key: ${RAW_SECRET})`) } as const;
     case "tool-call":
+      return { kind: "sse", events: toolCallEvents(scenario.call.id, scenario.call.name, JSON.stringify(scenario.call.input), scenario.inputTokens, scenario.outputTokens) } as const;
     case "tool-call-bad-input":
-      // Wired with the Anthropic tool mapping; the suite runs these only when the adapter passes `tools: true`.
-      throw new Error("tool scenarios are not wired for this harness yet");
+      return { kind: "sse", events: toolCallEvents("toolu_bad", "search_videos", '{"query": "cut off', 1, 1) } as const;
   }
 }
 
@@ -59,7 +59,7 @@ function makeHarness() {
   };
 }
 
-runProviderContractSuite("Anthropic adapter (synthetic fixtures)", () => makeHarness());
+runProviderContractSuite("Anthropic adapter (synthetic fixtures)", () => makeHarness(), { tools: true });
 
 async function collect(iterable: AsyncIterable<StreamEvent>): Promise<StreamEvent[]> {
   const events: StreamEvent[] = [];

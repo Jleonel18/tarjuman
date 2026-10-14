@@ -25,6 +25,7 @@
   --color-danger: light-dark(#ba1a1a, #ffb4ab);
   --color-danger-container: light-dark(#ffdad6, #93000a);
   --color-on-danger-container: light-dark(#93000a, #ffdad6);
+  --color-scrim: light-dark(#111c2d, #000000);
   --color-border: light-dark(#707974, #86948a);
   --color-divider: light-dark(#c0c9c2, #3c4a42);
 

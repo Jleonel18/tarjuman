@@ -22,7 +22,11 @@ import { recordedHashProblem, ruleChangeProblem } from "./rule-versions";
  * The base branch is `origin/$GITHUB_BASE_REF` in CI and `main` elsewhere. In CI an unreachable
  * base is an error (check out with `fetch-depth: 0`); locally it is a warning.
  */
-const RULE_DIRS = ["packages/core/rules", "packages/capabilities/language-qa/rules"];
+const RULE_DIRS = [
+  "packages/core/rules",
+  "packages/capabilities/language-qa/rules",
+  "packages/capabilities/resource-curation/rules",
+];
 const problems: string[] = [];
 
 const baseRef = process.env["GITHUB_BASE_REF"] ? `origin/${process.env["GITHUB_BASE_REF"]}` : "main";

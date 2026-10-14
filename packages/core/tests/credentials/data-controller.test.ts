@@ -16,6 +16,9 @@ const META: CredentialMeta = { providerId: "anthropic", maskedHint: "sk-ant-…a
 // Fake Gemini key (004): never a real credential.
 const GEMINI_KEY = "AQ.FAKEdataCONTROLLERgeminiKEYfakeFAKE_-fakeFAKE0001";
 const GEMINI_META: CredentialMeta = { providerId: "gemini", maskedHint: "AQ.…0001" };
+// Fake YouTube key (005): a search source has its own credential id.
+const YOUTUBE_KEY = "AIzaFAKEdataCONTROLLERyoutube00000000000";
+const YOUTUBE_META: CredentialMeta = { providerId: "youtube", maskedHint: "AIza…0000" };
 
 /** In-memory storage that logs `clearAll` and can be told to fail its emptiness check. */
 class FakeStorage implements StoragePort {
@@ -97,11 +100,14 @@ async function world(mode: CredentialStorageMode = "persistent") {
   await storage.put("usage", { id: "u1", conversationId: "c1" });
   await credentials.save(KEY, mode, META);
   await credentials.save(GEMINI_KEY, mode, GEMINI_META);
+  await credentials.save(YOUTUBE_KEY, mode, YOUTUBE_META);
+  await storage.put("settings", { id: "search", enabled: true, consent: [] });
+  await storage.put("saved_resources", { id: "youtube:aaaaaaaaaaa" });
   return {
     storage,
     credentials,
     log,
-    data: new DataController({ storage, credentials, providerIds: ["anthropic", "gemini"] }),
+    data: new DataController({ storage, credentials, credentialIds: ["anthropic", "gemini", "youtube"] }),
   };
 }
 
@@ -116,7 +122,9 @@ describe("DataController.deleteAll", () => {
       expect(await storage.query("conversations")).toEqual([]);
       expect(await storage.query("messages")).toEqual([]);
       expect(await storage.query("usage")).toEqual([]);
-      for (const id of ["anthropic", "gemini"]) {
+      expect(await storage.query("saved_resources")).toEqual([]);
+      expect(await storage.get("settings", "search")).toBeUndefined();
+      for (const id of ["anthropic", "gemini", "youtube"]) {
         expect(await credentials.describe(id)).toBeUndefined();
         expect(await credentials.load(id)).toBeUndefined();
       }
@@ -127,7 +135,7 @@ describe("DataController.deleteAll", () => {
     const { data, log } = await world();
     await data.deleteAll();
     // Checking the key after `clearAll` would reopen (and so recreate) the database it just dropped.
-    expect(log).toEqual(["removeAll", "list", "load:anthropic", "load:gemini", "clearAll"]);
+    expect(log).toEqual(["removeAll", "list", "load:anthropic", "load:gemini", "load:youtube", "clearAll"]);
   });
 
   it("reports a failure, never success, when the storage emptiness check fails", async () => {
@@ -150,7 +158,22 @@ describe("DataController.deleteAll", () => {
     expect(log).toContain("clearAll");
   });
 
-  it("checks every offered provider even if the list looks empty", async () => {
+  it("reports a failure when the search key survives (005)", async () => {
+    const { data, credentials } = await world("persistent");
+    credentials.survivor = "youtube";
+    expect(await data.deleteAll()).toEqual({ ok: false, code: "not_verified" });
+  });
+
+  it("reports a failure when saved resources or search settings remain after clearAll (005)", async () => {
+    const { data, storage } = await world();
+    storage.clearAll = async () => {
+      // A store that forgets a collection: its own emptiness check is what must catch it.
+      throw new Error("Could not verify that all Tarjuman data was removed");
+    };
+    expect(await data.deleteAll()).toEqual({ ok: false, code: "not_verified" });
+  });
+
+  it("checks every offered credential even if the list looks empty", async () => {
     const { data, credentials } = await world();
     // A store whose list forgets an entry must still be caught by loading each provider.
     credentials.survivor = "gemini";
@@ -171,5 +194,6 @@ describe("DataController.deleteAll", () => {
     const outcome = JSON.stringify(await data.deleteAll());
     expect(outcome).not.toContain("SECRETSECRET");
     expect(outcome).not.toContain("geminiKEY");
+    expect(outcome).not.toContain("youtube0000");
   });
 });

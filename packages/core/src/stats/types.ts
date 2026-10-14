@@ -26,4 +26,8 @@ export interface UsageRecord {
   configuredEffort: Effort;
   recommendedEffort: Effort;
   createdAt: string;
+  /** Model calls in the turn; the token fields above are the sum over them (005). Absent before 005. */
+  steps?: number;
+  /** Searches made in the turn, per source (005). Searches add no money cost (FR-017). */
+  searches?: { sourceId: string; count: number }[];
 }

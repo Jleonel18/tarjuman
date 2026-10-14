@@ -1,1 +1,6 @@
-{}
+{
+  "capability.resource-curation.name": "Find material",
+  "capability.resource-curation.description": "Finds videos and songs in the language you are learning, picked for your level and interests.",
+  "capability.resource-curation.tool.search_videos": "Searching YouTube",
+  "capability.resource-curation.tool.show_resources": "Preparing the list"
+}

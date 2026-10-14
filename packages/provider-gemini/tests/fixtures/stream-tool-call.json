@@ -1,0 +1,30 @@
+[
+  {
+    "candidates": [
+      {
+        "content": {
+          "parts": [
+            {
+              "functionCall": {
+                "id": "fc_synthetic_1",
+                "name": "search_videos",
+                "args": { "query": "escalada deportiva", "kind": "video" }
+              },
+              "thoughtSignature": "SYNTHETIC-SIGNATURE-1"
+            }
+          ],
+          "role": "model"
+        },
+        "finishReason": "STOP",
+        "index": 0
+      }
+    ],
+    "usageMetadata": {
+      "promptTokenCount": 200,
+      "candidatesTokenCount": 12,
+      "totalTokenCount": 242,
+      "thoughtsTokenCount": 30
+    },
+    "modelVersion": "gemini-3.5-flash-lite"
+  }
+]

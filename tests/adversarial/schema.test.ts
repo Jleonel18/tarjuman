@@ -22,6 +22,7 @@ const MINIMUM_PER_CATEGORY: Record<string, number> = {
   "embedded-external-content": 8,
   "tone-scope-relaxation": 6,
   "multilingual-encoded": 8,
+  "resource-curation": 8,
 };
 
 interface CaseShape {

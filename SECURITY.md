@@ -23,7 +23,30 @@ behave.
 - **Least privilege.** Capabilities declare their permissions; anything undeclared is denied by a
   permission broker. A tool gets only its own declared permissions, and network access is limited
   to an allowlist of `https` hosts.
-- **Delete everything in one action**, verified.
+- **Delete everything in one action**, verified. That includes the search key, the saved
+  resources, and the search choices.
+- **Search results are data from an untrusted source** (feature 005). A video title or description
+  can say anything. Results are validated and capped twice (by the YouTube adapter and again by the
+  search broker), key-shaped text in them is withheld, and they reach the model fenced as
+  `untrusted_data`; a side-effecting tool after a search waits for the learner. The cards, with
+  their titles, links, and labels, are built by the app from the search data. The model only picks
+  ids and writes a note, so it cannot invent a resource or a link.
+- **Links.** A card carries one link, built from a validated video id with no other parameter. In a
+  turn that searched, a link the model writes in prose is clickable only if it equals a card's link;
+  anything else is shown as text with its destination. Links open in a new tab with `noopener
+  noreferrer` and no referrer.
+- **The search key** is a Google Cloud key for the YouTube Data API. It goes in a request header
+  only (never in a URL), to `https://www.googleapis.com` only, which is the one origin the network
+  policy gained. It is entered, stored, and deleted exactly like the model key, and a model key
+  typed for search (or the reverse) is refused before any request. Searching asks for consent
+  first, naming what is sent and linking YouTube's terms and Google's privacy policy; the learner
+  can turn search off.
+- **What a search sends:** the query words, the language being learned, and the key. Not the
+  conversation, the profile, or the model key. The query is written by the model, so its length is
+  limited and a key shape in it is refused, but its content cannot be fully controlled (accepted
+  and recorded in the feature's research notes).
+- **YouTube data is not kept longer than 30 days**, in conversations or in saved resources: an old
+  card is reduced to its id and fetch time at every start.
 
 The full threat analysis is in
 [specs/001-core-foundation/plan.md](specs/001-core-foundation/plan.md) under *Threat Analysis*.
@@ -37,8 +60,9 @@ The full threat analysis is in
   passphrase-protected mode is a possible future hardening.
 - With a free-tier Gemini key, Google's terms allow it to use what is sent to improve its products.
   The app says so when the learner picks Gemini; it cannot prevent it.
-- The model may still be influenced in prose by hostile pasted text. It has no tools and cannot
-  see the key, which bounds the damage. Behavioral rates have so far been measured only against a
+- The model may still be influenced in prose by hostile pasted text or by a hostile video title.
+  It cannot see the key, its only tools are a search and a list of ids, and a side-effecting tool
+  after untrusted content waits for the learner, which bounds the damage. Behavioral rates have so far been measured only against a
   local non-Claude model; runs against Claude are planned.
 
 ## Status

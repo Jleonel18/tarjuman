@@ -28,6 +28,7 @@ Contrast is the WCAG ratio of the pair in the "Used on" column, computed from th
 | `--color-danger` | errors, refusal marker | `#ba1a1a` | `#ffb4ab` | canvas: text 6.2 / 11.0 |
 | `--color-danger-container` | error panels | `#ffdad6` | `#93000a` | — |
 | `--color-on-danger-container` | text in error panels | `#93000a` | `#ffdad6` | danger container: text 7.2 / 7.2 |
+| `--color-scrim` | the backdrop behind a modal dialog, shown at half opacity (005) | `#111c2d` | `#000000` | — |
 | `--color-border` | input and control borders | `#707974` | `#86948a` | canvas: boundary 4.3 / 5.9 |
 | `--color-divider` | decorative separators only, never a control's only boundary | `#c0c9c2` | `#3c4a42` | not a boundary |
 

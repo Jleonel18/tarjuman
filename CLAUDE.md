@@ -107,6 +107,7 @@ VITE_PROVIDER=mock pnpm --filter @tarjuman/web dev     # mock provider; key sk-a
 VITE_PROVIDER=ollama pnpm --filter @tarjuman/web dev   # dev-only free local model
 pnpm test:live:ollama                                    # live smoke test, needs Ollama running
 pnpm test:live:gemini                                    # live smoke test, needs GEMINI_API_KEY in .env
+pnpm test:live:youtube                                   # live smoke test, needs YOUTUBE_API_KEY in .env
 pnpm record:guardrails                                   # re-record guardrail fixtures (Ollama by default)
 pnpm test:live:guardrails                                # run guardrail cases against a live model
 ```
@@ -121,8 +122,10 @@ Run `pnpm typecheck && pnpm lint && pnpm lint:arch && pnpm test` before declarin
 - `packages/provider-anthropic` — Anthropic adapter and model/price table
 - `packages/provider-gemini` — Google Gemini adapter, native `fetch` (feature 004)
 - `packages/provider-ollama` — dev-only local-model adapter (feature 002)
+- `packages/search-youtube` — YouTube Data API adapter, native `fetch` (feature 005)
 - `packages/storage-web` — IndexedDB and WebCrypto adapters
 - `packages/capabilities/language-qa` — first capability
+- `packages/capabilities/resource-curation` — second capability, contract 1.1.0 (feature 005)
 - `packages/ui` — React components, i18n catalogs, styles
 - `packages/testing` — mock provider, fixtures, runners
 - `apps/web` — composition root and shell
@@ -173,6 +176,18 @@ own key. `ProviderPort` is unchanged: the pipeline holds a fixed list of provide
 in `profile.providerId`. The Gemini adapter has been run live once with the owner's key
 (`research.md` → Live results). Gemini results are not Claude results and never count for 001 SC-003.
 How it works: [ARCHITECTURE.md](ARCHITECTURE.md), section 3.
+
+Feature 005 (`specs/005-resource-curation/`) lets the learner ask for videos and songs. The model
+searches YouTube through tool calls; the app builds the cards. `ProviderPort` gained `tool_call`
+events, tool messages and `ModelInfo.supportsTools`; the pipeline runs up to 4 steps; a new
+`SearchPort` is held only by `SearchBroker`; capability contract 1.1.0 adds a `search` permission,
+presentation tools, `availability: "all_conversations"` and `whenSearch` fragments. Search needs
+consent per source (`consent_required` ends the turn and the app sends the message again after
+Agree), saved resources live in IndexedDB version 3, and YouTube data is reduced to id + fetch time
+after 30 days. The YouTube adapter has **never run live**: `pnpm test:live:youtube` needs the
+owner's `YOUTUBE_API_KEY`; its fixtures are synthetic. Guardrail fixtures for the
+`curation.resource-requests` rule are **not recorded** (see `research.md` and `tasks.md` T067).
+How it works: [ARCHITECTURE.md](ARCHITECTURE.md), section 3 and the step loop in section 4.
 
 Gotchas learned so far:
 
@@ -231,5 +246,21 @@ Gotchas learned so far:
   provider with `click()`, not `check()`: switching to a provider without a key leaves the screen.
 - Gemini prices change on 2026-12-01 (`gemini-4-argon`) and 2027-01-01 (`gemini-3.8-flash`): update
   `packages/provider-gemini/src/models.ts`, its test, and `research.md` R8 before then.
+- Gemini's thought signature (`continuation`) must go back unchanged with the call it came from, or
+  the next step fails with a 400. Only the adapter reads or writes it.
+- A key shape maps to a *set* of credential ids: `AIza…` is valid for `gemini` and `youtube`, `AQ.…`
+  only for `gemini`, `sk-ant-…` only for `anthropic`. `youtube` is a credential id like a provider id.
+- The IndexedDB database is version 3 (`saved_resources`). `saved_resources` is deliberately not a
+  collection a capability can get storage access to.
+- `Pipeline` buffers a step's text while tools are on offer (a step with tool calls is never
+  shown), so those turns render their answer in one piece. Turns with no tools stream as before.
+- A `consent_required` turn discards both the question and the empty answer; the usage of the step
+  it spent is kept. The footer therefore may count one more model call than the visible answers.
+- `bundle-origins` accepts the YouTube and Google policy origins only as link targets in scripts
+  (`linkOrigins`), never in the HTML, CSS, or CSP. Run `check:bundle-origins` on a real production
+  build, not on the e2e mock build (which carries test doubles with example URLs).
+- The search key form sits behind "Add search key" so it never competes with the model key's form
+  (same labels broke e2e). The search form uses "Search API key" and "Save search key".
+- `ToolSearchResult` is a type alias, not an interface, so a tool can return it as JSON.
 - pnpm enforces a minimum release age for new packages. If an install adds a
   `minimumReleaseAgeExclude` entry to `pnpm-workspace.yaml`, do not keep it: pick an older version.

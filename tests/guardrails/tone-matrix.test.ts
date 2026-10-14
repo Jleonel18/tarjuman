@@ -13,6 +13,7 @@ import {
 import { DEFAULT_MOCK_KEY, MockProvider, parseFixture } from "@tarjuman/testing/mock-provider";
 import { beforeAll, describe, expect, it } from "vitest";
 import { loadAdversarialCases } from "../support/adversarial-cases";
+import { curationSetup } from "../support/curation-setup";
 import {
   CAPABILITY_ID,
   GUARDRAIL_FIXTURES,
@@ -99,7 +100,7 @@ describe("tone matrix: structural adversarial suite", () => {
         tone,
         await runStructural(
           adversarial.map((c) => ({ ...c, tones: [tone] })),
-          { capabilities: capabilityRegistry(), capabilityId: CAPABILITY_ID, refusalTemplate },
+          { capabilities: capabilityRegistry(), capabilityId: CAPABILITY_ID, refusalTemplate, curation: curationSetup() },
         ),
       );
     }

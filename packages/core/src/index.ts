@@ -1,6 +1,8 @@
 // Public surface of @tarjuman/core. The core is framework-free: no DOM, React, Node, or SDK.
 
 export type * from "./ports/provider";
+export type * from "./ports/search";
+export { SEARCH_LIMITS } from "./ports/search";
 export type * from "./ports/storage";
 export { SecretHandle, sealSecret, destroySecret } from "./ports/secret-handle";
 // `unsealSecret` is intentionally not re-exported: only adapters import it, from the module path.
@@ -14,9 +16,10 @@ export type * from "./stats/types";
 export type * from "./pipeline/types";
 
 export type * from "./capabilities/types";
-export { CAPABILITY_CONTRACT_VERSION } from "./capabilities/types";
+export { CAPABILITY_CONTRACT_VERSION, SUPPORTED_CONTRACT_VERSIONS } from "./capabilities/types";
 export { capabilitySchema, domainRuleSchema, permissionSchema } from "./capabilities/schema";
 export { CapabilityRegistry, CapabilityRegistrationError } from "./capabilities/registry";
+export type { CapabilityRegistryOptions } from "./capabilities/registry";
 export { PermissionBroker, PermissionDeniedError } from "./capabilities/permission-broker";
 export type {
   BrokerServices,
@@ -47,13 +50,15 @@ export type {
 export { ContextAssembler } from "./pipeline/context-assembler";
 export type { AssembleInput, AssembledContext } from "./pipeline/context-assembler";
 export { renderSafeBlocks, OutputGuard } from "./pipeline/output-guard";
+export type { RenderOptions } from "./pipeline/output-guard";
 export type { ToolCall, ToolCallDecision } from "./pipeline/output-guard";
 export { guardInput, normalizeForMatching, WITHHELD_MARKER } from "./pipeline/input-guard";
 export type { GuardInput, GuardedInput } from "./pipeline/input-guard";
 export { checkTaint } from "./pipeline/taint-gate";
 export type { TaintCheck, TaintDecision } from "./pipeline/taint-gate";
-export { ProviderCredentialValidator } from "./pipeline/credential-validation";
-export type { CredentialValidator } from "./pipeline/credential-validation";
+export { CompositeCredentialValidator, ProviderCredentialValidator } from "./pipeline/credential-validation";
+export type { CredentialValidator, RoutableCredentialValidator } from "./pipeline/credential-validation";
+export { SearchCredentialValidator } from "./search/search-credential-validation";
 // Explicitly exported, so this class takes the place of the `Pipeline` interface in `types.ts`.
 export { Pipeline } from "./pipeline/pipeline";
 export type { PipelineDeps } from "./pipeline/pipeline";
@@ -61,11 +66,25 @@ export type { PipelineDeps } from "./pipeline/pipeline";
 export { KeyManager } from "./credentials/key-manager";
 export type { EnterKeyOutcome, KeyManagerDeps, KeyState, WrongProvider } from "./credentials/key-manager";
 export { DataController } from "./credentials/data-controller";
-export { findKeyShape, hasKeyShape, KEY_SHAPES, maskKey, providerOfKey } from "./credentials/key-shapes";
+export { credentialIdsOfKey, findKeyShape, hasKeyShape, isKeyFor, KEY_SHAPES, maskKey, providerOfKey } from "./credentials/key-shapes";
 export type { KeyShape } from "./credentials/key-shapes";
 export type { DataControllerDeps, DeleteAllOutcome } from "./credentials/data-controller";
 
-export { buildUsageRecord, sumUsage, isContextWarning, CONTEXT_WARNING_RATIO } from "./stats/usage";
+export { addUsage, buildUsageRecord, sumUsage, isContextWarning, CONTEXT_WARNING_RATIO } from "./stats/usage";
 export type { BuildUsageInput, ReportedUsage, UsageTotals } from "./stats/usage";
 export { recommendEffort, extractRequestFeatures } from "./stats/recommend-effort";
 export type { RequestFeatures, RequestType } from "./stats/recommend-effort";
+
+export { SearchSettingsStore } from "./search/search-settings";
+export type { SearchConsent, SearchSettings, SearchSettingsDeps } from "./search/search-settings";
+export { SearchBroker } from "./search/search-broker";
+export type { BrokerErrorCode, BrokerOutcome, BrokerSearchRequest, SearchBrokerDeps } from "./search/search-broker";
+export { TurnSearchSession } from "./search/turn-search-session";
+export { buildResourceCards, parseShowResources, sourceDisplayOf } from "./search/resource-cards";
+export type { BuildCardsInput, ShowResourcesItem } from "./search/resource-cards";
+export { DIFFICULTIES, isExpired } from "./search/resource-card";
+export type { Difficulty, ExpiredResourceCard, ResourceCard, StoredResourceCard } from "./search/resource-card";
+export { SavedResourcesStore, savedId } from "./search/saved-resources";
+export type { SavedResource, SavedResourcesDeps } from "./search/saved-resources";
+export { RETENTION_DAYS, ResourceRetention } from "./search/retention";
+export type { RefreshOutcome, RetentionDeps } from "./search/retention";

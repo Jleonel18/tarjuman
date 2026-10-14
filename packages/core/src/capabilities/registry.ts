@@ -33,11 +33,18 @@ function deepFreeze<T>(value: T): T {
  * reorder, skip, or replace pipeline stages here (US8-3), and registering a capability needs no
  * change in `core` (SC-008).
  */
+export interface CapabilityRegistryOptions {
+  /** Search source ids a `search` permission may name. Default: `["youtube"]`. */
+  searchSources?: readonly string[];
+}
+
 export class CapabilityRegistry {
   readonly #capabilities = new Map<string, Readonly<Capability>>();
   readonly #ruleOwners = new Map<string, string>();
+  readonly #searchSources: ReadonlySet<string>;
 
-  constructor() {
+  constructor(options: CapabilityRegistryOptions = {}) {
+    this.#searchSources = new Set(options.searchSources ?? ["youtube"]);
     // Frozen so no method can be swapped for one that returns a different capability (US8-3).
     Object.freeze(this);
   }
@@ -58,6 +65,17 @@ export class CapabilityRegistry {
     const conflicts: string[] = [];
     if (this.#capabilities.has(capability.id)) {
       conflicts.push(`Capability "${capability.id}" is already registered`);
+    }
+    for (const permission of capability.permissions) {
+      if (permission.kind !== "search") continue;
+      for (const source of permission.sources) {
+        if (!this.#searchSources.has(source)) conflicts.push(`Search source "${source}" is not known`);
+      }
+    }
+    // One shared capability per build keeps the prompt predictable (capability-contract-1.1.md).
+    if (capability.availability === "all_conversations") {
+      const existing = this.#sharedCapability();
+      if (existing) conflicts.push(`"${existing.id}" is already the all_conversations capability`);
     }
     const ruleIds = new Set<string>();
     for (const rule of capability.domainRules) {
@@ -86,6 +104,20 @@ export class CapabilityRegistry {
 
   list(): readonly Readonly<Capability>[] {
     return Object.freeze([...this.#capabilities.values()]);
+  }
+
+  /**
+   * The capabilities that apply to a turn: the conversation's own, then the one available in every
+   * conversation (if any, and not already listed). An unknown id contributes nothing.
+   */
+  forTurn(conversationCapabilityId: string): readonly Readonly<Capability>[] {
+    const own = this.#capabilities.get(conversationCapabilityId);
+    const shared = this.#sharedCapability();
+    return Object.freeze([...(own ? [own] : []), ...(shared && shared !== own ? [shared] : [])]);
+  }
+
+  #sharedCapability(): Readonly<Capability> | undefined {
+    return [...this.#capabilities.values()].find((c) => c.availability === "all_conversations");
   }
 
   /** All domain rules across capabilities, for the scope layer and the guardrail tests. */

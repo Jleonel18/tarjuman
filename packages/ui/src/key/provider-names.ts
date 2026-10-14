@@ -8,6 +8,7 @@ import type { TFunction } from "i18next";
 const PROVIDER_NAME_KEYS: Readonly<Record<string, string>> = {
   anthropic: "provider.name.anthropic",
   gemini: "provider.name.gemini",
+  youtube: "provider.name.youtube",
 };
 
 export function providerName(t: TFunction, providerId: string): string {

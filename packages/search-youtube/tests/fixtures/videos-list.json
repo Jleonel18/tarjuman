@@ -1,0 +1,44 @@
+{
+  "kind": "youtube#videoListResponse",
+  "etag": "synthetic",
+  "items": [
+    {
+      "kind": "youtube#video",
+      "id": "bbbbbbbbbbb",
+      "snippet": {
+        "title": "Boulder &amp; cuerda &#39;en vivo&#39; &lt;b&gt; &unknown; &amp;lt;",
+        "channelTitle": "Roca &quot;Viva&quot;",
+        "description": "Una clase de escalada. Visita https://example.com para más.",
+        "categoryId": "17",
+        "defaultAudioLanguage": "es-419"
+      },
+      "contentDetails": {
+        "duration": "PT1H2M3S",
+        "caption": "true",
+        "regionRestriction": {
+          "blocked": [
+            "DE"
+          ]
+        }
+      }
+    },
+    {
+      "kind": "youtube#video",
+      "id": "aaaaaaaaaaa",
+      "snippet": {
+        "title": "Escalada para principiantes",
+        "channelTitle": "Club Vertical",
+        "description": "Primeros pasos.",
+        "categoryId": "10",
+        "defaultLanguage": "es"
+      },
+      "contentDetails": {
+        "duration": "PT4M5S",
+        "caption": "false",
+        "contentRating": {
+          "ytRating": "ytAgeRestricted"
+        }
+      }
+    }
+  ]
+}

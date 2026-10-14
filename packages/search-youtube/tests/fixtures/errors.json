@@ -1,0 +1,155 @@
+{
+  "key_invalid": {
+    "status": 400,
+    "body": {
+      "error": {
+        "code": 400,
+        "message": "API key not valid. SECRET-SERVER-TEXT",
+        "errors": [
+          {
+            "message": "x",
+            "domain": "global",
+            "reason": "badRequest"
+          }
+        ],
+        "status": "INVALID_ARGUMENT",
+        "details": [
+          {
+            "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+            "reason": "API_KEY_INVALID",
+            "domain": "googleapis.com"
+          }
+        ]
+      }
+    }
+  },
+  "key_invalid_legacy": {
+    "status": 400,
+    "body": {
+      "error": {
+        "code": 400,
+        "message": "SECRET-SERVER-TEXT",
+        "errors": [
+          {
+            "reason": "keyInvalid"
+          }
+        ]
+      }
+    }
+  },
+  "bad_request": {
+    "status": 400,
+    "body": {
+      "error": {
+        "code": 400,
+        "message": "SECRET-SERVER-TEXT",
+        "errors": [
+          {
+            "reason": "invalidParameter"
+          }
+        ]
+      }
+    }
+  },
+  "not_enabled": {
+    "status": 403,
+    "body": {
+      "error": {
+        "code": 403,
+        "message": "SECRET-SERVER-TEXT",
+        "errors": [
+          {
+            "reason": "accessNotConfigured"
+          }
+        ]
+      }
+    }
+  },
+  "service_disabled": {
+    "status": 403,
+    "body": {
+      "error": {
+        "code": 403,
+        "message": "SECRET-SERVER-TEXT",
+        "details": [
+          {
+            "reason": "SERVICE_DISABLED"
+          }
+        ]
+      }
+    }
+  },
+  "quota": {
+    "status": 403,
+    "body": {
+      "error": {
+        "code": 403,
+        "message": "SECRET-SERVER-TEXT",
+        "errors": [
+          {
+            "reason": "quotaExceeded"
+          }
+        ]
+      }
+    }
+  },
+  "daily_limit": {
+    "status": 403,
+    "body": {
+      "error": {
+        "code": 403,
+        "message": "SECRET-SERVER-TEXT",
+        "errors": [
+          {
+            "reason": "dailyLimitExceeded"
+          }
+        ]
+      }
+    }
+  },
+  "forbidden_other": {
+    "status": 403,
+    "body": {
+      "error": {
+        "code": 403,
+        "message": "SECRET-SERVER-TEXT",
+        "errors": [
+          {
+            "reason": "forbidden"
+          }
+        ]
+      }
+    }
+  },
+  "unauthorized": {
+    "status": 401,
+    "body": {
+      "error": {
+        "code": 401,
+        "message": "SECRET-SERVER-TEXT"
+      }
+    }
+  },
+  "rate": {
+    "status": 429,
+    "body": {
+      "error": {
+        "code": 429,
+        "message": "SECRET-SERVER-TEXT"
+      }
+    }
+  },
+  "server": {
+    "status": 500,
+    "body": {
+      "error": {
+        "code": 500,
+        "message": "SECRET-SERVER-TEXT"
+      }
+    }
+  },
+  "html": {
+    "status": 502,
+    "body": "<html>SECRET-SERVER-TEXT</html>"
+  }
+}

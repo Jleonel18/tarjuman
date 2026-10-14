@@ -32,9 +32,48 @@ function replyFor(scenario: ContractScenario, isValidation: boolean): Reply {
     case "fail-leaking-secret":
       return { kind: "reject", error: new Error(`socket hang up (x-goog-api-key: ${RAW_SECRET})`) };
     case "tool-call":
+      return {
+        kind: "sse",
+        chunks: [
+          {
+            candidates: [
+              {
+                content: {
+                  parts: [
+                    {
+                      functionCall: { id: scenario.call.id, name: scenario.call.name, args: scenario.call.input },
+                      ...(scenario.call.continuation !== undefined && { thoughtSignature: scenario.call.continuation }),
+                    },
+                  ],
+                  role: "model",
+                },
+                finishReason: "STOP",
+                index: 0,
+              },
+            ],
+            usageMetadata: {
+              promptTokenCount: scenario.inputTokens,
+              candidatesTokenCount: scenario.outputTokens,
+              totalTokenCount: scenario.inputTokens + scenario.outputTokens,
+            },
+          },
+        ],
+      };
     case "tool-call-bad-input":
-      // Wired with the Gemini tool mapping; the suite runs these only when the adapter passes `tools: true`.
-      throw new Error("tool scenarios are not wired for this harness yet");
+      return {
+        kind: "sse",
+        chunks: [
+          {
+            candidates: [
+              {
+                content: { parts: [{ functionCall: { id: "bad", name: "search_videos", args: "not an object" } }], role: "model" },
+                finishReason: "STOP",
+                index: 0,
+              },
+            ],
+          },
+        ],
+      };
   }
 }
 
@@ -65,4 +104,6 @@ function makeHarness() {
 // `quota_exhausted` (004 research R6).
 runProviderContractSuite("Gemini adapter (synthetic fixtures)", () => makeHarness(), {
   errorCodes: ["invalid_credential", "permission_denied", "rate_limited", "overloaded", "network", "bad_request"],
+  tools: true,
+  continuation: true,
 });

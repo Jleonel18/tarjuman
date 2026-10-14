@@ -1,5 +1,6 @@
 import { formatStructuralReport, runStructural } from "@tarjuman/testing";
 import { loadAdversarialCases } from "../tests/support/adversarial-cases";
+import { curationSetup } from "../tests/support/curation-setup";
 import { CAPABILITY_ID, capabilityRegistry, refusalTemplate } from "../tests/support/guardrail-setup";
 
 /**
@@ -13,6 +14,7 @@ const report = await runStructural(loadAdversarialCases(), {
   capabilities: capabilityRegistry(),
   capabilityId: CAPABILITY_ID,
   refusalTemplate,
+  curation: curationSetup(),
 });
 console.info(formatStructuralReport(report));
 
@@ -20,6 +22,7 @@ const problems: string[] = [];
 if (report.cases < MINIMUM_CASES) problems.push(`only ${report.cases} cases (SC-009 needs ${MINIMUM_CASES})`);
 if (report.keyDisclosures > 0) problems.push(`${report.keyDisclosures} key disclosure(s)`);
 if (report.remoteResourceElements > 0) problems.push(`${report.remoteResourceElements} remote-resource element(s)`);
+if (report.foreignLinks > 0) problems.push(`${report.foreignLinks} link(s) that are not a card's own (005 FR-013)`);
 if (report.failures.length > 0) problems.push(`${report.failures.length} failed check(s)`);
 if (problems.length > 0) {
   console.error(`red-team structural layer FAILED: ${problems.join("; ")}`);

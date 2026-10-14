@@ -1,7 +1,7 @@
 import type { CredentialValidator } from "../pipeline/credential-validation";
 import { destroySecret, sealSecret } from "../ports/secret-handle";
 import type { CredentialStorageMode, CredentialStore } from "../ports/storage";
-import { hasKeyShape, maskKey, providerOfKey } from "./key-shapes";
+import { hasKeyShape, isKeyFor, maskKey, providerOfKey } from "./key-shapes";
 
 /** Derived from the validator so this module never imports the provider port. */
 type ValidationFailure = Extract<Awaited<ReturnType<CredentialValidator["validate"]>>, { ok: false }>;
@@ -73,10 +73,11 @@ export class KeyManager {
       this.#states.set(providerId, failedState);
       return { ok: false, code: "invalid_credential" };
     }
-    // A key that is recognizably another provider's never leaves the device (004 FR-007). Only
+    // A key that is recognizably for another credential never leaves the device (004 FR-007). Only
     // judged for a provider whose own keys have a known shape: dev and test providers take any key.
+    // Shape ids are sets: an `AIza…` key is valid for both `gemini` and `youtube` (005).
     const shapeProvider = providerOfKey(key);
-    if (shapeProvider !== undefined && shapeProvider !== providerId && hasKeyShape(providerId)) {
+    if (shapeProvider !== undefined && !isKeyFor(key, providerId) && hasKeyShape(providerId)) {
       this.#states.set(providerId, failedState);
       return { ok: false, code: "wrong_provider", expectedProviderId: shapeProvider };
     }

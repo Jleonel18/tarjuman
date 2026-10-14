@@ -167,3 +167,54 @@ describe.each(["en", "es"])("MessageBubble streaming indicator in %s (003 US2)",
   });
 });
 
+
+describe.each(["en", "es"])("search in the chat, in %s", (locale) => {
+  const live = {
+    ref: "r1",
+    sourceId: "youtube",
+    sourceDisplay: "YouTube (youtube.com)",
+    externalId: "aaaaaaaaaaa",
+    title: "Escalada",
+    channel: "Club",
+    durationSeconds: 60,
+    hasCaptions: true,
+    audioLanguage: "es",
+    type: "video" as const,
+    priceLabel: "free" as const,
+    accessNote: null,
+    sponsored: false,
+    affiliate: false,
+    link: "https://www.youtube.com/watch?v=aaaaaaaaaaa",
+    fetchedAt: "2026-10-14T00:00:00.000Z",
+    fitNote: "Good fit.",
+    difficulty: "about_right" as const,
+  };
+
+  it("shows the cards under the answer text", async () => {
+    const { html, missing } = await render(
+      chat({ messages: [{ id: "a", author: "assistant", status: "complete", blocks: [para("Here you go")], resources: [live] }] }),
+      locale,
+    );
+    expect(missing).toEqual([]);
+    expect(html.indexOf("Here you go")).toBeLessThan(html.indexOf("Escalada"));
+    expect(html).toContain('class="resources"');
+  });
+
+  it("says it is searching instead of writing while a tool runs", async () => {
+    const searching = await render(
+      chat({ streaming: true, messages: [{ id: "a", author: "assistant", status: "streaming", blocks: [], searching: true }] }),
+      locale,
+    );
+    expect(searching.missing).toEqual([]);
+    expect(searching.html).toContain(locale === "en" ? "Searching YouTube…" : "Buscando en YouTube…");
+  });
+
+  it.each(["search_incomplete", "search_key_error", "search_quota"] as const)("shows the %s notice", async (code) => {
+    const { html, missing } = await render(chat({ searchNotice: { code }, onOpenSearchSettings: noop }), locale);
+    expect(missing).toEqual([]);
+    expect(html).toContain('role="status"');
+    const settings = locale === "en" ? "Open search settings" : "Abrir ajustes de búsqueda";
+    if (code === "search_key_error") expect(html).toContain(settings);
+    else expect(html).not.toContain(settings);
+  });
+});

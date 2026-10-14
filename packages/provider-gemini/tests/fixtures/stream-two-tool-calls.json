@@ -1,0 +1,33 @@
+[
+  {
+    "candidates": [
+      {
+        "content": {
+          "parts": [
+            { "text": "Looking that up. " },
+            {
+              "functionCall": {
+                "id": "fc_synthetic_a",
+                "name": "search_videos",
+                "args": { "query": "escalada", "kind": "video" }
+              },
+              "thoughtSignature": "SYNTHETIC-SIGNATURE-A"
+            },
+            {
+              "functionCall": {
+                "id": "fc_synthetic_b",
+                "name": "search_videos",
+                "args": { "query": "bouldering", "kind": "song" }
+              }
+            }
+          ],
+          "role": "model"
+        },
+        "finishReason": "STOP",
+        "index": 0
+      }
+    ],
+    "usageMetadata": { "promptTokenCount": 210, "candidatesTokenCount": 20, "totalTokenCount": 230 },
+    "modelVersion": "gemini-3.5-flash-lite"
+  }
+]

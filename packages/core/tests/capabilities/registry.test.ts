@@ -130,7 +130,7 @@ describe("registry validation matrix (US8)", () => {
     ["a fragment in the security layer", { promptFragments: { x: { layer: "security", text: text("hi") } } }, "promptFragments"],
     ["a fragment in the scope layer", { promptFragments: { x: { layer: "domain_scope", text: text("hi") } } }, "promptFragments"],
     ["a fragment with no layer", { promptFragments: { x: { text: text("hi") } } }, "promptFragments"],
-    ["a contractVersion mismatch", { contractVersion: "1.1.0" }, "contractVersion"],
+    ["an unknown contractVersion", { contractVersion: "1.2.0" }, "contractVersion"],
     ["a missing contractVersion", { contractVersion: undefined }, "contractVersion"],
   ])("rejects %s", (_name, overrides, message) => {
     expect(rejects(validCapability(overrides))).toContain(message);
@@ -151,5 +151,115 @@ describe("registry validation matrix (US8)", () => {
     const registered = registry.register(validCapability({ tools: [tool(permissions)], permissions }));
     expect(registered.tools.map((t) => t.name)).toEqual(["lookup"]);
     expect(registry.list().map((c) => c.id)).toEqual(["demo"]);
+  });
+});
+
+/** 005: contract 1.1.0 (contracts/capability-contract-1.1.md). Every addition is optional. */
+describe("contract 1.1.0", () => {
+  const SEARCH = { kind: "search", sources: ["youtube"] };
+  const presentation = (overrides: Record<string, unknown> = {}) => ({
+    name: "show_things",
+    description: text("Shows things."),
+    inputSchema: { type: "object", additionalProperties: false },
+    requiredPermissions: [],
+    sideEffecting: false,
+    presentation: "resources",
+    ...overrides,
+  });
+  const search = (overrides: Record<string, unknown> = {}) => ({
+    name: "search_things",
+    description: text("Searches."),
+    inputSchema: { type: "object", additionalProperties: false },
+    requiredPermissions: [SEARCH],
+    sideEffecting: false,
+    handler: async () => ({ ok: true, output: null }),
+    ...overrides,
+  });
+  const v11 = (overrides: Record<string, unknown> = {}) => validCapability({ contractVersion: "1.1.0", ...overrides });
+
+  it("accepts 1.0.0 and 1.1.0, and language-qa style declarations are unchanged", () => {
+    const registry = new CapabilityRegistry();
+    expect(registry.register(validCapability()).contractVersion).toBe("1.0.0");
+    expect(registry.register(v11({ id: "other", domainRules: [], i18n: {} })).contractVersion).toBe("1.1.0");
+  });
+
+  it("accepts a search permission, a presentation tool without a handler, and all_conversations", () => {
+    const registry = new CapabilityRegistry();
+    const registered = registry.register(
+      v11({
+        permissions: [SEARCH],
+        tools: [search(), presentation()],
+        availability: "all_conversations",
+      }),
+    );
+    expect(registered.availability).toBe("all_conversations");
+    expect(registered.tools.find((t) => t.name === "show_things")?.presentation).toBe("resources");
+  });
+
+  it("defaults availability to the capability's own conversations", () => {
+    expect(new CapabilityRegistry().register(v11()).availability).toBeUndefined();
+  });
+
+  it.each([
+    ["availability", { availability: "all_conversations" }],
+    ["a search permission", { permissions: [SEARCH], tools: [search()] }],
+    ["a presentation tool", { tools: [presentation()] }],
+  ])("rejects %s in a 1.0.0 capability", (_name, overrides) => {
+    expect(rejects(validCapability(overrides))).toMatch(/1\.1\.0|contractVersion/);
+  });
+
+  it.each([
+    ["a side-effecting presentation tool", presentation({ sideEffecting: true }), "presentation"],
+    ["a presentation tool with permissions", presentation({ requiredPermissions: [SEARCH] }), "presentation"],
+  ])("rejects %s", (_name, tool, message) => {
+    expect(rejects(v11({ permissions: [SEARCH], tools: [tool] }))).toContain(message);
+  });
+
+  it("requires a handler on every tool that is not a presentation tool", () => {
+    const noHandler = search({ handler: undefined });
+    expect(rejects(v11({ permissions: [SEARCH], tools: [noHandler] }))).toContain("handler");
+  });
+
+  it("rejects an unknown presentation kind and an unknown availability", () => {
+    expect(rejects(v11({ tools: [presentation({ presentation: "popup" })] }))).toContain("presentation");
+    expect(rejects(v11({ availability: "everywhere" }))).toContain("availability");
+  });
+
+  it("requires a search permission to list at least one known source id", () => {
+    expect(rejects(v11({ permissions: [{ kind: "search", sources: [] }] }))).toContain("sources");
+    expect(rejects(v11({ permissions: [{ kind: "search", sources: ["vimeo"] }] }))).toContain("vimeo");
+    const registry = new CapabilityRegistry({ searchSources: ["vimeo"] });
+    expect(() => registry.register(v11({ permissions: [{ kind: "search", sources: ["vimeo"] }] }))).not.toThrow();
+  });
+
+  it("rejects a second all_conversations capability", () => {
+    const registry = new CapabilityRegistry();
+    registry.register(v11({ availability: "all_conversations" }));
+    const second = v11({
+      id: "second",
+      domainRules: [],
+      i18n: {},
+      availability: "all_conversations",
+    });
+    expect(rejects(second, registry)).toContain("all_conversations");
+    expect(() => registry.register(v11({ id: "third", domainRules: [], i18n: {} }))).not.toThrow();
+  });
+
+  it("forTurn returns the conversation's capability, then the all_conversations one", () => {
+    const registry = new CapabilityRegistry();
+    registry.register(validCapability());
+    registry.register(v11({ id: "curation", domainRules: [], i18n: {}, availability: "all_conversations" }));
+    expect(registry.forTurn("demo").map((c) => c.id)).toEqual(["demo", "curation"]);
+    // The all_conversations capability itself is not listed twice.
+    expect(registry.forTurn("curation").map((c) => c.id)).toEqual(["curation"]);
+    // An unknown conversation capability contributes nothing, but the shared one still applies.
+    expect(registry.forTurn("missing").map((c) => c.id)).toEqual(["curation"]);
+  });
+
+  it("forTurn without an all_conversations capability returns just the conversation's", () => {
+    const registry = new CapabilityRegistry();
+    registry.register(validCapability());
+    expect(registry.forTurn("demo").map((c) => c.id)).toEqual(["demo"]);
+    expect(registry.forTurn("missing")).toEqual([]);
   });
 });

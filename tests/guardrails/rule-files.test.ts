@@ -10,12 +10,17 @@ import { describe, expect, it } from "vitest";
 
 const ROOT = resolve(import.meta.dirname, "../..");
 const SCHEMA_PATH = join(ROOT, "specs/001-core-foundation/contracts/domain-rule.schema.json");
-const RULE_DIRS = ["packages/core/rules", "packages/capabilities/language-qa/rules"];
+const RULE_DIRS = [
+  "packages/core/rules",
+  "packages/capabilities/language-qa/rules",
+  "packages/capabilities/resource-curation/rules",
+];
 
 /** Rule files the scope work (T073, T074) must ship. A missing one fails here, not silently. */
 const REQUIRED_FILES = [
   "packages/core/rules/scope.language-learning-only.json",
   "packages/capabilities/language-qa/rules/translation.pedagogical-only.json",
+  "packages/capabilities/resource-curation/rules/curation.resource-requests.json",
 ];
 
 const schema: unknown = JSON.parse(readFileSync(SCHEMA_PATH, "utf8"));

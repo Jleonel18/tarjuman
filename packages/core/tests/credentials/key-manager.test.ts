@@ -247,6 +247,34 @@ describe("KeyManager across providers (004 FR-004, FR-007)", () => {
     expect(JSON.stringify(outcome)).not.toContain(key);
   });
 
+  it.each([
+    ["an Anthropic key for YouTube", KEY, "anthropic"],
+    ["a Gemini auth key (AQ.) for YouTube", GEMINI_KEY, "gemini"],
+  ])("rejects %s locally, with no validation call (005)", async (_name, key, expected) => {
+    const { keys, validator, store } = manager({ ok: true });
+    const outcome = await keys.enter("youtube", key, "persistent");
+    expect(outcome).toEqual({ ok: false, code: "wrong_provider", expectedProviderId: expected });
+    expect(validator.calls).toBe(0);
+    expect(store.saved).toEqual([]);
+  });
+
+  it("accepts an AIza key for both gemini and youtube, each stored under its own id (005)", async () => {
+    const { keys, validator, store } = manager({ ok: true });
+    expect(await keys.enter("youtube", OTHER_GEMINI_KEY, "session")).toEqual({ ok: true, maskedHint: "AIza…0002" });
+    expect(await keys.enter("gemini", OTHER_GEMINI_KEY, "session")).toEqual({ ok: true, maskedHint: "AIza…0002" });
+    expect(validator.providers).toEqual(["youtube", "gemini"]);
+    expect([...store.byProvider.keys()].sort()).toEqual(["gemini", "youtube"]);
+  });
+
+  it("rejects an AIza key for Anthropic (005)", async () => {
+    const { keys } = manager({ ok: true });
+    expect(await keys.enter("anthropic", OTHER_GEMINI_KEY, "session")).toEqual({
+      ok: false,
+      code: "wrong_provider",
+      expectedProviderId: "gemini",
+    });
+  });
+
   it("checks the shape on replace too, and keeps the old key", async () => {
     const { keys, store, log } = await storedManager({ ok: true });
     const outcome = await keys.replace("anthropic", GEMINI_KEY, "persistent");

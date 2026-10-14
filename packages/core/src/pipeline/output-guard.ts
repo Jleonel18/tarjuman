@@ -13,10 +13,18 @@ const md = new MarkdownIt("default", { html: false, linkify: false, typographer:
 // Only these schemes can become a link; the core has no `URL` type, so a pattern is used.
 const SAFE_LINK_PATTERN = /^(?:https?:\/\/|mailto:)\S+$/i;
 
+export interface RenderOptions {
+  /**
+   * In a turn with search results (005 FR-013): the only links that stay clickable, the cards' own.
+   * Any other link becomes plain text that shows its destination. `undefined` means no restriction.
+   */
+  allowedLinks?: ReadonlySet<string> | undefined;
+}
+
 /** Parses Markdown into the restricted `SafeBlock` AST. Images and raw HTML are not representable. */
-export function renderSafeBlocks(markdown: string): SafeBlock[] {
+export function renderSafeBlocks(markdown: string, options: RenderOptions = {}): SafeBlock[] {
   const tokens = md.parse(markdown, {});
-  return new BlockReader(tokens).readBlocks();
+  return new BlockReader(tokens, options.allowedLinks).readBlocks();
 }
 
 /** A tool call the model asked for, and the broker of the capability it belongs to. */
@@ -38,6 +46,11 @@ export type ToolCallDecision =
  */
 export class OutputGuard {
   #text = "";
+  readonly #options: RenderOptions;
+
+  constructor(options: RenderOptions = {}) {
+    this.#options = options;
+  }
 
   /**
    * Every tool call is judged here before it runs. First the permission broker: a tool the
@@ -58,6 +71,8 @@ export class OutputGuard {
       outcome: "allow",
       run: async (input) => {
         try {
+          // A presentation tool has no handler: it is validated and kept by the pipeline, not run.
+          if (!tool.handler) return { ok: false, error: "no_handler" };
           return await tool.handler(input, call.broker.contextFor(tool));
         } catch (error) {
           // Reported by code only: a handler's own message never reaches the learner or the model.
@@ -69,13 +84,16 @@ export class OutputGuard {
 
   push(delta: string): SafeBlock[] {
     this.#text += delta;
-    return renderSafeBlocks(this.#text);
+    return renderSafeBlocks(this.#text, this.#options);
   }
 }
 
 class BlockReader {
   #i = 0;
-  constructor(private readonly tokens: Token[]) {}
+  constructor(
+    private readonly tokens: Token[],
+    private readonly allowedLinks: ReadonlySet<string> | undefined,
+  ) {}
 
   readBlocks(until?: string): SafeBlock[] {
     const blocks: SafeBlock[] = [];
@@ -129,7 +147,7 @@ class BlockReader {
       const token = this.tokens[this.#i];
       this.#i += 1;
       if (!token || token.type === close) break;
-      if (token.type === "inline") children = readInline(token.children ?? []);
+      if (token.type === "inline") children = readInline(token.children ?? [], this.allowedLinks);
     }
     return children;
   }
@@ -160,20 +178,23 @@ class BlockReader {
       else if (token.type === "tr_close") {
         if (inHead) header.push(...row);
         else rows.push(row);
-      } else if (token.type === "inline") row.push(readInline(token.children ?? []));
+      } else if (token.type === "inline") row.push(readInline(token.children ?? [], this.allowedLinks));
     }
     return { type: "table", header, rows };
   }
 }
 
-function readInline(tokens: Token[]): SafeInline[] {
-  const reader = new InlineReader(tokens);
+function readInline(tokens: Token[], allowedLinks: ReadonlySet<string> | undefined): SafeInline[] {
+  const reader = new InlineReader(tokens, allowedLinks);
   return reader.read();
 }
 
 class InlineReader {
   #i = 0;
-  constructor(private readonly tokens: Token[]) {}
+  constructor(
+    private readonly tokens: Token[],
+    private readonly allowedLinks: ReadonlySet<string> | undefined,
+  ) {}
 
   read(until?: string): SafeInline[] {
     const out: SafeInline[] = [];
@@ -224,6 +245,11 @@ class InlineReader {
     const children = this.read("link_close");
     const destination = String(open.attrGet("href") ?? "");
     if (!isSafeLink(destination)) return children;
+    // A turn with search results: only a card's own link is clickable. Anything else the model wrote
+    // is shown as text with its real destination, so it can be read but not followed by accident.
+    if (this.allowedLinks !== undefined && !this.allowedLinks.has(destination)) {
+      return [...children, { type: "text", text: ` (${destination})` }];
+    }
     return [{ type: "link", children, destination, destinationDisplay: destination }];
   }
 }

@@ -9,6 +9,9 @@ import { SessionSecrets } from "../src/session-secrets";
 import { sealSecret } from "@tarjuman/core";
 import { FakeLocalStorage, throwingLocalStorage } from "./fake-local-storage";
 
+/** The collections of database versions 1 and 2, before 005 added `saved_resources`. */
+const VERSION_1_COLLECTIONS = ["profile", "settings", "conversations", "messages", "usage"] as const;
+
 const noWebExtras = { cacheStorage: undefined, serviceWorker: undefined, localStorage: undefined };
 
 beforeEach(() => {
@@ -185,7 +188,7 @@ describe("IndexedDbStorage upgrade from version 1 (004 FR-002, SC-006)", () => {
   async function createVersion1Database(): Promise<void> {
     const db = await openDB(DB_NAME, 1, {
       upgrade(database) {
-        for (const name of COLLECTIONS) {
+        for (const name of VERSION_1_COLLECTIONS) {
           const store = database.createObjectStore(name, { keyPath: "id" });
           if (name === "messages" || name === "usage") store.createIndex("conversationId", "conversationId");
         }
@@ -215,8 +218,8 @@ describe("IndexedDbStorage upgrade from version 1 (004 FR-002, SC-006)", () => {
     db.close();
   }
 
-  it("is now version 2", () => {
-    expect(DB_VERSION).toBe(2);
+  it("is now version 3", () => {
+    expect(DB_VERSION).toBe(3);
   });
 
   it("moves the old credential under its provider id and keeps it readable", async () => {
@@ -236,12 +239,80 @@ describe("IndexedDbStorage upgrade from version 1 (004 FR-002, SC-006)", () => {
   it("upgrades a version-1 database that holds no credential", async () => {
     const db = await openDB(DB_NAME, 1, {
       upgrade(database) {
-        for (const name of COLLECTIONS) database.createObjectStore(name, { keyPath: "id" });
+        for (const name of VERSION_1_COLLECTIONS) database.createObjectStore(name, { keyPath: "id" });
         database.createObjectStore("credential", { keyPath: "id" });
       },
     });
     db.close();
     const store = new WebCredentialStore({ records: new IndexedDbStorage(noWebExtras), sessionSecrets: new SessionSecrets() });
     expect(await store.list()).toEqual([]);
+  });
+});
+
+describe("IndexedDbStorage upgrade from version 2 (005)", () => {
+  /** The database as 004 left it: version 2, the five collections, one credential keyed by provider. */
+  async function createVersion2Database(): Promise<void> {
+    const db = await openDB(DB_NAME, 2, {
+      upgrade(database) {
+        for (const name of VERSION_1_COLLECTIONS) {
+          const store = database.createObjectStore(name, { keyPath: "id" });
+          if (name === "messages" || name === "usage") store.createIndex("conversationId", "conversationId");
+        }
+        database.createObjectStore("credential", { keyPath: "id" });
+      },
+    });
+    await db.put("profile", { id: "profile", level: "B1" });
+    await db.put("messages", { id: "m1", conversationId: "c1" });
+    await db.put("settings", { id: "theme-ish", value: 1 });
+    db.close();
+  }
+
+  it("adds the saved_resources store and keeps every record", async () => {
+    await createVersion2Database();
+    const storage = new IndexedDbStorage(noWebExtras);
+    expect(await storage.get("profile", "profile")).toEqual({ id: "profile", level: "B1" });
+    expect(await storage.query("messages", { index: "conversationId", equals: "c1" })).toEqual([
+      { id: "m1", conversationId: "c1" },
+    ]);
+    expect(await storage.get("settings", "theme-ish")).toEqual({ id: "theme-ish", value: 1 });
+
+    await storage.put("saved_resources", { id: "youtube:aaaaaaaaaaa", savedAt: "2026-10-14" });
+    expect(await storage.query("saved_resources")).toHaveLength(1);
+
+    const raw = await openDB(DB_NAME);
+    expect(raw.version).toBe(3);
+    expect([...raw.objectStoreNames].sort()).toEqual(
+      ["conversations", "credential", "messages", "profile", "saved_resources", "settings", "usage"],
+    );
+    raw.close();
+  });
+
+  it("starts a fresh database at version 3 with the store already there", async () => {
+    const storage = new IndexedDbStorage(noWebExtras);
+    await storage.put("saved_resources", { id: "youtube:bbbbbbbbbbb" });
+    const raw = await openDB(DB_NAME);
+    expect(raw.version).toBe(3);
+    expect(raw.objectStoreNames.contains("saved_resources")).toBe(true);
+    raw.close();
+  });
+
+  it("upgrades a version-1 database straight to 3, keeping the moved credential and adding the store", async () => {
+    const db = await openDB(DB_NAME, 1, {
+      upgrade(database) {
+        for (const name of VERSION_1_COLLECTIONS) database.createObjectStore(name, { keyPath: "id" });
+        database.createObjectStore("credential", { keyPath: "id" });
+      },
+    });
+    db.close();
+    const storage = new IndexedDbStorage(noWebExtras);
+    await storage.put("saved_resources", { id: "youtube:ccccccccccc" });
+    expect(await storage.query("saved_resources")).toHaveLength(1);
+  });
+
+  it("clearAll removes saved resources too, and verifies the database is gone", async () => {
+    const storage = new IndexedDbStorage(noWebExtras);
+    await storage.put("saved_resources", { id: "youtube:ddddddddddd" });
+    await storage.clearAll();
+    expect(await new IndexedDbStorage(noWebExtras).query("saved_resources")).toEqual([]);
   });
 });

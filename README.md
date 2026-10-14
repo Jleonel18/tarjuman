@@ -46,6 +46,17 @@ light and dark themes with a layout that adapts to phone, tablet, and desktop, r
 deleting the key, and "delete all my data". Capabilities are added by declaration
 and checked by a permission broker.
 
+**Finding material (feature 005).** Ask for videos or songs in the language you are learning and
+the assistant searches YouTube and shows cards: source and channel, type, duration, captions,
+language, price, an estimate of difficulty for you, and why it fits. Cards are built by the app from
+what YouTube returned, never from the model's text, and they link to YouTube. Before the first
+search the app asks your consent and says what is sent. You can save cards; YouTube data is not
+kept more than 30 days (a card then shows only that it expired, and Refresh fetches it again). It
+needs a model that can use tools (Claude and Gemini can; the local Ollama models cannot) and a
+YouTube Data API key of your own: in the Google Cloud console enable "YouTube Data API v3" for a
+project, create an API key, and restrict it to the site's address. Add it under Settings →
+Internet search. The free daily allowance covers about 100 searches.
+
 What is still open: a run against Claude itself. The guardrail fixtures were recorded with a local
 non-Claude model, so how well Claude keeps to scope (SC-003) is not measured, and the nightly job
 that would measure it skips until a test key is configured. A human click-through of the manual
@@ -87,6 +98,8 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the full picture.
 - **The browser** runs under a strict Content-Security-Policy, loads no third-party scripts, and
   talks only to the app's own origin and the provider. There is no telemetry.
 - **Capabilities** get only the permissions they declare, checked by a permission broker.
+- **Search results** are untrusted data: validated, capped, fenced from the instruction layers, and
+  turned into cards by the app. The model only picks which results to show.
 - **Your data** can be erased in one confirmed action, which verifies that nothing is left.
 
 Known limits and how to report a problem: [SECURITY.md](SECURITY.md).
@@ -99,8 +112,10 @@ Known limits and how to report a problem: [SECURITY.md](SECURITY.md).
 | `packages/provider-anthropic` | Adapter for the Anthropic API (the only package that imports the SDK) |
 | `packages/provider-gemini` | Adapter for the Google Gemini API, with native `fetch` (no SDK) |
 | `packages/provider-ollama` | Development-only adapter for a free local model ([docs/local-model.md](docs/local-model.md)); never in a production build |
+| `packages/search-youtube` | Adapter for the YouTube Data API, with native `fetch`; validates and caps what it returns |
 | `packages/storage-web` | Adapter for IndexedDB storage and WebCrypto key encryption |
 | `packages/capabilities/language-qa` | The first capability: answering questions about your target language |
+| `packages/capabilities/resource-curation` | The second capability: finding videos and songs in your target language |
 | `packages/ui` | React components, translation catalogs, logical-property styles |
 | `packages/testing` | Mock provider, fixtures, adversarial test runner, pseudo-RTL locale |
 | `apps/web` | The web app that wires everything together |
@@ -123,6 +138,7 @@ pnpm lint:rules     # guardrail rule versions and recorded fixtures
 pnpm test           # Vitest, all projects
 pnpm test:redteam   # adversarial suite only, with a summary
 pnpm test:e2e       # Playwright against the production build and the mock provider
+pnpm test:live:youtube  # opt-in smoke test of the YouTube adapter; needs YOUTUBE_API_KEY in .env
 ```
 
 Running the app without an Anthropic key:

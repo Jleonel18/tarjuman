@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { findKeyShape, hasKeyShape, KEY_SHAPES, maskKey, providerOfKey } from "../../src/credentials/key-shapes";
+import {
+  credentialIdsOfKey,
+  findKeyShape,
+  hasKeyShape,
+  isKeyFor,
+  KEY_SHAPES,
+  maskKey,
+  providerOfKey,
+} from "../../src/credentials/key-shapes";
 
 // Fake keys only: they match the shapes in data-model.md → KeyShape and are not real credentials.
 const ANTHROPIC = "sk-ant-api03-FAKEFAKEFAKEFAKE-a1b2";
@@ -7,8 +15,8 @@ const GEMINI_STANDARD = "AIzaFAKEfakeFAKEfakeFAKEfakeFAKE-_0a1b2"; // AIza + 35
 const GEMINI_AUTH = "AQ.FAKEfakeFAKEfakeFAKEfakeFAKEfakeFAKEfakeFAKE_-a1b2"; // AQ. + 49
 
 describe("KEY_SHAPES", () => {
-  it("lists Anthropic and Gemini", () => {
-    expect(KEY_SHAPES.map((shape) => shape.providerId)).toEqual(["anthropic", "gemini"]);
+  it("maps each pattern to the set of credential ids it is valid for (005 data-model → KeyShape)", () => {
+    expect(KEY_SHAPES.map((shape) => [...shape.credentialIds])).toEqual([["anthropic"], ["gemini", "youtube"], ["gemini"]]);
   });
 
   it("the fake keys used in tests have the documented lengths", () => {
@@ -71,10 +79,32 @@ describe("findKeyShape", () => {
   });
 });
 
+describe("credentialIdsOfKey and isKeyFor (005)", () => {
+  it("an AIza key is valid for gemini and youtube", () => {
+    expect(credentialIdsOfKey(GEMINI_STANDARD)).toEqual(["gemini", "youtube"]);
+    expect(isKeyFor(GEMINI_STANDARD, "gemini")).toBe(true);
+    expect(isKeyFor(GEMINI_STANDARD, "youtube")).toBe(true);
+    expect(isKeyFor(GEMINI_STANDARD, "anthropic")).toBe(false);
+  });
+
+  it("an AQ. key is for gemini only, and an Anthropic key for anthropic only", () => {
+    expect(credentialIdsOfKey(GEMINI_AUTH)).toEqual(["gemini"]);
+    expect(isKeyFor(GEMINI_AUTH, "youtube")).toBe(false);
+    expect(credentialIdsOfKey(ANTHROPIC)).toEqual(["anthropic"]);
+    expect(isKeyFor(ANTHROPIC, "youtube")).toBe(false);
+  });
+
+  it("a key of unknown shape is not judged", () => {
+    expect(credentialIdsOfKey("an-unknown-shape-1234")).toBeUndefined();
+    expect(isKeyFor("an-unknown-shape-1234", "youtube")).toBe(true);
+  });
+});
+
 describe("hasKeyShape", () => {
   it("is true for providers with a known key shape only", () => {
     expect(hasKeyShape("anthropic")).toBe(true);
     expect(hasKeyShape("gemini")).toBe(true);
+    expect(hasKeyShape("youtube")).toBe(true);
     expect(hasKeyShape("mock")).toBe(false);
     expect(hasKeyShape("ollama")).toBe(false);
   });

@@ -10,4 +10,9 @@ with real captures when one exists, and change this note when you do.
   `message_delta` that repeats `input_tokens`, to exercise the usage rule from research R4.
 - `stream-overloaded-midway.json`: an SSE `error` event arriving after a `200`.
 
+- `stream-tool-use.json`, `stream-tool-use-bad-json.json`, `stream-tool-use-no-input.json` (005): a
+  `tool_use` content block with `input_json_delta` chunks and `stop_reason: "tool_use"`, written
+  from the same docs page. **Synthetic, not a live capture**: ids, queries, and token counts are
+  made up. The bad-json one is cut off in the middle of the input.
+
 No real key, conversation, or personal data belongs here.

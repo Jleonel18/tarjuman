@@ -1,0 +1,11 @@
+{
+  "kind": "youtube#videoCategoryListResponse",
+  "items": [
+    {
+      "id": "1"
+    },
+    {
+      "id": "2"
+    }
+  ]
+}

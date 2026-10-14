@@ -13,6 +13,12 @@ export interface BundleFile {
 export interface BundleCheckOptions {
   /** Origins the user's key may be sent to, e.g. `https://api.anthropic.com`. */
   providerOrigins: readonly string[];
+  /**
+   * Origins that appear in the JavaScript only as the target of a link the learner clicks (a card's
+   * "Open on YouTube", the terms and privacy links). They are never fetched, the CSP does not list
+   * them, and they are accepted only in scripts: not in the HTML, the CSS, or the CSP.
+   */
+  linkOrigins?: readonly string[];
 }
 
 /**
@@ -36,6 +42,7 @@ const ABSOLUTE_ORIGIN = /\bhttps?:\/\/[A-Za-z0-9.-]+(?::\d+)?/g;
 /** Every problem found in the built bundle, one line each. An empty list means it is clean. */
 export function bundleOriginProblems(files: readonly BundleFile[], options: BundleCheckOptions): string[] {
   const providerHosts = new Set(options.providerOrigins.map(hostOf));
+  const linkHosts = new Set((options.linkOrigins ?? []).map(hostOf));
   const problems: string[] = [];
   let sawHtml = false;
 
@@ -48,7 +55,7 @@ export function bundleOriginProblems(files: readonly BundleFile[], options: Bund
     } else if (/\.(?:m?js|cjs)$/.test(file.path)) {
       for (const origin of new Set(file.content.match(ABSOLUTE_ORIGIN) ?? [])) {
         const host = hostOf(origin);
-        if (!providerHosts.has(host) && !INERT_HOSTS.has(host)) {
+        if (!providerHosts.has(host) && !linkHosts.has(host) && !INERT_HOSTS.has(host)) {
           problems.push(`${file.path}: references the origin ${origin}`);
         }
       }

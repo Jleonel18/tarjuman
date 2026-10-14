@@ -39,3 +39,16 @@ interface Capability {
   this feature (registry check), to keep prompts predictable.
 - Registry validation matrix extended; "register with zero core diff" (001 SC-008) still holds for
   1.1.0 capabilities.
+
+## Additions made while implementing (need owner approval)
+
+- `PromptFragment.whenSearch?: ("available" | "off" | "no_key" | "model_cannot_search")[]`. A
+  fragment is included only when the turn's search state is listed (absent: always; no state given:
+  state-bound fragments are left out). This is how "the fragment tells the model why search is
+  unavailable" (provider-tool-calls.md) is expressed as data instead of code in the core.
+- `CapabilityRegistry` takes `{ searchSources }` (default `["youtube"]`) so a `search` permission
+  can only name known sources, and gains `forTurn(conversationCapabilityId)`.
+- A 1.0.0 capability that uses a 1.1.0 feature (availability, a search permission, a presentation
+  tool) is rejected, so the version means something.
+- `ToolDeclaration.handler` is optional (required unless the tool is a presentation tool).
+

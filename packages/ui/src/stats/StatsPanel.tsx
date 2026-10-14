@@ -3,6 +3,7 @@ import type { ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import { effortLabelKey } from "../settings/effort-labels";
 import { FormError } from "../forms/FormMessage";
+import { providerName } from "../key/provider-names";
 
 export interface StatsPanelProps {
   /** Usage of the open conversation, oldest first. */
@@ -28,6 +29,13 @@ export function StatsPanel({ records, configuredEffort, onApplyEffort }: StatsPa
 
   const latest = records.at(-1);
   const totals = sumUsage(records);
+  // Searches and extra model calls (005 FR-017): only said when there were any.
+  const searchTotals = new Map<string, number>();
+  for (const record of records) {
+    for (const search of record.searches ?? []) searchTotals.set(search.sourceId, (searchTotals.get(search.sourceId) ?? 0) + search.count);
+  }
+  const searchCount = [...searchTotals.values()].reduce((sum, count) => sum + count, 0);
+  const steps = records.reduce((sum, record) => sum + (record.steps ?? 1), 0);
   const canApply = latest !== undefined && latest.recommendedEffort !== configuredEffort;
 
   return (
@@ -63,6 +71,20 @@ export function StatsPanel({ records, configuredEffort, onApplyEffort }: StatsPa
               </tr>
             </tfoot>
           </table>
+
+          {searchCount > 0 || steps > records.length ? (
+            <div className="stats__block">
+              {searchCount > 0 ? (
+                <p>
+                  {t("stats.searches.summary", {
+                    count: number.format(searchCount),
+                    sources: [...searchTotals.keys()].map((id) => providerName(t, id)).join(", "),
+                  })}
+                </p>
+              ) : null}
+              {steps > records.length ? <p>{t("stats.steps.summary", { steps: number.format(steps) })}</p> : null}
+            </div>
+          ) : null}
 
           <div className="stats__block">
             <label htmlFor="stats-context">{t("stats.context.label")}</label>

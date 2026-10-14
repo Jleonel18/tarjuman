@@ -4,8 +4,11 @@ import { defaultLocalStorage, removeTarjumanKeys, tarjumanKeys, type LocalStorag
 import { defaultSessionSecrets, type SessionSecrets } from "./session-secrets";
 
 export const DB_NAME = "tarjuman";
-/** 2 since 004: credential records are keyed by provider id instead of the fixed key "current". */
-export const DB_VERSION = 2;
+/**
+ * 2 since 004: credential records are keyed by provider id instead of the fixed key "current".
+ * 3 since 005: the `saved_resources` store. Only a store is created; no record is touched.
+ */
+export const DB_VERSION = 3;
 
 /** The `credential` store is internal: it is not a `Collection`, so `StoragePort` cannot reach it. */
 const CREDENTIAL_STORE = "credential";
@@ -18,6 +21,7 @@ export const COLLECTIONS: readonly Collection[] = [
   "conversations",
   "messages",
   "usage",
+  "saved_resources",
 ];
 
 /** What is persisted for a remembered key. The secret itself is only ever present as ciphertext. */
@@ -110,6 +114,9 @@ export class IndexedDbStorage implements StoragePort, CredentialRecordAccess {
             await credentials.put({ ...legacy, id: legacy.providerId });
             await credentials.delete(LEGACY_CREDENTIAL_KEY);
           }
+        }
+        if (oldVersion >= 1 && oldVersion < 3 && !db.objectStoreNames.contains("saved_resources")) {
+          db.createObjectStore("saved_resources", { keyPath: "id" });
         }
       },
       // Another tab is deleting or upgrading the database: step aside instead of blocking it.

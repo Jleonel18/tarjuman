@@ -200,6 +200,48 @@ export class MockProvider implements ProviderPort {
   }
 }
 
+const CURATION_REQUEST = /\b(videos?|songs?|canciones|vídeos?)\b/i;
+
+/**
+ * A model that uses the resource tools the way the capability's fragment asks (005), for the e2e
+ * suite: step 1 searches with the learner's own words, step 2 shows the first three results, step
+ * 3 answers. Words in the request pick the path: "TWO-SEARCHES" makes a second search for
+ * "fail", and "nothing" finds no results (the search double answers by those words).
+ */
+export function curationResponder(req: ModelRequest): MockScript | undefined {
+  if (!req.tools?.some((t) => t.name === "search_videos")) return undefined;
+  const asked = [...req.messages].reverse().find((m) => m.role === "user")?.content ?? "";
+  const lastRole = req.messages.at(-1)?.role;
+  // No topic in the request and no interests in the profile: ask what the learner likes.
+  const noInterests = req.layers.some((l) => /interests:\s*\nnone\b/.test(l.text));
+  if (lastRole === "user" && noInterests && /something to (watch|listen)/i.test(asked)) {
+    return reply("CLARIFY\nWhat topics do you enjoy? Tell me one and I will look for something.");
+  }
+  if (!CURATION_REQUEST.test(asked)) return undefined;
+  const last = req.messages.at(-1);
+  const usage = { type: "usage", inputTokens: 300, outputTokens: 40 } as const;
+  const call = (id: string, name: string, input: JsonValue): MockScript => ({
+    steps: [{ type: "tool_call", id, name, input }, usage, { type: "stop", reason: "tool_use" }],
+  });
+
+  if (last?.role === "user") {
+    return call("call_search_1", "search_videos", { query: asked.replace(/\s+/g, " ").trim().slice(0, 120), kind: "any" });
+  }
+  if (last?.role === "tool" && last.name === "search_videos") {
+    const searches = req.messages.filter((m) => m.role === "tool" && m.name === "search_videos").length;
+    if (/TWO-SEARCHES/.test(asked) && searches === 1) return call("call_search_2", "search_videos", { query: "fail", kind: "any" });
+    const refs = req.messages
+      .filter((m) => m.role === "tool")
+      .flatMap((m) => [...m.content.matchAll(/"ref":"(r\d+)"/g)].map((match) => match[1] ?? ""))
+      .slice(0, 3);
+    if (refs.length === 0) return reply("ACCEPT\nI could not find anything that fits. Try another topic.");
+    return call("call_show_1", "show_resources", {
+      items: refs.map((id) => ({ id, fitNote: "Clear speech and captions, a good fit for your level.", difficulty: "about_right" })),
+    });
+  }
+  return reply("ACCEPT\nHere are some options that match what you like. Open one and tell me what you understood.");
+}
+
 const reply = (text: string, inputTokens = 120): MockScript => ({
   steps: [
     { type: "text", delta: text },
@@ -262,6 +304,8 @@ const LYRIC_EXPLANATION = [
  * Anything it does not recognize gets the default answer. It reads only the latest user message.
  */
 export function scopeAwareResponder(req: ModelRequest): MockScript | undefined {
+  const curation = curationResponder(req);
+  if (curation) return curation;
   const asked = [...req.messages].reverse().find((m) => m.role === "user")?.content ?? "";
   // US3 e2e: a model that has been fully compromised, and one that explains injected material.
   if (/HOSTILE-RENDER-TEST/.test(asked)) return reply(HOSTILE_ANSWER);

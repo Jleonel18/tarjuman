@@ -1,0 +1,15 @@
+[
+  {
+    "candidates": [
+      {
+        "content": {
+          "parts": [{ "functionCall": { "id": "fc_synthetic_x", "name": "search_videos", "args": "not an object" } }],
+          "role": "model"
+        },
+        "finishReason": "STOP",
+        "index": 0
+      }
+    ],
+    "usageMetadata": { "promptTokenCount": 10, "candidatesTokenCount": 2, "totalTokenCount": 12 }
+  }
+]

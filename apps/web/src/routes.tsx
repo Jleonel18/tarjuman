@@ -1,4 +1,4 @@
-import { BackIcon, ChatView, ConversationList, DataControls, KeyEntry, KeySettings, LanguageSettings, ModelEffortSettings, Onboarding, ProviderSettings, SettingsIcon, StatsPanel, ThemeSwitcher, ToneSelector, Workspace, useTranslation } from "@tarjuman/ui";
+import { BackIcon, ChatView, ConversationList, DataControls, KeyEntry, KeySettings, LanguageSettings, ModelEffortSettings, Onboarding, ProviderSettings, SavedResources, SearchConsentDialog, SearchSettings, SettingsIcon, StatsPanel, ThemeSwitcher, ToneSelector, Workspace, useTranslation } from "@tarjuman/ui";
 import type { ReactElement } from "react";
 import type { AppController } from "./controller";
 import type { AppServices } from "./composition-root";
@@ -6,7 +6,7 @@ import { useAppStore } from "./store";
 
 export interface RoutesProps {
   controller: AppController;
-  services: Pick<AppServices, "storageAvailable" | "providers" | "uiLocales">;
+  services: Pick<AppServices, "storageAvailable" | "providers" | "uiLocales" | "searchSourceIds">;
 }
 
 /** First-run guard: onboarding, then key entry, then chat. `boot()` picks the starting screen. */
@@ -37,6 +37,14 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
       );
     case "chat":
       return (
+        <>
+        {state.consentRequest ? (
+          <SearchConsentDialog
+            sourceId={state.consentRequest.sourceId}
+            onAgree={() => void controller.agreeToSearch()}
+            onCancel={controller.declineSearch}
+          />
+        ) : null}
         <Workspace
           sidebar={({ onNavigate }) => (
             <>
@@ -59,6 +67,11 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
                     <SettingsIcon aria-hidden="true" className="icon" />
                     <span>{t("settings.open")}</span>
                   </button>
+                  {services.searchSourceIds.length > 0 ? (
+                    <button type="button" className="button button--secondary" onClick={() => void controller.openSaved()}>
+                      <span>{t("saved.open")}</span>
+                    </button>
+                  ) : null}
                   <StatsPanel
                     records={state.usage}
                     configuredEffort={state.profile.configuredEffort}
@@ -88,6 +101,12 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
             error={state.error}
             notice={state.notice}
             onDismissNotice={controller.dismissNotice}
+            searchNotice={state.searchNotice}
+            onDismissSearchNotice={controller.dismissSearchNotice}
+            onOpenSearchSettings={controller.openSearchSettings}
+            savedIds={state.savedIds}
+            onSaveResource={(card) => void controller.saveResource(card)}
+            onRefreshResource={(card) => void controller.refreshResource(card)}
             contextRatio={state.usage.at(-1)?.contextRatio}
             onNewConversation={controller.newConversation}
             onSend={(text) => void controller.send(text)}
@@ -96,6 +115,22 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
             onOpenKeySettings={controller.openKeySettings}
           />
         </Workspace>
+        </>
+      );
+    case "saved":
+      return (
+        <div className="settings-screen">
+          <button type="button" className="button button--quiet settings-screen__back" onClick={() => state.navigate("chat")}>
+            <BackIcon aria-hidden="true" className="icon icon-directional" />
+            <span>{t("common.back")}</span>
+          </button>
+          <SavedResources
+            items={state.saved}
+            refreshFailed={state.refreshFailed}
+            onRemove={(item) => void controller.removeSavedResource(item.card)}
+            onRefresh={(card) => void controller.refreshResource(card)}
+          />
+        </div>
       );
     case "settings":
       return (
@@ -135,6 +170,19 @@ export function Routes({ controller, services }: RoutesProps): ReactElement {
               onReplace={controller.replaceKey}
               onDelete={() => void controller.removeKey()}
               providerId={state.profile?.providerId}
+            />
+          ) : null}
+          {services.searchSourceIds.length > 0 ? (
+            <SearchSettings
+              enabled={state.searchEnabled}
+              onToggle={(enabled) => void controller.setSearchEnabled(enabled)}
+              keyHint={state.storedKeys["youtube"]?.hint}
+              keyMode={state.storedKeys["youtube"]?.mode}
+              storageAvailable={services.storageAvailable}
+              disabled={state.streaming}
+              onEnterKey={controller.enterSearchKey}
+              onReplaceKey={controller.replaceSearchKey}
+              onRemoveKey={() => void controller.removeSearchKey()}
             />
           ) : null}
           <DataControls disabled={state.streaming} onDeleteAll={controller.deleteAllData} />

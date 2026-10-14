@@ -5,7 +5,7 @@ import type { SecretHandle } from "./secret-handle";
  * See contracts/storage-port.md. The web adapter uses IndexedDB and WebCrypto.
  */
 
-export type Collection = "profile" | "settings" | "conversations" | "messages" | "usage";
+export type Collection = "profile" | "settings" | "conversations" | "messages" | "usage" | "saved_resources";
 
 export interface StoredRecord {
   id: string;

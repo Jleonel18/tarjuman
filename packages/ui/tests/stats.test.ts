@@ -33,6 +33,40 @@ function record(overrides: Partial<UsageRecord> = {}): UsageRecord {
 const panel = (records: UsageRecord[], configuredEffort: "low" | "medium" | "high" = "medium") =>
   createElement(StatsPanel, { records, configuredEffort, onApplyEffort: noop });
 
+describe("StatsPanel searches and steps (005 FR-017)", () => {
+  const withSearch = record({ steps: 3, searches: [{ sourceId: "youtube", count: 2 }] });
+
+  it("shows how many searches were made, to which source, and that they use a free allowance", async () => {
+    const { html, missing } = await render(panel([withSearch, record({ id: "u2", steps: 2, searches: [{ sourceId: "youtube", count: 1 }] })]));
+    expect(missing).toEqual([]);
+    expect(html).toContain("Searches: 3 (YouTube, free daily allowance)");
+  });
+
+  it("shows the number of model calls when a turn used more than one", async () => {
+    const { html } = await render(panel([withSearch]));
+    expect(html).toContain("Model calls: 3");
+  });
+
+  it("says nothing about searches or calls for plain single-call turns", async () => {
+    const { html } = await render(panel([record(), record({ id: "u2", steps: 1 })]));
+    expect(html).not.toContain("Searches:");
+    expect(html).not.toContain("Model calls:");
+  });
+
+  it("still shows the summed cost as an estimate, with the price date", async () => {
+    const { html } = await render(panel([withSearch]));
+    expect(html).toContain("Estimated cost");
+    expect(html).toContain("2026-10-02");
+  });
+
+  it("is in Spanish too", async () => {
+    const { html, missing } = await render(panel([withSearch]), "es");
+    expect(missing).toEqual([]);
+    expect(html).toContain("Búsquedas: 2 (YouTube, cuota diaria gratuita)");
+    expect(html).toContain("Llamadas al modelo: 3");
+  });
+});
+
 describe("StatsPanel", () => {
   it("shows the reported tokens per answer and in total", async () => {
     const { html, missing } = await render(panel([record(), record({ id: "u2", inputTokens: 800, outputTokens: 10 })]));

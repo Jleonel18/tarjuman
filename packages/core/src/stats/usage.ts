@@ -25,6 +25,9 @@ export interface BuildUsageInput {
   configuredEffort: Effort;
   recommendedEffort: Effort;
   createdAt: string;
+  /** Model calls in the turn (005). Omitted for a single-call turn recorded by older code. */
+  steps?: number;
+  searches?: { sourceId: string; count: number }[];
 }
 
 export function isContextWarning(ratio: number): boolean {
@@ -69,6 +72,22 @@ export function buildUsageRecord(input: BuildUsageInput): UsageRecord {
     configuredEffort: input.configuredEffort,
     recommendedEffort: input.recommendedEffort,
     createdAt: input.createdAt,
+    ...(input.steps !== undefined && { steps: input.steps }),
+    ...(input.searches !== undefined && input.searches.length > 0 && { searches: input.searches }),
+  };
+}
+
+/** Adds up what the provider reported over the steps of a turn. `undefined` when it reported nothing. */
+export function addUsage(a: ReportedUsage | undefined, b: ReportedUsage | undefined): ReportedUsage | undefined {
+  if (a === undefined) return b;
+  if (b === undefined) return a;
+  const cacheRead = (a.cacheReadTokens ?? 0) + (b.cacheReadTokens ?? 0);
+  const cacheWrite = (a.cacheWriteTokens ?? 0) + (b.cacheWriteTokens ?? 0);
+  return {
+    inputTokens: a.inputTokens + b.inputTokens,
+    outputTokens: a.outputTokens + b.outputTokens,
+    cacheReadTokens: a.cacheReadTokens === undefined && b.cacheReadTokens === undefined ? undefined : cacheRead,
+    cacheWriteTokens: a.cacheWriteTokens === undefined && b.cacheWriteTokens === undefined ? undefined : cacheWrite,
   };
 }
 

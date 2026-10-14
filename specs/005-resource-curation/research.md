@@ -258,3 +258,53 @@ search (R2, R4).
   the fragment's instruction; SC-005 is checked with scripted queries. Accepted.
 - `relevanceLanguage` is a hint; YouTube may return videos in other languages. `videos.list`
   `defaultAudioLanguage` is used when present; otherwise the card says the language is unconfirmed.
+
+## R13. Decisions made while implementing
+
+Recorded so the owner can review them with the code.
+
+- **Prompt fragments tied to a search state** (`whenSearch`): the way to tell the model why search
+  is unavailable, as data. See `contracts/capability-contract-1.1.md`, "Additions made while
+  implementing".
+- **A step is buffered while tools are on offer.** Only the last step's text may be shown, and a
+  step can end in a tool call after it has written text, so its text waits for the step to end.
+  Turns with no tools offered stream exactly as before. The cost is that an answer in a turn with
+  tools arrives in one piece.
+- **The last step is offered no tools**, so the model has to answer; any tool call it still makes
+  in that step is ignored.
+- **A `consent_required` turn discards the question and the empty answer** (the learner agrees and
+  the same message is sent as a new turn, so keeping them would show the question twice). The usage
+  of the model call it spent is kept, so the cost is not hidden.
+- **Link origins in the bundle check.** The card link (`https://www.youtube.com/watch?v=`) and the
+  consent dialog's terms and privacy links must exist in the JavaScript. They are accepted only as
+  link targets in scripts (`linkOrigins`), not in the HTML, the CSS, or the CSP. The check must be
+  run on a real production build: the e2e build carries test doubles with example URLs.
+- **The search key form is behind "Add search key"**, with its own label and button, so on the
+  settings screen it never has the same accessible name as the model key's form.
+- **A refreshed card has no fit note or difficulty**: those were the model's judgement of the old
+  data and are removed with it at expiry. The card then shows no difficulty claim.
+- **Search results are cleaned twice**: by the YouTube adapter (Zod, caps, entities, key check) and
+  again by `SearchBroker` (ids, links, caps, key-shaped text), because the core must not rely on an
+  adapter being perfect.
+- **Adversarial coverage:** 10 structural cases run a compromised model through the real pipeline
+  with hostile search results, plus one behavioral-only case (full lyrics). They check keys in every
+  request, only card links rendered, results fenced as data, no side effect after a search, and
+  forged ids adding no card. Mutating the link restriction in the pipeline makes them fail.
+
+## R14. Not done, and why
+
+- **Guardrail fixtures for `curation.resource-requests` are not recorded (T067).** Recording needs a
+  model that can use tools. Ollama offers none, so the options are to record with Gemini (the owner
+  runs `TARJUMAN_PROVIDER=gemini node --env-file=.env --import tsx scripts/record-guardrails.ts`;
+  fixtures would say "not Claude"), or to mark the curation cases verdict-only. Adding the capability
+  to the guardrail setup changes the recorded prompt hash, so `lint:rules` fails until it is
+  re-recorded. **The owner decides.** Until then the rule file is validated against the contract
+  schema and loaded by the core loader (`tests/guardrails/rule-files.test.ts`) and its version is
+  compared with `main`, but no model has been asked its cases.
+- **The YouTube adapter and the Gemini/Anthropic tool mappings have not run live (T068).** Gemini's
+  tool shape was captured live once (R8); the new round-trip test is in
+  `packages/provider-gemini/tests/gemini.live.test.ts` and skips without a key. The YouTube fixtures
+  are synthetic ("shaped after the documented response"). `pnpm test:live:youtube` needs the
+  owner's `YOUTUBE_API_KEY`. Anthropic's tool mapping is from the documentation only.
+- **The behavioral layer** (a real model resisting a hostile video title, quoting at most two lines
+  of lyrics) has not been run.

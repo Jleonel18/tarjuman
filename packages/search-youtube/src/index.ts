@@ -3,3 +3,5 @@
  * root and `tests/` construct it; everything else sees the `SearchPort` type.
  */
 export { YOUTUBE_API_ORIGIN } from "./origin";
+export { YouTubeSearch, YOUTUBE_TERMS_VERSION } from "./youtube-search";
+export type { YouTubeSearchOptions } from "./youtube-search";

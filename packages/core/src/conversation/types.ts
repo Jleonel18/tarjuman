@@ -1,4 +1,5 @@
 import type { LanguageCode } from "../profile/types";
+import type { StoredResourceCard } from "../search/resource-card";
 
 /**
  * How much authority a piece of text carries (FR-007). User-typed text is `user`; pasted material
@@ -30,6 +31,10 @@ export interface Message {
   ruleIds: string[];
   usageId: string | null;
   createdAt: string;
+  /** Resource cards shown with this answer, at most 10 (005). Aged by the 30-day retention rule. */
+  resources?: StoredResourceCard[];
+  /** How many searches this turn made. A turn with searches renders its prose links strictly (FR-013). */
+  searchCount?: number;
 }
 
 export interface Conversation {

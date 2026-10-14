@@ -1,4 +1,4 @@
-import { isContextWarning, type ProviderErrorCode } from "@tarjuman/core";
+import { isContextWarning, type ExpiredResourceCard, type ProviderErrorCode, type ResourceCard } from "@tarjuman/core";
 import type { ReactElement } from "react";
 import { CircleAlert } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -7,6 +7,7 @@ import { Composer } from "./Composer";
 import { ContextNotice } from "./ContextNotice";
 import { GuardNotice, type GuardNoticeCode } from "./GuardNotice";
 import { MessageBubble, type ChatMessage } from "./MessageBubble";
+import { SearchNotice, type SearchNoticeCode } from "./SearchNotice";
 
 export interface ChatViewProps {
   messages: readonly ChatMessage[];
@@ -18,6 +19,14 @@ export interface ChatViewProps {
   /** Set when the input guard withheld part of the last message. */
   notice?: { code: GuardNoticeCode } | undefined;
   onDismissNotice?: (() => void) | undefined;
+  /** What the last turn's searches did, when it matters (005). */
+  searchNotice?: { code: SearchNoticeCode } | undefined;
+  onDismissSearchNotice?: (() => void) | undefined;
+  onOpenSearchSettings?: (() => void) | undefined;
+  /** Saved resources and the explicit actions on a card (US4). */
+  savedIds?: ReadonlySet<string> | undefined;
+  onSaveResource?: ((card: ResourceCard) => void) | undefined;
+  onRefreshResource?: ((card: ExpiredResourceCard) => void) | undefined;
   /** 0..1 share of the model's window the open conversation uses; a notice shows from 80%. */
   contextRatio?: number | undefined;
   onNewConversation?: (() => void) | undefined;
@@ -35,6 +44,12 @@ export function ChatView({
   error,
   notice,
   onDismissNotice,
+  searchNotice,
+  onDismissSearchNotice,
+  onOpenSearchSettings,
+  savedIds,
+  onSaveResource,
+  onRefreshResource,
   contextRatio,
   onNewConversation,
   onSend,
@@ -55,6 +70,9 @@ export function ChatView({
           <MessageBubble
             key={message.id}
             message={message}
+            savedIds={savedIds}
+            onSaveResource={onSaveResource}
+            onRefreshResource={onRefreshResource}
             onRetry={
               message.author === "assistant" && message.status === "interrupted" && !streaming
                 ? () => onRetry(message.id)
@@ -74,6 +92,14 @@ export function ChatView({
             </button>
           ) : null}
         </p>
+      ) : null}
+
+      {searchNotice ? (
+        <SearchNotice
+          code={searchNotice.code}
+          onDismiss={onDismissSearchNotice ?? (() => {})}
+          onOpenSearchSettings={onOpenSearchSettings}
+        />
       ) : null}
 
       {notice ? <GuardNotice code={notice.code} onDismiss={onDismissNotice ?? (() => {})} /> : null}

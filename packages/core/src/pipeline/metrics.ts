@@ -15,6 +15,9 @@ export interface MetricsInput {
   model: ModelInfo | undefined;
   configuredEffort: Effort;
   recommendedEffort: Effort;
+  /** Model calls and searches of the turn (005). */
+  steps?: number;
+  searches?: { sourceId: string; count: number }[];
 }
 
 /**
@@ -36,6 +39,8 @@ export async function runMetrics(input: MetricsInput): Promise<TurnEvent[]> {
       configuredEffort: input.configuredEffort,
       recommendedEffort: input.recommendedEffort,
       createdAt,
+      ...(input.steps !== undefined && { steps: input.steps }),
+      ...(input.searches !== undefined && { searches: input.searches }),
     }),
   );
   const events: TurnEvent[] = [{ type: "usage", record }];

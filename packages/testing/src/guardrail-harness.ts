@@ -1,12 +1,16 @@
 import {
   ConversationService,
   Pipeline,
+  SearchBroker,
+  SearchSettingsStore,
+  sealSecret,
   type CapabilityRegistry,
   type CredentialStore,
   type LearnerProfile,
   type ModelRequest,
   type ProviderPort,
   type RefusalTemplates,
+  type SearchPort,
   type SafeBlock,
   type SafeInline,
   type SecretHandle,
@@ -26,6 +30,11 @@ export interface HarnessDeps {
   capabilities: CapabilityRegistry;
   capabilityId: string;
   refusalTemplate: RefusalTemplates;
+  /**
+   * Search sources for a turn that may use resource tools (005). Consent is recorded for each, so a
+   * compromised model's search goes through; `key` is the raw search key the sources are given.
+   */
+  search?: { ports: readonly SearchPort[]; key: string };
 }
 
 /** What one turn needs. A `GuardrailCase` satisfies it; the adversarial runner adds the extras. */
@@ -46,8 +55,10 @@ export interface GuardrailRun {
   status: string | undefined;
   /** What the learner saw, as plain text. */
   text: string;
-  /** The request the pipeline sent (the only one; a case is one turn). */
+  /** The first request the pipeline sent. A case without tools is one turn with one request. */
   request: ModelRequest | undefined;
+  /** Every request, in order: a turn that uses tools makes several (005). */
+  requests: ModelRequest[];
   /** The provider's events exactly as streamed, in the mock-provider script form. */
   steps: MockStep[];
 }
@@ -60,19 +71,26 @@ export interface GuardrailRun {
 export async function runGuardrailCase(c: TurnCase, deps: HarnessDeps): Promise<GuardrailRun> {
   const capturing = new CapturingProvider(deps.provider);
   let tick = 0;
+  const storage = new MemoryStorage();
   const conversations = new ConversationService({
-    storage: new MemoryStorage(),
+    storage,
     now: () => new Date(Date.UTC(2026, 0, 1, 0, 0, tick++)).toISOString(),
     newId: () => `id-${tick++}`,
   });
+  const searchIds = new Set((deps.search?.ports ?? []).map((port) => port.id));
   const credentials: CredentialStore = {
     save: async () => {},
-    load: async () => deps.secret,
-    describe: async () => undefined,
+    load: async (id) => (searchIds.has(id) && deps.search ? sealSecret(deps.search.key) : deps.secret),
+    describe: async (id) =>
+      searchIds.has(id)
+        ? { providerId: id, maskedHint: "AIza…", storageMode: "session" as const, validatedAt: "2026-01-01T00:00:00.000Z" }
+        : undefined,
     list: async () => [],
     remove: async () => {},
     removeAll: async () => {},
   };
+  const settings = new SearchSettingsStore({ storage, now: () => "2026-01-01T00:00:00.000Z" });
+  for (const port of deps.search?.ports ?? []) await settings.recordConsent(port.id, port.termsVersion);
   const profile: LearnerProfile = {
     id: "profile",
     uiLanguage: "en",
@@ -94,6 +112,7 @@ export async function runGuardrailCase(c: TurnCase, deps: HarnessDeps): Promise<
     capabilities: deps.capabilities,
     getProfile: async () => profile,
     refusalTemplate: deps.refusalTemplate,
+    ...(deps.search && { search: new SearchBroker({ ports: deps.search.ports, settings, credentials }) }),
   });
   const conversation = await conversations.create({
     capabilityId: deps.capabilityId,
@@ -124,6 +143,7 @@ export async function runGuardrailCase(c: TurnCase, deps: HarnessDeps): Promise<
     status: done?.type === "done" ? done.status : undefined,
     text: lastRender?.type === "render" ? blocksToText(lastRender.blocks) : "",
     request: capturing.requests[0],
+    requests: capturing.requests,
     steps: capturing.steps,
   };
 }

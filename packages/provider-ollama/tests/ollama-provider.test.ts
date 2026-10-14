@@ -274,3 +274,14 @@ describe("OllamaProvider: validateCredential", () => {
     expect(fake.calls).toHaveLength(0);
   });
 });
+
+describe("OllamaProvider: tools (005)", () => {
+  it("never sends tools: the models declare supportsTools false, so the pipeline offers none", async () => {
+    const tool = { name: "search_videos", description: "Search.", inputSchema: { type: "object" } };
+    const { fake, provider } = setup({ kind: "sse", chunks: answerChunks(["ACCEPT\nok"], 1, 1) });
+    await collect(provider.stream({ ...REQUEST, tools: [tool] }, SECRET, new AbortController().signal));
+    const sent = JSON.stringify(fake.calls[0]?.body);
+    expect(sent).not.toContain("tools");
+    expect(sent).not.toContain("search_videos");
+  });
+});

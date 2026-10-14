@@ -179,3 +179,62 @@ describe("OutputGuard.checkToolCall: broker first, then the taint gate (US8, FR-
     expect(await decision.run({})).toEqual({ ok: false, error: "tool_failed" });
   });
 });
+
+/** 005 FR-013: in a turn with search results, only a card's own link stays clickable. */
+describe("links in a turn with search results (allowedLinks)", () => {
+  const CARD = "https://www.youtube.com/watch?v=aaaaaaaaaaa";
+  const allowedLinks = new Set([CARD]);
+  const links = (blocks: ReturnType<typeof renderSafeBlocks>) => json(blocks).match(/"type":"link"/g)?.length ?? 0;
+
+  it("keeps a link equal to a card link", () => {
+    const blocks = renderSafeBlocks(`Watch [this one](${CARD}).`, { allowedLinks });
+    expect(links(blocks)).toBe(1);
+    expect(json(blocks)).toContain(`"destination":"${CARD}"`);
+  });
+
+  it.each([
+    ["an invented id", "https://www.youtube.com/watch?v=r1"],
+    ["another video", "https://www.youtube.com/watch?v=bbbbbbbbbbb"],
+    ["another domain", "https://evil.example/phish"],
+    ["a card link plus a tracking parameter", `${CARD}&utm_source=x`],
+    ["a card link with a fragment", `${CARD}#t=10`],
+    ["http instead of https", "http://www.youtube.com/watch?v=aaaaaaaaaaa"],
+    ["a mailto", "mailto:someone@example.com"],
+  ])("turns %s into plain text that shows the destination", (_name, url) => {
+    const blocks = renderSafeBlocks(`See [the video](${url}) now.`, { allowedLinks });
+    expect(links(blocks)).toBe(0);
+    const text = json(blocks);
+    expect(text).toContain("the video");
+    expect(text).toContain(url);
+  });
+
+  it("keeps the words of a restricted link, including its emphasis", () => {
+    const blocks = renderSafeBlocks("[*bold move*](https://evil.example)", { allowedLinks });
+    expect(links(blocks)).toBe(0);
+    expect(json(blocks)).toContain('"type":"emphasis"');
+    expect(json(blocks)).toContain("https://evil.example");
+  });
+
+  it("restricts every link when the turn produced no cards", () => {
+    expect(links(renderSafeBlocks(`[x](${CARD})`, { allowedLinks: new Set() }))).toBe(0);
+  });
+
+  it("leaves a turn without search untouched", () => {
+    expect(links(renderSafeBlocks("[docs](https://example.com/docs)"))).toBe(1);
+    expect(renderSafeBlocks("[docs](https://example.com/docs)")).toEqual(
+      renderSafeBlocks("[docs](https://example.com/docs)", {}),
+    );
+  });
+
+  it("still drops unsafe schemes the old way", () => {
+    expect(links(renderSafeBlocks("[x](javascript:alert(1))", { allowedLinks }))).toBe(0);
+  });
+
+  it("applies the same rule to the streaming OutputGuard", () => {
+    const guard = new OutputGuard({ allowedLinks });
+    guard.push("See [a](https://evil.example) and ");
+    const blocks = guard.push(`[b](${CARD}).`);
+    expect(links(blocks)).toBe(1);
+    expect(json(blocks)).toContain("https://evil.example");
+  });
+});
