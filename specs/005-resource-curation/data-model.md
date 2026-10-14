@@ -35,7 +35,7 @@ Removed by "delete all my data".
 
 | Field | Type | Rule |
 |---|---|---|
-| `query` | string | 1–120 characters after trimming; from the model's tool input. |
+| `query` | string | 1–120 characters after trimming; from the model's tool input. Rejected (tool error, no request) if the input guard's key detector finds a key shape in it. |
 | `targetLanguage` | BCP 47 | From the profile, never from the model. |
 | `kind` | `any` \| `music` | |
 | `captionsOnly` | boolean | |
@@ -47,7 +47,7 @@ Never contains the key, history, or profile fields other than the target languag
 
 | Field | Type | Notes |
 |---|---|---|
-| `ref` | `r1`…`r10` | Turn-local id the model uses. |
+| `ref` | `r1`…`r16` | Turn-wide id the model uses: numbering continues across the turn's searches (2 × 8 results max). A result whose `externalId` was already returned in this turn keeps its first `ref` and is not repeated. |
 | `sourceId` | `youtube` | |
 | `externalId` | string | YouTube video id, `^[A-Za-z0-9_-]{11}$`. |
 | `title` | string | Verbatim after entity decoding; max 200 characters. |
@@ -58,6 +58,7 @@ Never contains the key, history, or profile fields other than the target languag
 | `audioLanguage` | BCP 47 \| null | `null` → card says "language not confirmed". |
 | `type` | `video` \| `song` | `song` when the category is Music. |
 | `priceLabel` | `free` \| `paid` \| `free_with_limits` \| `unknown` | YouTube videos: `free`. |
+| `accessNote` | `region_restricted` \| `age_restricted` \| null | From `videos.list` `contentDetails.regionRestriction` / `contentRating.ytRating`. |
 | `sponsored`, `affiliate` | boolean | `false` for YouTube search results (the API returns no ads). |
 | `fetchedAt` | ISO date | |
 
@@ -70,7 +71,8 @@ item; the model never supplies title, link, or labels.
 
 | Field | From |
 |---|---|
-| `sourceId`, `externalId`, `title`, `channel`, `durationSeconds`, `hasCaptions`, `audioLanguage`, `type`, `priceLabel`, `sponsored`, `affiliate`, `fetchedAt` | SearchResult |
+| `sourceId`, `externalId`, `title`, `channel`, `durationSeconds`, `hasCaptions`, `audioLanguage`, `type`, `priceLabel`, `accessNote`, `sponsored`, `affiliate`, `fetchedAt` | SearchResult |
+| `sourceDisplay` | App constant per source: `YouTube (youtube.com)` (FR-005). |
 | `link` | Built by the adapter from `externalId` (`https://www.youtube.com/watch?v=<id>`), no other parameters. |
 | `fitNote` | Model; max 300 characters; rendered as plain text through the output guard (no links). |
 | `difficulty` | Model; `easier` \| `about_right` \| `harder` \| `unknown`; labelled as an estimate. |
@@ -112,3 +114,18 @@ idle → model_step → (tool_calls → running_tools → model_step)* → final
 
 Limits: 4 model steps, 2 `search_videos`, 1 `show_resources` per turn. Cancel at any point stops
 further steps and searches; no retry.
+
+A `search_videos` call without consent for its source ends the turn with status `consent_required`
+(no search request is made, the model's text is not shown). After the learner agrees, the app sends
+the same user message again as a new turn; after Cancel, nothing is sent. This is a new turn chosen
+by the learner, not a retry.
+
+A turn where one search succeeded and a later one failed keeps the results it has; the final answer
+and the cards are shown with the notice `search_incomplete`.
+
+## Resource context for later turns
+
+When assembling a later turn, each earlier assistant message with non-expired cards contributes one
+`untrusted_data` block listing `ref`, title, channel, and type of its cards (no links, no fit notes),
+so the learner can refer to "the second one". Expired cards contribute nothing (FR-021). Tool
+messages of earlier turns are never replayed.

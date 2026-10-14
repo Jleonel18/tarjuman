@@ -43,15 +43,29 @@ Rules for every adapter:
 ## Pipeline (amended)
 
 - Tools offered in a turn = tools of the conversation's capability + every registered capability
-  with `availability: "all_conversations"`, only if the model `supportsTools` and search is enabled
-  and consented (FR-018). Otherwise no tools, and the capability fragment tells the model that
-  search is unavailable and why (FR-009 fallback).
+  with `availability: "all_conversations"`, only if the model `supportsTools`, search is enabled,
+  and a key for the source is stored. Consent is **not** a condition for offering tools (see
+  below). Otherwise no tools, and the capability fragment tells the model that search is
+  unavailable and why: `off`, `no_key`, `model_cannot_search` (FR-009 fallback).
 - Loop per turn (max 4 model steps): stream a step; collect `tool_call`s; for each, in order:
   1. `OutputGuard.checkToolCall` (authorize, taint). Denied → tool result `{ ok:false, error }`.
   2. Per-turn limits: `search_videos` ≤ 2, `show_resources` ≤ 1. Over → error result.
   3. Presentation tools (`show_resources`) are validated and kept, not executed.
   4. Other tools run via the broker; results become `tool` messages, wrapped in an
      `untrusted_data` block; every segment from them is `untrusted`.
+  5. Consent: a `search_videos` call for a source without consent makes no request and ends the
+     turn with `{ type: "done"; status: "consent_required"; sourceId }`; no model text is shown. The
+     app shows the consent dialog; on Agree it sends the same user message as a new turn (the
+     learner's action, not a retry); on Cancel nothing is sent.
+  6. Partial failure: if a later search fails after an earlier one succeeded, the failed call gets an
+     error result, the loop continues, and the turn ends with notice `search_incomplete`.
+- Searches in a turn go through a per-turn `TurnSearchSession` (created by the pipeline and handed
+  to the broker services): it assigns turn-wide refs `r1…r16` in order, drops results whose
+  `externalId` was already returned in the turn, and is the set `show_resources` ids are checked
+  against.
+- History: later turns get, per earlier assistant message with non-expired cards, one
+  `untrusted_data` block with `ref`, title, channel, type (data-model.md → Resource context). Tool
+  messages of earlier turns are never replayed.
 - Only the final step's text is parsed for the verdict and rendered. While tools run the pipeline
   emits `{ type: "status"; code: "searching" }`.
 - `TurnEvent` gains `{ type: "resources"; cards: ResourceCard[] }`, emitted once, after the final

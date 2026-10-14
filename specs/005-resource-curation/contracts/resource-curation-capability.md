@@ -22,7 +22,8 @@ two searches; then call `show_resources` with the results that fit, keeping thei
 short reply that does not restate titles or write links (cards show them); never invent resources;
 quote at most two lines of lyrics; if search is unavailable, say so and why, and do not suggest
 specific videos from memory. When tools are not offered, the fragment variant says search is
-unavailable (reason code supplied by the app: off, no consent, no key, model without tools).
+unavailable (reason code supplied by the app: off, no key, model without tools). Missing consent is
+not a fallback: the turn ends with `consent_required` and the app asks (provider-tool-calls.md).
 
 ## Domain rules (versioned, with accept/refuse cases)
 
@@ -32,8 +33,8 @@ unavailable (reason code supplied by the app: off, no consent, no key, model wit
 
 ## UI (packages/ui)
 
-- `ResourceCards`: list of cards (title, "YouTube · channel", type, duration, captions, language,
-  price label, sponsored/affiliate labels when true, difficulty "(estimate)", fit note, "Open on
+- `ResourceCards`: list of cards (title, "YouTube (youtube.com) · channel", type, duration, captions,
+  language, access note, price label, sponsored/affiliate labels when true, difficulty "(estimate)", fit note, "Open on
   YouTube" link with `target="_blank" rel="noopener noreferrer"`, Save button). No images.
   Logical properties; titles in any script with `dir="auto"`.
 - `SearchConsentDialog` (FR-018): what is sent, YouTube Terms and Google Privacy Policy links, the

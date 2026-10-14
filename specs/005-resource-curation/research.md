@@ -202,13 +202,18 @@ search (R2, R4).
   model must answer. No step is retried.
 - **Verdict:** the verdict line is read from the **final** step's text. Text of earlier steps (if
   any) is not shown. While tools run, the UI shows "Searching YouTube…" (a `TurnEvent` status).
+- **Consent:** tools are offered without consent; a search attempt without consent ends the turn as
+  `consent_required` and the app asks, then re-sends the learner's message as a new turn. Offering
+  no tools until consent was rejected: the app cannot know a message is a resource request before
+  the model says so, so the dialog would never appear.
 - **Taint:** after a search result enters the turn, the turn is tainted (segments with `untrusted`
   trust). `show_resources` and `search_videos` are not side-effecting, so they run; any
   side-effecting tool would need confirmation (none in this feature).
 - **Tools of `resource-curation`:**
   - `search_videos({ query, kind: "any" | "music", captionsOnly?: boolean })` → result set with
-    short ids `r1…rN` (no URLs, no raw descriptions beyond 200 characters), wrapped in an
-    `untrusted_data` block.
+    turn-wide ids `r1…r16` (numbering continues across the turn's searches; repeats of the same
+    video are dropped), no URLs, descriptions cut to 200 characters, wrapped in an `untrusted_data`
+    block.
   - `show_resources({ items: [{ id, fitNote, difficulty: "easier" | "about_right" | "harder" |
     "unknown", interest? }] })` → validated against the turn's result ids. The pipeline emits a
     `resources` `TurnEvent` built from **search data** (title, channel, link, duration, labels) plus
@@ -248,5 +253,8 @@ search (R2, R4).
 - Omitting YouTube results (R7) is an interpretation of the terms, not an explicit permission.
 - Difficulty is a model estimate from metadata (title, duration, captions, channel), not from the
   content.
+- The search query is written by the model, so "no conversation history in search terms" (FR-004)
+  cannot be fully enforced. Structural limits: 120 characters, key-shape check before sending, and
+  the fragment's instruction; SC-005 is checked with scripted queries. Accepted.
 - `relevanceLanguage` is a hint; YouTube may return videos in other languages. `videos.list`
   `defaultAudioLanguage` is used when present; otherwise the card says the language is unconfirmed.

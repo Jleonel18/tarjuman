@@ -170,8 +170,9 @@ affecting User Stories 1–3.
   could not be matched to a level.
 - The target language has little online material on the topic: Tarjuman says so and offers nearby
   topics or material for a slightly higher level, labelled as such.
-- A result is region-locked, age-restricted, removed, or behind a login: the price or access label
-  says so when the search result reveals it; otherwise the link is shown as found.
+- A result is region-locked, age-restricted, removed, or behind a login: the card carries an
+  access note when the source reveals it (YouTube: region restriction, age restriction); otherwise
+  the link is shown as found.
 - The same resource appears from several searches: it is shown once.
 - A result's source domain is not on the list of sites the app may contact or link to: the app
   shows it as plain text with its domain, not as a clickable link, or leaves it out.
@@ -209,7 +210,8 @@ affecting User Stories 1–3.
   topic is given, their profile interests. They MUST NOT contain the API key, conversation history
   beyond the current request, or profile fields other than target language, level, and interests.
 - **FR-005**: The app MUST show at most 10 resources per answer, each with: title, type (video, song,
-  podcast, article, book, series, other), source name and domain, link, fit note in the mediation
+  podcast, article, book, series, other), source name and domain (for YouTube: "YouTube
+  (youtube.com)" and the channel name), link, fit note in the mediation
   language, price label (free, paid, free with limits, unknown), and estimated difficulty
   (labelled as an estimate).
 - **FR-006**: Ranking MUST depend only on fit to the learner's request, interests, target language,
@@ -297,13 +299,15 @@ affecting User Stories 1–3.
 - **Resource**: one piece of material found by a search. Title, type, source name, domain, link,
   language(s), price label, sponsored flag, affiliate flag, estimated difficulty, fit note, the
   interest it matches, and the search it came from. Never contains the content itself.
-- **Search request**: what the provider's search is asked for: terms, target language, optional type filter.
+- **Search request**: what is sent to the search service (YouTube): terms, target language, optional
+  type filter.
   Never contains the key or history.
 - **Search result**: what a search source returns, before curation. Untrusted. Lives only for the
   turn.
 - **Saved resource**: a Resource plus the date saved, stored on the
   device with other learner data.
-- **Search settings**: whether internet search is on, and whether the first-search notice was shown.
+- **Search settings**: whether internet search is on, and, per search source, whether and when the
+  learner agreed to its terms (asked again when those terms change).
 
 ## Threat Analysis
 
@@ -317,9 +321,9 @@ affecting User Stories 1–3.
   (only search links), and FR-014 (no added parameters) close it.
 - **Malicious or phishing destinations**: a search can return harmful sites. FR-011 limits clickable
   links to allowlisted domains; others are plain text.
-- **Privacy leak to search services**: search terms reveal interests and target language, and the
-  provider passes them to a search engine (which may be a third party for that provider). FR-004
-  limits what is in the terms; FR-018 discloses it and lets the learner turn search off.
+- **Privacy leak to search services**: search terms reveal interests and target language to the
+  search service (YouTube, operated by Google). FR-004 limits what is in the terms; FR-018 discloses
+  it, asks for consent, and lets the learner turn search off.
 - **Key exposure**: the AI key still goes only to the selected provider. The new search key goes
   only to its search service, is stored and masked like an AI key, and never enters model context.
   FR-004 keeps both out of search terms. A key shaped for one service but pasted for another is
