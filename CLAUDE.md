@@ -140,12 +140,11 @@ Run `pnpm typecheck && pnpm lint && pnpm lint:arch && pnpm test` before declarin
 
 ## Current state
 
-Phases 1-10 of 11 are done for feature 001 (T001-T147): all eight user stories, from the MVP
-chat and guardrails through injection defense, stats, tone, languages and RTL, key and data
-control, and the capability permission broker. Phase 11 (Polish, T148-T153) is next: the nightly
-live workflow, latency and network-origin e2e tests, the README and capability guide, the
-quickstart validation, and the final security review. The guardrail fixtures were recorded with a
-non-Claude model, so the mechanics are verified and SC-003 is not.
+All 11 phases of feature 001 are done (T001-T153). Results are in
+`specs/001-core-foundation/checklists/validation.md` and `security-review.md`. Still open: SC-003
+(the guardrail fixtures were recorded with a non-Claude model, and the nightly workflow skips
+without a `TARJUMAN_TEST_KEY` secret), a human click-through of the quickstart scenarios, and the
+low-severity findings and proposed `plan.md` threat-table changes in `security-review.md`.
 
 The pipeline has no tool-call path: no provider is asked for tools in this feature. The permission
 broker and `OutputGuard.checkToolCall` are built and tested but not called by the pipeline yet.

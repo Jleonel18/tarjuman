@@ -34,7 +34,7 @@ The project follows Spec-Driven Development with [GitHub Spec Kit](https://githu
 | Specification (`001-core-foundation`) | Done |
 | Plan, data model, contracts | Done |
 | Task list (153 tasks, 11 phases) | Done |
-| Implementation | **Phases 1-10 of 11 done** (all eight user stories). Phase 11 (polish and release checks) is next |
+| Implementation | **All 11 phases done** (153 tasks). Results: [validation](specs/001-core-foundation/checklists/validation.md), [security review](specs/001-core-foundation/checklists/security-review.md) |
 
 What works today: onboarding, key entry with a choice of where the key is kept, a streaming chat
 with saved conversations, the security pipeline (key withholding, untrusted-content isolation,
@@ -43,10 +43,10 @@ and effort settings, tone presets, English and Spanish interfaces with right-to-
 replacing or deleting the key, and "delete all my data". Capabilities are added by declaration
 and checked by a permission broker.
 
-What is still open (Phase 11): a nightly run against a live model, latency and network-origin
-end-to-end tests, a final security review, and the full manual validation. The guardrail fixtures
-were recorded with a local non-Claude model, so how well Claude itself keeps to scope (SC-003) is
-not measured yet.
+What is still open: a run against Claude itself. The guardrail fixtures were recorded with a local
+non-Claude model, so how well Claude keeps to scope (SC-003) is not measured, and the nightly job
+that would measure it skips until a test key is configured. A human click-through of the manual
+scenarios is also still to do.
 
 Progress is tracked by the checkboxes in
 [specs/001-core-foundation/tasks.md](specs/001-core-foundation/tasks.md).
@@ -71,6 +71,22 @@ Every message passes through the same fixed pipeline:
 5. **Metrics** record the provider-reported token usage for the stats panel.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the full picture.
+
+## Security model in short
+
+- **Your key** is validated before it is stored, kept encrypted with a non-extractable browser key
+  (or only in memory, if you choose "this session only"), shown only as a masked hint, and sent
+  only to the AI provider. It is never part of what the model sees.
+- **Pasted text** is labeled as untrusted data with no authority to give instructions, and
+  anything that looks like a key is withheld before it reaches the model.
+- **Answers** are rendered as a restricted set of blocks: no images, no raw HTML, and links that
+  show their real destination and do nothing until you act.
+- **The browser** runs under a strict Content-Security-Policy, loads no third-party scripts, and
+  talks only to the app's own origin and the provider. There is no telemetry.
+- **Capabilities** get only the permissions they declare, checked by a permission broker.
+- **Your data** can be erased in one confirmed action, which verifies that nothing is left.
+
+Known limits and how to report a problem: [SECURITY.md](SECURITY.md).
 
 ## Repository layout
 
@@ -121,6 +137,7 @@ fill it in. End users never use this: they enter their own key in the app.
 - [ARCHITECTURE.md](ARCHITECTURE.md) — how the pieces fit and which rules keep them apart
 - [SECURITY.md](SECURITY.md) — security model and how to report a problem
 - [docs/local-model.md](docs/local-model.md) — running and testing with a free local model
+- [docs/adding-a-capability.md](docs/adding-a-capability.md) — how to add a capability without touching the core
 - [CLAUDE.md](CLAUDE.md) — instructions for AI coding agents working in this repo
 - [.specify/memory/constitution.md](.specify/memory/constitution.md) — the non-negotiable principles
 - [specs/001-core-foundation/](specs/001-core-foundation/) — spec, plan, data model, contracts, tasks

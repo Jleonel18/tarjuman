@@ -5,9 +5,8 @@ from [specs/001-core-foundation/plan.md](specs/001-core-foundation/plan.md) as b
 [constitution](.specify/memory/constitution.md) (principles) and the feature specs (requirements);
 if this file disagrees with them, they win.
 
-**Implementation status:** Phases 1-10 of 11 are done: everything below is built and tested.
-Phase 11 (nightly live runs, latency and network-origin tests, final security review) is open.
-Two limits: the Anthropic adapter has only been tested against synthetic fixtures, never the live
+**Implementation status:** all 11 phases of feature 001 are done: everything below is built and
+tested. Two limits: the Anthropic adapter has only been tested against synthetic fixtures, never the live
 API, and the pipeline has no tool-call path yet (section 6).
 
 ## 1. Shape of the system
@@ -186,7 +185,8 @@ third-party scripts. See [SECURITY.md](SECURITY.md) and the threat analysis in t
 | i18n and RTL checks | lint script, Playwright | every PR | free |
 | Adversarial suite, structural | Vitest, mock provider | every PR, blocks merge | free |
 | End to end | Playwright against the mock provider | every PR | free |
-| Guardrail and adversarial, behavioral | Vitest against a live model | on demand (nightly planned, T148) | free with Ollama; uses a test key with Anthropic |
+| Latency (SC-001, SC-002) and network origins (FR-039, FR-040) | Playwright against the mock provider | every PR | free |
+| Guardrail and adversarial, behavioral | Vitest against a live model | on demand, and nightly against Claude once `TARJUMAN_TEST_KEY` is set | free with Ollama; uses a test key with Anthropic |
 
 The per-PR gate relies on **structural** assertions (the assembled request never contains the key;
 hostile output cannot render an image) because those do not depend on model behavior. Behavioral
