@@ -45,6 +45,8 @@ export class Pipeline implements PipelineContract {
 
   constructor(deps: PipelineDeps) {
     this.#deps = deps;
+    // Nothing on the instance or the prototype can be replaced, so the stage order above holds (US8-3).
+    Object.freeze(this);
   }
 
   /** Emits exactly one `done` or `error`. Never retries the provider (cost safety). */
@@ -219,6 +221,8 @@ export class Pipeline implements PipelineContract {
     }
   }
 }
+
+Object.freeze(Pipeline.prototype);
 
 function effortFor(model: ModelInfo | undefined, effort: Effort): { effort?: Effort } {
   return model?.supportsEffort && model.effortLevels.includes(effort) ? { effort } : {};

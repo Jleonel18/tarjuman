@@ -99,3 +99,57 @@ describe("CapabilityRegistry.register", () => {
     expect(rejects(validCapability({ tools: [tool] }))).toContain("additionalProperties");
   });
 });
+
+/** T141: each invalid declaration in the contract is rejected on its own; the valid one registers. */
+describe("registry validation matrix (US8)", () => {
+  const tool = (requiredPermissions: unknown[]) => ({
+    name: "lookup",
+    description: text("Looks things up."),
+    inputSchema: { type: "object", additionalProperties: false },
+    requiredPermissions,
+    sideEffecting: false,
+    handler: async () => ({ ok: true, output: null }),
+  });
+
+  it.each<[string, Record<string, unknown>, string]>([
+    ["a rule without accept cases", { domainRules: [{ ...rule("scope.a"), acceptCases: [] }] }, "acceptCases"],
+    ["a rule without refuse cases", { domainRules: [{ ...rule("scope.a"), refuseCases: [] }] }, "refuseCases"],
+    [
+      "a tool naming an undeclared permission",
+      { tools: [tool([{ kind: "storage", collections: ["usage"], access: "read" }])] },
+      "did not declare",
+    ],
+    [
+      "a tool naming a narrower variant of a declared permission",
+      {
+        tools: [tool([{ kind: "network", allowedHosts: ["other.example"] }])],
+        permissions: [{ kind: "network", allowedHosts: ["example.com"] }],
+      },
+      "did not declare",
+    ],
+    ["a fragment in the security layer", { promptFragments: { x: { layer: "security", text: text("hi") } } }, "promptFragments"],
+    ["a fragment in the scope layer", { promptFragments: { x: { layer: "domain_scope", text: text("hi") } } }, "promptFragments"],
+    ["a fragment with no layer", { promptFragments: { x: { text: text("hi") } } }, "promptFragments"],
+    ["a contractVersion mismatch", { contractVersion: "1.1.0" }, "contractVersion"],
+    ["a missing contractVersion", { contractVersion: undefined }, "contractVersion"],
+  ])("rejects %s", (_name, overrides, message) => {
+    expect(rejects(validCapability(overrides))).toContain(message);
+  });
+
+  it("rejects a duplicate id", () => {
+    const registry = new CapabilityRegistry();
+    registry.register(validCapability({ domainRules: [] }));
+    expect(rejects(validCapability({ domainRules: [] }), registry)).toContain("already registered");
+  });
+
+  it("registers a valid capability with a tool and the permissions it needs", () => {
+    const permissions = [
+      { kind: "network", allowedHosts: ["example.com"] },
+      { kind: "ui", surface: "notice" },
+    ];
+    const registry = new CapabilityRegistry();
+    const registered = registry.register(validCapability({ tools: [tool(permissions)], permissions }));
+    expect(registered.tools.map((t) => t.name)).toEqual(["lookup"]);
+    expect(registry.list().map((c) => c.id)).toEqual(["demo"]);
+  });
+});

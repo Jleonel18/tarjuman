@@ -17,6 +17,14 @@ export type * from "./capabilities/types";
 export { CAPABILITY_CONTRACT_VERSION } from "./capabilities/types";
 export { capabilitySchema, domainRuleSchema, permissionSchema } from "./capabilities/schema";
 export { CapabilityRegistry, CapabilityRegistrationError } from "./capabilities/registry";
+export { PermissionBroker, PermissionDeniedError } from "./capabilities/permission-broker";
+export type {
+  BrokerServices,
+  DenialReason,
+  PermissionBrokerDeps,
+  PermissionDenial,
+  ToolAuthorization,
+} from "./capabilities/permission-broker";
 export { loadRules, RuleLoadError } from "./guardrails/rule-loader";
 export type { RefusalTemplates } from "./guardrails/refusal";
 
@@ -39,6 +47,7 @@ export type {
 export { ContextAssembler } from "./pipeline/context-assembler";
 export type { AssembleInput, AssembledContext } from "./pipeline/context-assembler";
 export { renderSafeBlocks, OutputGuard } from "./pipeline/output-guard";
+export type { ToolCall, ToolCallDecision } from "./pipeline/output-guard";
 export { guardInput, WITHHELD_MARKER } from "./pipeline/input-guard";
 export type { GuardInput, GuardedInput } from "./pipeline/input-guard";
 export { checkTaint } from "./pipeline/taint-gate";

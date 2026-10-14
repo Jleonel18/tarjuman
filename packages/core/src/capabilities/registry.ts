@@ -37,6 +37,11 @@ export class CapabilityRegistry {
   readonly #capabilities = new Map<string, Readonly<Capability>>();
   readonly #ruleOwners = new Map<string, string>();
 
+  constructor() {
+    // Frozen so no method can be swapped for one that returns a different capability (US8-3).
+    Object.freeze(this);
+  }
+
   /**
    * Validates and registers a capability. The caller's object is never mutated or frozen; the
    * registry keeps its own validated, frozen copy.
@@ -88,3 +93,5 @@ export class CapabilityRegistry {
     return Object.freeze(this.list().flatMap((capability) => capability.domainRules));
   }
 }
+
+Object.freeze(CapabilityRegistry.prototype);

@@ -11,7 +11,7 @@
     "typecheck": "tsc -b && tsc -p apps/web --noEmit",
     "lint": "eslint .",
     "lint:css": "stylelint \"packages/**/*.css\" \"apps/**/*.css\" --allow-empty-input",
-    "lint:arch": "depcruise packages apps tests --config .dependency-cruiser.cjs",
+    "lint:arch": "depcruise packages apps tests --config .dependency-cruiser.cjs && tsx scripts/check-provider-port-imports.ts",
     "lint:i18n": "tsx scripts/lint-i18n.ts",
     "lint:rules": "tsx scripts/check-rule-versions.ts",
     "check:bundle-origins": "tsx scripts/check-bundle-origins.ts",

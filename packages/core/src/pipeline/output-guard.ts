@@ -1,7 +1,9 @@
 import MarkdownIt from "markdown-it";
 import type { Token } from "markdown-it";
+import { PermissionDeniedError, type PermissionBroker, type PermissionDenial } from "../capabilities/permission-broker";
+import type { ToolResult } from "../capabilities/types";
 import type { Segment } from "../conversation/types";
-import { checkTaint, type TaintCheck, type TaintDecision } from "./taint-gate";
+import { checkTaint } from "./taint-gate";
 import type { SafeBlock, SafeInline } from "./types";
 
 // `html: false` makes raw HTML in model output ordinary text. Linkify is off so nothing becomes
@@ -17,6 +19,19 @@ export function renderSafeBlocks(markdown: string): SafeBlock[] {
   return new BlockReader(tokens).readBlocks();
 }
 
+/** A tool call the model asked for, and the broker of the capability it belongs to. */
+export interface ToolCall {
+  broker: PermissionBroker;
+  toolName: string;
+}
+
+export type ToolCallDecision =
+  /** `run` gives the handler only its brokered `ToolContext`; it never throws. */
+  | { outcome: "allow"; run(input: unknown): Promise<ToolResult> }
+  /** Refused by the broker; the denial was already reported as a metrics event. */
+  | { outcome: "denied"; denial: PermissionDenial }
+  | { outcome: "needs_confirmation"; toolName: string };
+
 /**
  * Stream-safe: feed deltas as they arrive and get the AST for everything received so far.
  * Re-parsing the whole text keeps a half-received code fence or list well-formed.
@@ -25,12 +40,31 @@ export class OutputGuard {
   #text = "";
 
   /**
-   * Every tool call is judged here before it runs (FR-010): a side-effecting tool in a turn that
-   * contains untrusted content waits for the learner. The pipeline has no tool-call path yet;
-   * the permission broker and the call itself arrive with the capability work (US8, T145-T146).
+   * Every tool call is judged here before it runs. First the permission broker: a tool the
+   * capability did not declare is denied, even if the learner confirmed (FR-023). Then the taint
+   * gate: a side-effecting tool in a turn that contains untrusted content waits for the learner
+   * (FR-010). An allowed call runs with the brokered context only.
+   *
+   * No provider in this feature asks for tools (`ModelRequest.tools` is empty), so the pipeline
+   * never calls this yet; it is the one place a future tool-call path must go through.
    */
-  checkToolCall(tool: TaintCheck["tool"], turnSegments: readonly Segment[], userConfirmed?: boolean): TaintDecision {
-    return checkTaint({ tool, segments: turnSegments, userConfirmed });
+  checkToolCall(call: ToolCall, turnSegments: readonly Segment[], userConfirmed?: boolean): ToolCallDecision {
+    const authorization = call.broker.authorize(call.toolName);
+    if (!authorization.ok) return { outcome: "denied", denial: authorization.denial };
+    const { tool } = authorization;
+    const taint = checkTaint({ tool, segments: turnSegments, userConfirmed });
+    if (taint.outcome === "needs_confirmation") return taint;
+    return {
+      outcome: "allow",
+      run: async (input) => {
+        try {
+          return await tool.handler(input, call.broker.contextFor(tool));
+        } catch (error) {
+          // Reported by code only: a handler's own message never reaches the learner or the model.
+          return { ok: false, error: error instanceof PermissionDeniedError ? "permission_denied" : "tool_failed" };
+        }
+      },
+    };
   }
 
   push(delta: string): SafeBlock[] {

@@ -305,16 +305,16 @@ pnpm monorepo, per plan.md. `packages/core` is framework-free: no DOM, React, No
 
 ### Tests for User Story 8 ⚠️
 
-- [ ] T141 [P] [US8] Registry validation matrix in `packages/core/tests/capabilities/registry.test.ts`: duplicate ids, rules without accept or refuse cases, tools naming undeclared permissions, fragments whose `layer` is not `"capability"`, and `contractVersion` mismatch are each rejected; a valid capability registers
-- [ ] T142 [P] [US8] Permission broker tests in `packages/core/tests/capabilities/permission-broker.test.ts`: an undeclared permission yields a typed denial and a metrics event; `network` calls outside `allowedHosts` are denied; `storage` access outside declared collections or access mode is denied
-- [ ] T143 [P] [US8] SC-008 test in `tests/architecture/dummy-capability.test.ts`: register the dummy capability from `tests/fixtures/dummy-capability.ts` and run a turn through the full pipeline with guardrails, tone, and metrics active; assert no file in `packages/core` imports it
-- [ ] T144 [P] [US8] Pipeline-bypass tests in `packages/core/tests/pipeline/bypass.test.ts`: no exported API can reorder, skip, or replace stages; capabilities and `ToolContext` expose no provider handle, secret, or stage object; a fixture file importing `ProviderPort` outside the allowed paths fails `pnpm lint:arch`
+- [X] T141 [P] [US8] Registry validation matrix in `packages/core/tests/capabilities/registry.test.ts`: duplicate ids, rules without accept or refuse cases, tools naming undeclared permissions, fragments whose `layer` is not `"capability"`, and `contractVersion` mismatch are each rejected; a valid capability registers
+- [X] T142 [P] [US8] Permission broker tests in `packages/core/tests/capabilities/permission-broker.test.ts`: an undeclared permission yields a typed denial and a metrics event; `network` calls outside `allowedHosts` are denied; `storage` access outside declared collections or access mode is denied
+- [X] T143 [P] [US8] SC-008 test in `tests/architecture/dummy-capability.test.ts`: register the dummy capability from `tests/fixtures/dummy-capability.ts` and run a turn through the full pipeline with guardrails, tone, and metrics active; assert no file in `packages/core` imports it
+- [X] T144 [P] [US8] Pipeline-bypass tests in `packages/core/tests/pipeline/bypass.test.ts`: no exported API can reorder, skip, or replace stages; capabilities and `ToolContext` expose no provider handle, secret, or stage object; a fixture file importing `ProviderPort` outside the allowed paths fails `pnpm lint:arch`
 
 ### Implementation for User Story 8
 
-- [ ] T145 [US8] Implement `PermissionBroker` and the least-privilege `ToolContext` (`ctx.net.fetch` with allowlist check, scoped storage helpers, notice surface) in `packages/core/src/capabilities/permission-broker.ts` (depends on T142)
-- [ ] T146 [US8] Check every tool call against the broker, then the taint gate, in `packages/core/src/pipeline/output-guard.ts`; emit a metrics event on denial (depends on T145, T102)
-- [ ] T147 [US8] Make the registry views read-only (frozen) and expose no stage-injection API in `packages/core/src/capabilities/registry.ts` and `packages/core/src/index.ts`, so the bypass tests in T144 pass (depends on T144)
+- [X] T145 [US8] Implement `PermissionBroker` and the least-privilege `ToolContext` (`ctx.net.fetch` with allowlist check, scoped storage helpers, notice surface) in `packages/core/src/capabilities/permission-broker.ts` (depends on T142)
+- [X] T146 [US8] Check every tool call against the broker, then the taint gate, in `packages/core/src/pipeline/output-guard.ts`; emit a metrics event on denial (depends on T145, T102)
+- [X] T147 [US8] Make the registry views read-only (frozen) and expose no stage-injection API in `packages/core/src/capabilities/registry.ts` and `packages/core/src/index.ts`, so the bypass tests in T144 pass (depends on T144)
 
 **Checkpoint**: All user stories are independently functional.
 

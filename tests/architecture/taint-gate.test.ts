@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkTaint, OutputGuard, type Segment } from "@tarjuman/core";
+import { CapabilityRegistry, checkTaint, OutputGuard, PermissionBroker, type Segment } from "@tarjuman/core";
 import { dummyCapability, dummyTool } from "../fixtures/dummy-capability";
 
 const clean: Segment[] = [{ trust: "user", text: "Remind me that ser means to be" }];
@@ -58,9 +58,12 @@ describe("checkTaint (FR-010)", () => {
 
 describe("OutputGuard.checkToolCall", () => {
   it("is the place a tool call is judged: held in a tainted turn, allowed in a clean one", () => {
+    const capability = new CapabilityRegistry().register(dummyCapability);
+    const broker = new PermissionBroker({ capability, services: { notice: () => {} }, onDenial: () => {} });
+    const call = { broker, toolName: dummyTool.name };
     const guard = new OutputGuard();
-    expect(guard.checkToolCall(dummyTool, tainted)).toEqual({ outcome: "needs_confirmation", toolName: dummyTool.name });
-    expect(guard.checkToolCall(dummyTool, clean)).toEqual({ outcome: "allow" });
-    expect(guard.checkToolCall(dummyTool, tainted, true)).toEqual({ outcome: "allow" });
+    expect(guard.checkToolCall(call, tainted)).toEqual({ outcome: "needs_confirmation", toolName: dummyTool.name });
+    expect(guard.checkToolCall(call, clean).outcome).toBe("allow");
+    expect(guard.checkToolCall(call, tainted, true).outcome).toBe("allow");
   });
 });
