@@ -1,5 +1,9 @@
 # Contract: Capability
 
+> **Version 1.1.0 is defined in 005-resource-curation:** a `search` permission, `ctx.search`,
+> presentation tools, and `availability`. See
+> `specs/005-resource-curation/contracts/capability-contract-1.1.md`. The 1.0.0 text below stands.
+
 How functionality is added without touching the core (FR-022 – FR-024, Principle II). Version
 `1.0.0`. Amending this contract requires its own specification.
 

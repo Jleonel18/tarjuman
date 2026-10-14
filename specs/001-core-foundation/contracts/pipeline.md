@@ -1,5 +1,8 @@
 # Contract: Pipeline
 
+> **Amended by 005-resource-curation:** the step loop that runs tools. See
+> `specs/005-resource-curation/contracts/provider-tool-calls.md`.
+
 The single entry point for every model interaction (FR-006 – FR-011, Principles III–V).
 
 ```ts

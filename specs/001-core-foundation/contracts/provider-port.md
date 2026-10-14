@@ -1,5 +1,8 @@
 # Contract: ProviderPort
 
+> **Amended by 005-resource-curation:** tool calls (`tool_call` stream event, tool messages,
+> `ModelInfo.supportsTools`). See `specs/005-resource-curation/contracts/provider-tool-calls.md`.
+
 The only way the core reaches an AI model. Implemented by `provider-anthropic`; the core and all
 capabilities depend only on this interface (FR-002, Principle XI). Only the pipeline module (`Pipeline`
 and `CredentialValidator`, see contracts/pipeline.md) holds an instance; capabilities and

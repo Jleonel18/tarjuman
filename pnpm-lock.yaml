@@ -178,6 +178,9 @@ importers:
       '@tarjuman/capability-language-qa':
         specifier: workspace:*
         version: link:packages/capabilities/language-qa
+      '@tarjuman/capability-resource-curation':
+        specifier: workspace:*
+        version: link:packages/capabilities/resource-curation
       '@tarjuman/core':
         specifier: workspace:*
         version: link:packages/core
@@ -190,6 +193,9 @@ importers:
       '@tarjuman/provider-ollama':
         specifier: workspace:*
         version: link:packages/provider-ollama
+      '@tarjuman/search-youtube':
+        specifier: workspace:*
+        version: link:packages/search-youtube
       '@tarjuman/storage-web':
         specifier: workspace:*
         version: link:packages/storage-web
@@ -241,6 +247,9 @@ importers:
       '@tarjuman/capability-language-qa':
         specifier: workspace:*
         version: link:../../packages/capabilities/language-qa
+      '@tarjuman/capability-resource-curation':
+        specifier: workspace:*
+        version: link:../../packages/capabilities/resource-curation
       '@tarjuman/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -250,6 +259,9 @@ importers:
       '@tarjuman/provider-gemini':
         specifier: workspace:*
         version: link:../../packages/provider-gemini
+      '@tarjuman/search-youtube':
+        specifier: workspace:*
+        version: link:../../packages/search-youtube
       '@tarjuman/storage-web':
         specifier: workspace:*
         version: link:../../packages/storage-web
@@ -286,6 +298,12 @@ importers:
         version: 8.3.2(@types/node@26.6.4)(esbuild@0.28.2)(tsx@4.23.15)
 
   packages/capabilities/language-qa:
+    dependencies:
+      '@tarjuman/core':
+        specifier: workspace:*
+        version: link:../../core
+
+  packages/capabilities/resource-curation:
     dependencies:
       '@tarjuman/core':
         specifier: workspace:*
@@ -328,6 +346,16 @@ importers:
         version: link:../testing
 
   packages/provider-ollama:
+    dependencies:
+      '@tarjuman/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@tarjuman/testing':
+        specifier: workspace:*
+        version: link:../testing
+
+  packages/search-youtube:
     dependencies:
       '@tarjuman/core':
         specifier: workspace:*

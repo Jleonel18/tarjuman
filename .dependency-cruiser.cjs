@@ -16,7 +16,7 @@ module.exports = {
       to: {
         // Matches both resolved paths and bare package names: core declares none of these as
         // dependencies, so a violating import is "unresolved" and shows up by package name.
-        path: "^(packages/(capabilities|provider-anthropic|provider-ollama|provider-gemini|storage-web|ui|testing)|apps)/|^@tarjuman/(capability-.*|provider-anthropic|provider-ollama|provider-gemini|storage-web|ui|web|testing)(/|$)",
+        path: "^(packages/(capabilities|provider-anthropic|provider-ollama|provider-gemini|search-youtube|storage-web|ui|testing)|apps)/|^@tarjuman/(capability-.*|provider-anthropic|provider-ollama|provider-gemini|search-youtube|storage-web|ui|web|testing)(/|$)",
       },
     },
     {
@@ -66,6 +66,41 @@ module.exports = {
       to: { path: "^packages/provider-(anthropic|ollama)/|^@tarjuman/provider-(anthropic|ollama)(/|$)|@anthropic-ai/sdk" },
     },
     {
+      name: "search-impl-only-in-composition-root",
+      comment:
+        "A concrete search source is instantiated only in the composition root; everything else sees the SearchPort type (specs/005 contracts/search-port.md).",
+      severity: "error",
+      from: { pathNot: "^(apps/web/src/composition-root\\.ts|apps/[^/]+/tests/|packages/search-youtube/|tests/)" },
+      to: { path: "^packages/search-youtube/|^@tarjuman/search-youtube(/|$)", dependencyTypesNot: NOT_TYPE_ONLY },
+    },
+    {
+      name: "search-adapters-independent",
+      comment:
+        "A search adapter imports only the core (and the testing helpers in tests): no provider, capability, storage, or UI, and no SDK.",
+      severity: "error",
+      from: { path: "^packages/search-youtube/" },
+      to: {
+        path: "^packages/(provider-anthropic|provider-ollama|provider-gemini|capabilities|storage-web|ui)/|^@tarjuman/(provider-.*|capability-.*|storage-web|ui)(/|$)|@anthropic-ai/sdk",
+      },
+    },
+    {
+      name: "providers-never-import-search",
+      comment: "Provider adapters stay independent of search sources (Principle XI).",
+      severity: "error",
+      from: { path: "^packages/provider-(anthropic|ollama|gemini)/" },
+      to: { path: "^packages/search-youtube/|^@tarjuman/search-youtube(/|$)" },
+    },
+    {
+      name: "capabilities-no-adapters",
+      comment:
+        "A capability declares data and tools against the core's types. It never imports an adapter, storage, or UI (Principle II).",
+      severity: "error",
+      from: { path: "^packages/capabilities/", pathNot: "^packages/capabilities/[^/]+/tests/" },
+      to: {
+        path: "^packages/(provider-anthropic|provider-ollama|provider-gemini|search-youtube|storage-web|ui|testing)/|^@tarjuman/(provider-.*|search-youtube|storage-web|ui|testing)(/|$)",
+      },
+    },
+    {
       name: "provider-ollama-never-unseals",
       comment:
         "The dev-only Ollama adapter sends no credential (002 FR-007), so it must never be able to read a raw secret.",
@@ -97,7 +132,7 @@ module.exports = {
       severity: "error",
       from: {
         pathNot:
-          "^(packages/(provider-anthropic|provider-gemini|storage-web|testing)/|packages/core/src/ports/secret-handle\\.ts$|packages/core/src/ports/secret-unseal\\.ts$|packages/core/src/adapter\\.ts$|packages/[^/]+/tests/|tests/)",
+          "^(packages/(provider-anthropic|provider-gemini|search-youtube|storage-web|testing)/|packages/core/src/ports/secret-handle\\.ts$|packages/core/src/ports/secret-unseal\\.ts$|packages/core/src/adapter\\.ts$|packages/[^/]+/tests/|tests/)",
       },
       to: { path: "^packages/core/src/(ports/secret-(store|unseal)|adapter)\\.ts$" },
     },

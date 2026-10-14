@@ -5,8 +5,10 @@
     { "path": "packages/provider-anthropic" },
     { "path": "packages/provider-ollama" },
     { "path": "packages/provider-gemini" },
+    { "path": "packages/search-youtube" },
     { "path": "packages/storage-web" },
     { "path": "packages/capabilities/language-qa" },
+    { "path": "packages/capabilities/resource-curation" },
     { "path": "packages/ui" },
     { "path": "packages/testing" }
   ]

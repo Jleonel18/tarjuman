@@ -42,14 +42,14 @@ retention rule, which also applies to cards in conversations, so it is required 
 
 **Purpose**: notes on amended contracts, empty packages, build wiring.
 
-- [ ] T001 Add amendment notes (one line each, text not rewritten):
+- [X] T001 Add amendment notes (one line each, text not rewritten):
   - `specs/001-core-foundation/contracts/provider-port.md`: "Amended by 005: tool calls, see specs/005-resource-curation/contracts/provider-tool-calls.md."
   - `specs/001-core-foundation/contracts/pipeline.md`: same pointer.
   - `specs/001-core-foundation/contracts/capability-contract.md`: "Version 1.1.0 defined in specs/005-resource-curation/contracts/capability-contract-1.1.md."
-- [ ] T002 Create `packages/search-youtube/` mirroring `packages/provider-gemini/`: `package.json` (`@tarjuman/search-youtube`, deps `@tarjuman/core`, devDeps `@tarjuman/testing`), `tsconfig.json`, `src/index.ts` (empty exports), `src/origin.ts` exporting `YOUTUBE_API_ORIGIN = "https://www.googleapis.com"`. Add to root `tsconfig.json` references and to root and `apps/web/package.json` as `workspace:*`.
-- [ ] T003 Create `packages/capabilities/resource-curation/` mirroring `packages/capabilities/language-qa/`: `package.json` (`@tarjuman/capability-resource-curation`), `tsconfig.json`, `src/index.ts` (empty), `rules/`, `src/i18n/{en,es}.json` (empty objects). Wire references as in T002. Run `pnpm install` (no new npm package; if `pnpm-workspace.yaml` gains a `minimumReleaseAgeExclude` entry, remove it).
-- [ ] T004 [P] Update `.dependency-cruiser.cjs`: `search-youtube` is an adapter (may import `@tarjuman/core` and `@tarjuman/core/adapter`, may not import providers or capabilities; only the composition root and `tests/` may import it); `capabilities/resource-curation` follows the capability rules (imports only `@tarjuman/core` public types); `core` imports neither.
-- [ ] T005 [P] Add `YOUTUBE_API_KEY=` (no value) to `.env.example`, and `"test:live:youtube": "TARJUMAN_LIVE=1 node --env-file=.env node_modules/vitest/vitest.mjs run --project provider-live packages/search-youtube --silent=false"` to the root `package.json`; include `packages/search-youtube/tests/*.live.test.ts` in the `provider-live` project in `vitest.config.ts`.
+- [X] T002 Create `packages/search-youtube/` mirroring `packages/provider-gemini/`: `package.json` (`@tarjuman/search-youtube`, deps `@tarjuman/core`, devDeps `@tarjuman/testing`), `tsconfig.json`, `src/index.ts` (empty exports), `src/origin.ts` exporting `YOUTUBE_API_ORIGIN = "https://www.googleapis.com"`. Add to root `tsconfig.json` references and to root and `apps/web/package.json` as `workspace:*`.
+- [X] T003 Create `packages/capabilities/resource-curation/` mirroring `packages/capabilities/language-qa/`: `package.json` (`@tarjuman/capability-resource-curation`), `tsconfig.json`, `src/index.ts` (empty), `rules/`, `src/i18n/{en,es}.json` (empty objects). Wire references as in T002. Run `pnpm install` (no new npm package; if `pnpm-workspace.yaml` gains a `minimumReleaseAgeExclude` entry, remove it).
+- [X] T004 [P] Update `.dependency-cruiser.cjs`: `search-youtube` is an adapter (may import `@tarjuman/core` and `@tarjuman/core/adapter`, may not import providers or capabilities; only the composition root and `tests/` may import it); `capabilities/resource-curation` follows the capability rules (imports only `@tarjuman/core` public types); `core` imports neither.
+- [X] T005 [P] Add `YOUTUBE_API_KEY=` (no value) to `.env.example`, and `"test:live:youtube": "TARJUMAN_LIVE=1 node --env-file=.env node_modules/vitest/vitest.mjs run --project provider-live packages/search-youtube --silent=false"` to the root `package.json`; include `packages/search-youtube/tests/*.live.test.ts` in the `provider-live` project in `vitest.config.ts`.
 
 **Checkpoint**: `pnpm typecheck && pnpm lint:arch` pass with empty packages.
 

@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@tarjuman/capability-language-qa": "workspace:*",
+    "@tarjuman/capability-resource-curation": "workspace:*",
     "@tarjuman/core": "workspace:*",
     "@tarjuman/provider-anthropic": "workspace:*",
     "@tarjuman/provider-gemini": "workspace:*",
+    "@tarjuman/search-youtube": "workspace:*",
     "@tarjuman/storage-web": "workspace:*",
     "@tarjuman/ui": "workspace:*",
     "react": "^19.3.0",
