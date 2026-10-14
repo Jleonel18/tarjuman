@@ -283,3 +283,28 @@ Facts from `models.list` (live) and the pricing page (docs), both 2026-10-14.
 - `wrong_provider` message: "This looks like a {provider} key. Choose {provider} above, or paste
   a key for the provider you selected."
 - All strings go in `en` and `es` catalogs; layout uses logical properties and existing tokens.
+
+## Live results
+
+### 2026-10-14: `pnpm test:live:gemini` (T050, SC-008)
+
+Run by the agent with the owner's key (`GEMINI_API_KEY`, an `AQ.` auth key) loaded by
+`node --env-file=.env`. Output was results only; no key or header was printed.
+
+| Check | Result |
+|---|---|
+| `validateCredential` (`GET models/gemini-3.8-flash`) | `{ ok: true }`, one request |
+| `stream` on `gemini-3.5-flash-lite`, effort `low`, "Say hola in Spanish." | text `¡Hola!`; usage `inputTokens 12, outputTokens 3, cacheReadTokens 0`; `stop: end`; one request |
+
+Confirms on the real wire: the key travels in `x-goog-api-key` (the adapter sends no other way), the
+`alt=sse` parsing, the usage mapping (R4), and the `STOP` mapping (R5). Not confirmed live: a safety
+block, a 429, and an in-stream error object; those stay covered by synthetic fixtures. Earlier the
+same day a direct probe of `gemini-3.8-flash` answered `503 UNAVAILABLE` ("high demand"), which is the
+`overloaded` row of R6.
+
+### Deviation from R17 (implementation)
+
+The Gemini key help names Google AI Studio as plain text (`aistudio.google.com`) instead of a link.
+A link would put a new origin in the production bundle, which `check:bundle-origins` rejects, and the
+spec (FR-020) asks only to say where to get a key. The Anthropic help does the same
+(`console.anthropic.com`).

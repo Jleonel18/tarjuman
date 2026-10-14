@@ -7,8 +7,8 @@ Tarjuman is an AI **mediator** for learning languages through **comprehensible i
 tell it which language you want explanations in, which language you are learning, your level and
 your interests, and it answers your questions about the language at the right difficulty.
 
-- **Bring your own key (BYOK).** You use your own Anthropic API key. It stays on your device and
-  is only ever sent to Anthropic.
+- **Bring your own key (BYOK).** You use your own Anthropic or Google Gemini API key. It stays on
+  your device and is only ever sent to the provider you chose.
 - **Local-first.** No accounts, no Tarjuman server. Conversations and settings live in your
   browser.
 - **Stays on purpose.** Declarative guardrails keep it focused on language learning, so your paid
@@ -57,7 +57,7 @@ Progress is tracked by the checkboxes in
 ## How it works
 
 ```
- you ─► web app ─► Pipeline ─► Anthropic API (directly from your browser, with your key)
+ you ─► web app ─► Pipeline ─► Anthropic API or Gemini API (directly from your browser, with your key)
                       │
    input guard → trust-labeled context → model → output guard → usage metrics
 ```
@@ -97,6 +97,7 @@ Known limits and how to report a problem: [SECURITY.md](SECURITY.md).
 |------|------------|
 | `packages/core` | Framework-free TypeScript core: conversation, pipeline, guardrails, stats, ports |
 | `packages/provider-anthropic` | Adapter for the Anthropic API (the only package that imports the SDK) |
+| `packages/provider-gemini` | Adapter for the Google Gemini API, with native `fetch` (no SDK) |
 | `packages/provider-ollama` | Development-only adapter for a free local model ([docs/local-model.md](docs/local-model.md)); never in a production build |
 | `packages/storage-web` | Adapter for IndexedDB storage and WebCrypto key encryption |
 | `packages/capabilities/language-qa` | The first capability: answering questions about your target language |

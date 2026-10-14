@@ -6,8 +6,12 @@ behave.
 
 ## Model
 
-- **The key stays on the device.** It travels only from the user's browser to the AI provider.
-  There is no Tarjuman server, proxy, or telemetry on that path.
+- **The key stays on the device.** It travels only from the user's browser to the AI provider the
+  user chose (Anthropic or Google Gemini). There is no Tarjuman server, proxy, or telemetry on that
+  path. Each key is bound to its provider: a key that looks like another provider's is refused
+  before any request, and the network policy allows only the two providers' API origins.
+- **Gemini keys go in a header only.** Gemini's API also accepts the key in the URL; Tarjuman never
+  does that, because URLs end up in history, proxies, and error reports.
 - **The key never enters the model's context.** It is not an input to prompt assembly, so no
   prompt can make the model reveal it.
 - **Stored encrypted.** On the web, with a non-extractable WebCrypto key in IndexedDB. A "this
@@ -31,6 +35,8 @@ The full threat analysis is in
   locked dependency tree with audits, and the session-only option.
 - Someone with full access to the user's browser profile can run the app as the user. A
   passphrase-protected mode is a possible future hardening.
+- With a free-tier Gemini key, Google's terms allow it to use what is sent to improve its products.
+  The app says so when the learner picks Gemini; it cannot prevent it.
 - The model may still be influenced in prose by hostile pasted text. It has no tools and cannot
   see the key, which bounds the damage. Behavioral rates have so far been measured only against a
   local non-Claude model; runs against Claude are planned.
@@ -38,9 +44,9 @@ The full threat analysis is in
 ## Status
 
 Everything in the model above is **implemented and covered by tests**, including a structural
-adversarial suite of 57 cases that runs on every pull request. It has **not been released or
+adversarial suite of 63 cases that runs on every pull request. It has **not been released or
 independently reviewed**, the final security review is still open, and the Anthropic adapter has
-never been run against the live API. Do not rely on it for real keys until a release says
+never been run against the live API (the Gemini adapter has, once: research of feature 004). Do not rely on it for real keys until a release says
 otherwise.
 
 ## Reporting a vulnerability

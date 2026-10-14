@@ -106,6 +106,7 @@ pnpm --filter @tarjuman/web dev
 VITE_PROVIDER=mock pnpm --filter @tarjuman/web dev     # mock provider; key sk-ant-mock-valid-key-0000
 VITE_PROVIDER=ollama pnpm --filter @tarjuman/web dev   # dev-only free local model
 pnpm test:live:ollama                                    # live smoke test, needs Ollama running
+pnpm test:live:gemini                                    # live smoke test, needs GEMINI_API_KEY in .env
 pnpm record:guardrails                                   # re-record guardrail fixtures (Ollama by default)
 pnpm test:live:guardrails                                # run guardrail cases against a live model
 ```
@@ -118,6 +119,7 @@ Run `pnpm typecheck && pnpm lint && pnpm lint:arch && pnpm test` before declarin
 
 - `packages/core` — domain logic and ports
 - `packages/provider-anthropic` — Anthropic adapter and model/price table
+- `packages/provider-gemini` — Google Gemini adapter, native `fetch` (feature 004)
 - `packages/provider-ollama` — dev-only local-model adapter (feature 002)
 - `packages/storage-web` — IndexedDB and WebCrypto adapters
 - `packages/capabilities/language-qa` — first capability
@@ -165,6 +167,13 @@ and accessibility checks (axe contrast, focus walk, overflow). All its tasks are
 owner's manual visual review in `specs/003-visual-design/checklists/visual-review.md` (SC-010).
 How it works: [ARCHITECTURE.md](ARCHITECTURE.md), section 8.
 
+Feature 004 (`specs/004-gemini-provider/`) adds Google Gemini as a second product provider. The
+learner picks Anthropic or Gemini in onboarding and can switch in settings; each provider keeps its
+own key. `ProviderPort` is unchanged: the pipeline holds a fixed list of providers and uses the one
+in `profile.providerId`. The Gemini adapter has been run live once with the owner's key
+(`research.md` → Live results). Gemini results are not Claude results and never count for 001 SC-003.
+How it works: [ARCHITECTURE.md](ARCHITECTURE.md), section 3.
+
 Gotchas learned so far:
 
 - `idb` uses the global `indexedDB`; tests use `fake-indexeddb/auto` and assign
@@ -205,5 +214,22 @@ Gotchas learned so far:
   onboarding with the Next button instead.
 - On macOS, Firefox and WebKit tab only to text fields by default; `accessibility.spec.ts` turns on
   full keyboard access (a Firefox pref; Option+Tab in WebKit).
+- Google AI Studio now issues Gemini keys starting with `AQ.` (auth keys); older `AIza…` keys still
+  work. The key goes only in the `x-goog-api-key` header, never `?key=`. The owner's key is
+  `GEMINI_API_KEY` in `.env`; tools load it with `node --env-file=.env`.
+- Key shapes live in `packages/core/src/credentials/key-shapes.ts`. A key shaped for another
+  provider is refused before any request, but only for providers with a known shape: the mock
+  key `sk-ant-mock-valid-key-0000` must keep working for the `mock` provider. Fake test keys must
+  match the real lengths (`AIza` + 35, `AQ.` + 30 or more) or the shape tests fail.
+- `CredentialStore` methods take a provider id. The IndexedDB database is version 2: credential
+  records are keyed by provider id, and the upgrade moves a version-1 `"current"` record.
+- A profile without `providerId` (saved before 004) is read as Anthropic's: read profiles through
+  `readStoredProfile`, never as a raw `LearnerProfile`.
+- The pipeline turns a provider `stop: refusal` (a Gemini safety block) into a `refused` message and
+  appends the refusal template to any text already shown.
+- The e2e build offers one mock provider; `?mockProviders=2` adds `mock-alt`. In e2e, switch
+  provider with `click()`, not `check()`: switching to a provider without a key leaves the screen.
+- Gemini prices change on 2026-12-01 (`gemini-4-argon`) and 2027-01-01 (`gemini-3.8-flash`): update
+  `packages/provider-gemini/src/models.ts`, its test, and `research.md` R8 before then.
 - pnpm enforces a minimum release age for new packages. If an install adds a
   `minimumReleaseAgeExclude` entry to `pnpm-workspace.yaml`, do not keep it: pick an older version.

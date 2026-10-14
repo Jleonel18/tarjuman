@@ -49,10 +49,12 @@ refused with the normal refusal message.
 4. **Given** a saved Gemini key, **When** I send a message, **Then** it passes through the same
    pipeline as with Anthropic (input guard, context assembly, model, output guard, verdict line,
    metrics) and the answer streams into the chat.
-5. **Given** a Gemini request fails (rate limit, quota exhausted, server error, network loss, blocked
-   by the provider's own safety filter), **When** the failure occurs, **Then** I see the message for
-   the matching existing error category, partial text already shown is kept and marked incomplete,
-   and nothing is retried automatically.
+5. **Given** a Gemini request fails (rate limit or quota, server error, overload, network loss),
+   **When** the failure occurs, **Then** I see the message for the matching existing error
+   category, partial text already shown is kept and marked incomplete, and nothing is retried
+   automatically. If instead Gemini's own safety filter blocks the request or the answer, I see the
+   normal refusal (any text already shown is kept) and the message is stored as refused.
+   (Amended during planning: plan.md, Spec Amendments 1–2.)
 6. **Given** I am using Gemini, **When** I open the model settings, **Then** I see only Gemini models,
    each with its context window and price, and the reasoning-effort control appears only for models
    that support it.
@@ -117,14 +119,15 @@ confirm they complete, carry Gemini provenance and the "not Claude" label, and c
 
 ### Edge Cases
 
-- The learner pastes a Gemini key while Anthropic is selected (or the reverse): validation fails
-  with a message that suggests checking the selected provider. The key is not sent to the other
-  provider.
+- The learner pastes a Gemini key while Anthropic is selected (or the reverse): the app recognizes
+  the key's shape and rejects it locally, before any request, with a message naming the provider
+  the key belongs to. The key is sent nowhere. A key of unknown shape is validated against the
+  selected provider only. (Amended during planning: plan.md, Spec Amendment 3.)
 - The learner pastes a Gemini key into the chat: the input guard detects it the same way it detects
   Anthropic keys, and the message is not sent.
-- Gemini blocks a prompt or an answer with its own safety filter and returns no text: the user sees
-  the existing "the provider refused" category, not an empty answer, and the app's own verdict and
-  refusal rules still apply to any text that does arrive.
+- Gemini blocks a prompt or an answer with its own safety filter: the user sees the normal refusal,
+  never an empty answer or a partial one that looks complete; text already shown is kept and the
+  message is stored as refused.
 - Gemini answers without the first-line verdict: the existing fail-closed rule refuses it.
 - Gemini reports usage differently (for example, reasoning tokens counted separately): the app shows
   what is reported and the cost estimate counts every billed token category; where a figure is not
@@ -182,7 +185,10 @@ confirm they complete, carry Gemini provenance and the "not Claude" label, and c
   Gemini-specific features that a capability could depend on (Principle XI).
 - **FR-013**: The Gemini provider MUST stream text incrementally, support cancellation, report a stop
   reason, report usage figures as Gemini reports them, and map every failure (invalid key, rate
-  limit, quota, overload, too large, safety block, network) to the existing error categories.
+  limit or quota, overload, too large, network) to the existing error categories. Gemini's "resource
+  exhausted" answer does not say whether a rate or a quota ran out, so it maps to the rate-limit
+  category. A safety block is reported as a refusal stop, not an error. (Amended during planning:
+  plan.md, Spec Amendments 1–2.)
 - **FR-014**: The Gemini provider MUST NOT retry automatically.
 - **FR-015**: The Gemini provider MUST NOT add capability, tone, or guardrail behavior of its own.
   The verdict-line rule, output guard, safe rendering, and refusal templates apply unchanged.

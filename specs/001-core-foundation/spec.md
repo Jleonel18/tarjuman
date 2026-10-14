@@ -269,6 +269,7 @@ are subject to the full pipeline and that no core change was needed to add them.
 - **FR-002**: System MUST reach the AI provider exclusively through a provider abstraction so that
   additional providers can be added without changing capabilities or the pipeline.
 - **FR-003**: System MUST support one provider (Anthropic) in this feature.
+  Amended by 004-gemini-provider: Gemini is a second product provider.
 - **FR-004**: System MUST let the user stop a response in progress.
 - **FR-005**: System MUST persist conversations on the user's device and let the user start a new
   conversation and revisit or delete previous ones.

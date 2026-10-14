@@ -6,8 +6,9 @@ from [specs/001-core-foundation/plan.md](specs/001-core-foundation/plan.md) as b
 if this file disagrees with them, they win.
 
 **Implementation status:** all 11 phases of feature 001 are done: everything below is built and
-tested. Two limits: the Anthropic adapter has only been tested against synthetic fixtures, never the live
-API, and the pipeline has no tool-call path yet (section 6).
+tested. Feature 004 added Google Gemini as a second product provider (section 3). Two limits: the
+Anthropic adapter has only been tested against synthetic fixtures, never the live API (the Gemini
+adapter has been run live once), and the pipeline has no tool-call path yet (section 6).
 
 ## 1. Shape of the system
 
@@ -19,11 +20,12 @@ API, and the pipeline has no tool-call path yet (section 6).
 │                       ▲        ▲                                                   │
 │            implements │        │ implements                                        │
 │        packages/provider-anthropic    packages/storage-web                         │
-│        (Anthropic SDK, model table)   (IndexedDB, WebCrypto)                       │
+│        packages/provider-gemini       (IndexedDB, WebCrypto)                       │
+│        (adapters, model tables)                                                    │
 └────────────────────────────────────────────────────────────────────────────────────┘
                  │
-                 ▼  directly from the browser, with the user's own key
-          Anthropic Messages API
+                 ▼  directly from the browser, with the user's own key for the chosen provider
+          Anthropic Messages API   or   Gemini API (generativelanguage.googleapis.com)
 ```
 
 There is **no Tarjuman server** on the path. The user's key goes from their browser to the
@@ -38,6 +40,7 @@ is that `core` stays portable.
 |---------|------|-----------|
 | `core` | Domain logic and **ports** (interfaces) | `zod`, `markdown-it` only |
 | `provider-anthropic` | Implements `ProviderPort`; owns the SDK and the model/price table | `core`, `@anthropic-ai/sdk` |
+| `provider-gemini` | Implements `ProviderPort` for Google Gemini with native `fetch` (no SDK); owns its model/price table | `core` |
 | `provider-ollama` | Dev-only `ProviderPort` for a free local model; dropped from production builds | `core` |
 | `storage-web` | Implements `StoragePort` and `CredentialStore`; keeps the theme preference | `core`, `idb` |
 | `capabilities/language-qa` | First capability, pure data | `core` types |
@@ -51,7 +54,7 @@ These rules are **enforced mechanically**, not by convention:
 - Only `provider-anthropic` imports `@anthropic-ai/sdk`.
 - A concrete provider is instantiated only in `apps/web/src/composition-root.ts`.
 - Only the pipeline module, the provider adapters, the composition root, and tests may name
-  `ProviderPort` at all, even as a type. The two provider adapters never import each other.
+  `ProviderPort` at all, even as a type. The provider adapters never import each other.
 - Capabilities cannot import pipeline internals.
 - Only adapters may unseal a secret (`SecretHandle`).
 - Circular dependencies are errors.
@@ -78,6 +81,26 @@ The core talks to the outside world only through interfaces it owns
 
 Provider-specific behavior (reasoning effort, which models reject which parameters) is data inside
 the adapter, so callers express intent only.
+
+### More than one provider (feature 004)
+
+The product offers Anthropic and Google Gemini; the learner picks one in onboarding and can switch
+in settings. `ProviderPort` did not change. Instead:
+
+- The composition root builds a fixed list of providers (dev builds: Ollama alone; the e2e build:
+  one mock, or two with `?mockProviders=2`). The UI and the controller see only `ProviderOffer`
+  (id, models, default model), never a `ProviderPort`.
+- `Pipeline` holds that list, frozen, and sends each turn to the provider named by
+  `profile.providerId`, with that provider's key. An unknown id ends the turn; nothing falls back
+  to another provider. `ProviderCredentialValidator` holds the same list.
+- `CredentialStore` keeps at most one key per provider, side by side; each method names its
+  provider. The IndexedDB database went to version 2, and the upgrade moves a key stored under the
+  old fixed id to its provider id, so existing installs keep working.
+- A profile saved before 004 has no `providerId` and is read as Anthropic's (`readStoredProfile`).
+  Switching provider resets the model to that provider's default and keeps the effort.
+- `KeyManager` knows the key shapes (`sk-ant-…`, `AIza…`, `AQ.…`; `credentials/key-shapes.ts`). A
+  key shaped for another provider is rejected locally before any request. Dev and test providers
+  have no known shape and accept any key.
 
 ## 4. The pipeline
 
@@ -200,15 +223,19 @@ The look is defined once, as design tokens, and every component refers to them
 
 ## 9. Handling the API key
 
-- Entered by the user, validated with a minimal real request, then stored only if valid.
+- Entered by the user, validated with a minimal real request, then stored only if valid. Anthropic
+  validates with a tiny generation; Gemini with a `GET` of the default model, which costs nothing.
+- One key per provider, each with its own storage mode. A key that is recognizably another
+  provider's is refused before it is sent anywhere. A Gemini key travels only in the
+  `x-goog-api-key` header, never in a URL.
 - On the web: encrypted with a non-extractable WebCrypto key in IndexedDB, or held in memory only
   for "this session only". The user chooses on first entry; there is no silent default.
 - Never placed in model context, logs, telemetry, errors, or any Tarjuman service.
 - Displayed only as a masked hint. Settings show it with the storage mode in effect.
 - Replacing it validates the new key first and only then removes the old one; a rejected
   replacement keeps the old key. Deleting it keeps the profile and asks for a key again.
-- "Delete all my data" (`DataController`, behind a confirmation step) removes the key and checks it
-  is gone, then drops the whole IndexedDB database, Cache Storage, and service workers, and verifies
+- "Delete all my data" (`DataController`, behind a confirmation step) removes every provider's key
+  and checks each one is gone, then drops the whole IndexedDB database, Cache Storage, and service workers, and verifies
   that nothing is left. A failed check is shown as a failure, never as success. On success the app
   returns to onboarding.
 
