@@ -36,6 +36,16 @@ not have to rediscover it.
 | Base corner radius | Front matter and prose say `0.5rem`; the exported HTML's configuration says `0.25rem`. | `0.5rem` in both. | `0.5rem` base, `1rem` large panels, pill for chips (three of four sources agree). |
 | Body typeface | Inter for body and labels, Plus Jakarta Sans for headings. | Plus Jakarta Sans for everything. | One pairing in both themes: Plus Jakarta Sans for headings, Inter for body and labels. Fewer font files, and the two themes stay visually consistent. |
 
+## Clarifications
+
+### Session 2026-10-13
+
+- Q: Where is the theme preference stored so it applies before first paint? → A: In `localStorage`, read by a small blocking same-origin script in the document head (no inline script, CSP unchanged); "delete all my data" also clears it and verifies it is gone.
+- Q: Does this feature add a full Arabic interface, or is Arabic content-only with RTL proven by the pseudo-RTL locale? → A: No Arabic interface catalog. "Right-to-left interface" means the pseudo-RTL test locale (`ar-XB`); real Arabic is tested as conversation content mixed with Latin text.
+- Q: Where does the theme control live? → A: A compact control in the app shell header, visible on every screen including first run (onboarding and key entry), plus an entry on the Settings screen.
+- Q: How is the visual result verified? → A: No committed screenshot baselines. Automated structural checks (contrast on every screen in both themes, no raw colors outside the token definitions, no horizontal scroll, visible focus, RTL) plus a manual visual review recorded in a checklist.
+- Q: What size limit applies to the bundled fonts? → A: At most 250 KB (woff2) for the Latin fonts loaded at start; the Arabic font, at most 200 KB, downloads only when Arabic text appears; a build test checks both limits.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Use the app in a light or dark theme that suits me (Priority: P1)
@@ -47,8 +57,8 @@ both themes.
 **Why this priority**: the two themes are the core of this feature, and reading comfort during long
 sessions is the reason they exist. Every other story builds on the theme tokens this one defines.
 
-**Independent Test**: set the operating system to dark, open the app: it is dark. Switch to light in
-the interface, reload: it is light. Choose "follow system" and it follows the device again.
+**Independent Test**: set the operating system to dark, open the app: it is dark. Switch to light
+with the header control on the first-run screen, reload: it is light. Choose "follow system" and it follows the device again.
 
 **Acceptance Scenarios**:
 
@@ -116,19 +126,22 @@ state, in both themes and in an RTL language.
 
 As a learner whose languages include Arabic, or any right-to-left language, I read Arabic script
 and Latin text side by side without clipping, broken alignment, or missing fonts, and the layout
-mirrors correctly when the interface language is right-to-left.
+mirrors correctly when the interface is right-to-left. No Arabic interface catalog ships in this
+feature: a right-to-left interface is exercised with the pseudo-RTL test locale, and real Arabic
+appears as conversation content.
 
 **Why this priority**: Tarjuman is global by design (constitution principle VIII), and the mockups
 are Arabic-centered. Typography is where this usually breaks.
 
-**Independent Test**: switch the interface to Arabic and to pseudo-RTL, then view a conversation
-that mixes Arabic and Latin with diacritics; also view it in English and Spanish.
+**Independent Test**: switch the interface to the pseudo-RTL locale, then view a conversation
+that mixes Arabic (with diacritics) and Latin text; also view it with the interface in English and
+Spanish.
 
 **Acceptance Scenarios**:
 
 1. **Given** Arabic text with diacritics, **When** it is shown, **Then** nothing is clipped and line
    spacing is generous enough for the marks.
-2. **Given** a right-to-left interface language, **When** I view any screen, **Then** the sidebar,
+2. **Given** the right-to-left (pseudo-RTL) interface, **When** I view any screen, **Then** the sidebar,
    message alignment, composer, and directional icons mirror correctly.
 3. **Given** text in a script the bundled fonts do not cover, **When** it is shown, **Then** it
    falls back to a system font and stays readable.
@@ -159,7 +172,15 @@ that mixes Arabic and Latin with diacritics; also view it in English and Spanish
 - **FR-002**: The app MUST apply the theme the device prefers by default, and MUST apply it before
   first paint so the wrong theme never flashes.
 - **FR-003**: Users MUST be able to choose light, dark, or "follow system" in the interface, and
-  the choice MUST persist on the device and apply on the next visit.
+  the choice MUST persist on the device and apply on the next visit. The choice is kept in the
+  browser's synchronous local storage (`localStorage`) and read by a blocking same-origin script
+  before first paint, so an explicit choice never flashes either; no inline script is added and
+  the content security policy is unchanged.
+- **FR-003a**: "Delete all my data" MUST also remove the theme preference and MUST include local
+  storage in its emptiness check, reporting failure rather than success if anything remains.
+- **FR-003b**: The theme control MUST be available on every screen, including onboarding and key
+  entry before any profile or key exists, as a compact control in the app shell header; the
+  Settings screen MUST offer the same choice. Both reflect and change the one stored preference.
 - **FR-004**: The theme control MUST be keyboard-operable, named for assistive technology, and its
   labels MUST come from the i18n catalogs.
 - **FR-005**: No component MUST hard-code a color, size, or radius that belongs to a token.
@@ -187,6 +208,9 @@ that mixes Arabic and Latin with diacritics; also view it in English and Spanish
 - **FR-013**: The app MUST bundle a typeface suited to Arabic script and set it with extra line
   height so diacritics are not clipped, and MUST fall back to system fonts for anything else.
 - **FR-014**: Text MUST be visible immediately in a fallback font while bundled fonts load.
+- **FR-014a**: The Latin font files loaded at start MUST total at most 250 KB (woff2). The Arabic
+  font MUST total at most 200 KB and MUST download only when Arabic text is on screen. A test on
+  the production build MUST enforce both limits.
 - **FR-015**: Interface icons MUST be bundled, MUST have text alternatives (or be marked
   decorative), and directional icons MUST mirror in right-to-left languages.
 
@@ -223,7 +247,7 @@ The references show things this feature MUST NOT build. They are listed so the p
 - **Design token**: a named visual value (a color role, a type size, a spacing step, a radius, an
   elevation) with one value per theme. Components refer to tokens, never to raw values.
 - **Theme preference**: the learner's choice (light, dark, or follow system), stored on the device
-  with their other settings.
+  in local storage (not in the IndexedDB settings, which cannot be read before first paint).
 
 ## Success Criteria *(mandatory)*
 
@@ -239,24 +263,32 @@ The references show things this feature MUST NOT build. They are listed so the p
 - **SC-004**: With the app loaded, network logs show 0 requests to any origin other than the app's
   own and the selected provider's, including fonts and icons.
 - **SC-005**: Every screen passes the existing right-to-left check and shows no horizontal scroll at
-  320 px, 768 px, and 1280 px widths, in English, Spanish, and Arabic.
-- **SC-006**: Arabic text with full diacritics renders with no clipped marks in a visual check.
+  320 px, 768 px, and 1280 px widths, with the interface in English, Spanish, and the pseudo-RTL
+  locale, and with Arabic conversation content.
+- **SC-006**: Arabic text with full diacritics renders with no clipped marks, confirmed in the
+  manual visual review (SC-010).
 - **SC-007**: A keyboard-only user reaches and operates every control on every screen, with a visible
   focus indicator on each.
 - **SC-008**: Every existing automated test (unit, red-team, guardrails, end-to-end) still passes,
   and no test needed a change to its behavioral expectations.
 - **SC-009**: The first view of a conversation shows readable text in under 2 seconds on a typical
   broadband connection, with fonts never blocking it.
+- **SC-010**: Verification uses automated structural checks (SC-001, SC-002, SC-005, SC-007) and no
+  committed screenshot baselines. Whatever only a person can judge (every screen in both themes,
+  the RTL layout, Arabic diacritics, the forced-colors and reduced-motion modes) is covered by a
+  manual visual review whose results are recorded in a checklist in this feature's folder.
 
 ## Assumptions
 
 - This feature starts only after `001-core-foundation` is complete, and is built on its components.
-- The theme preference is stored locally with the other settings, never sent anywhere, and is
-  included in the single "delete all my data" action.
+- The theme preference is stored locally in `localStorage`, never sent anywhere, and is included in
+  the single "delete all my data" action (FR-003a).
 - The Arabic typeface is a freely licensed Naskh-style font (for example Noto Naskh Arabic or
   Amiri) whose license allows bundling; the choice is made in the plan.
 - Typefaces and icon sets are chosen for permissive licenses compatible with bundling.
-- Languages beyond English, Spanish, and Arabic rely on the system-font fallback in this version.
+- Interface languages stay English and Spanish (plus the pseudo-RTL test locale); an Arabic
+  interface catalog would need its own specification.
+- Content scripts beyond Latin and Arabic rely on the system-font fallback in this version.
 - The mockups are inspiration. Where a mockup shows something not listed in the requirements, it is
   not built.
 - The "follow system" behavior relies on the browser exposing the color-scheme preference; without
