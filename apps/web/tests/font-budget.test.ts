@@ -42,6 +42,7 @@ let previousProvider: string | undefined;
 let previousNodeEnv: string | undefined;
 let fonts: { name: string; size: number }[];
 let css: string;
+let indexHtml: string;
 
 beforeAll(async () => {
   outDir = await mkdtemp(join(tmpdir(), "tarjuman-font-budget-"));
@@ -62,6 +63,7 @@ beforeAll(async () => {
     if (entry.name.endsWith(".css")) cssParts.push(await readFile(path, "utf8"));
   }
   css = cssParts.join("\n");
+  indexHtml = await readFile(join(outDir, "index.html"), "utf8");
 }, 120_000);
 
 afterAll(async () => {
@@ -128,3 +130,33 @@ describe("bundled fonts in the production build", () => {
     expect(outside.map(([from, to]) => `U+${from.toString(16)}-${to.toString(16)}`)).toEqual([]);
   });
 });
+
+/**
+ * T044, FR-002: the theme is applied before first paint only if the built page loads
+ * `theme-init.js` as a blocking classic script, ahead of the stylesheet and the app module, and
+ * ships the file untouched (Vite copies `public/` verbatim; it must not bundle or rewrite it).
+ */
+describe("theme-init.js in the production build", () => {
+  const position = (pattern: RegExp) => indexHtml.search(pattern);
+
+  it("loads it as a classic script, with no type, defer, or async", () => {
+    const tag = /<script[^>]*src="\/theme-init\.js"[^>]*>/.exec(indexHtml)?.[0];
+    expect(tag).toBe('<script src="/theme-init.js">');
+  });
+
+  it("loads it before the app module and before any stylesheet", () => {
+    const init = position(/<script src="\/theme-init\.js">/);
+    const appModule = position(/<script type="module"/);
+    const stylesheet = position(/<link[^>]*rel="stylesheet"/);
+    expect(init).toBeGreaterThan(-1);
+    expect(appModule).toBeGreaterThan(init);
+    expect(stylesheet).toBeGreaterThan(init);
+  });
+
+  it("ships it byte for byte as written in public/", async () => {
+    const built = await readFile(join(outDir, "theme-init.js"));
+    const source = await readFile(join(APP_ROOT, "public/theme-init.js"));
+    expect(built.equals(source)).toBe(true);
+  });
+});
+

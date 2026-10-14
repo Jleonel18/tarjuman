@@ -6,7 +6,9 @@ What the restyle must deliver on screen, beyond the tokens (FR-006 to FR-011, FR
 
 - `AppShell` gains a `headerActions?: ReactNode` slot. The web app passes the compact
   `ThemeSwitcher` there, so the control appears on every screen (FR-003b).
-- On narrow layouts the header also shows the drawer button, but only on the chat screen.
+- The drawer button belongs to the chat screen, not the header: on narrow layouts it sits at the
+  top of the reading column, above the messages (decided during implementation, 2026-10-14, so
+  that `Workspace` owns the drawer's state and its focus return).
 
 ## Layout (FR-007)
 
@@ -22,8 +24,9 @@ What the restyle must deliver on screen, beyond the tokens (FR-006 to FR-011, FR
 
 ## Drawer (narrow layouts)
 
-- The toggle is a `<button>` with `aria-expanded` and `aria-controls`, named from
-  `shell.sidebar.open` or `shell.sidebar.close`.
+- The toggle is a `<button>` at the top of the reading column with `aria-expanded` and
+  `aria-controls`, named from `shell.sidebar.open`. The close button inside the drawer is named
+  from `shell.sidebar.close`.
 - The drawer slides in from the inline-start edge, so it opens from the right in right-to-left
   layouts. Escape, the close button, and a click on the backdrop close it, and focus returns to
   the toggle. Choosing a conversation also closes it.

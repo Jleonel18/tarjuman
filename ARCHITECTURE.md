@@ -39,9 +39,9 @@ is that `core` stays portable.
 | `core` | Domain logic and **ports** (interfaces) | `zod`, `markdown-it` only |
 | `provider-anthropic` | Implements `ProviderPort`; owns the SDK and the model/price table | `core`, `@anthropic-ai/sdk` |
 | `provider-ollama` | Dev-only `ProviderPort` for a free local model; dropped from production builds | `core` |
-| `storage-web` | Implements `StoragePort` and `CredentialStore` | `core`, `idb` |
+| `storage-web` | Implements `StoragePort` and `CredentialStore`; keeps the theme preference | `core`, `idb` |
 | `capabilities/language-qa` | First capability, pure data | `core` types |
-| `ui` | React components, i18next catalogs, logical CSS | `core`, React, i18next |
+| `ui` | React components, i18next catalogs, design tokens and logical CSS, bundled fonts and icons | `core`, React, i18next, Fontsource font files, `lucide-react` |
 | `testing` | Mock provider, fixtures, runners | `core` |
 | `apps/web` | Wires adapters, capabilities, UI, and pipeline together | everything |
 
@@ -158,7 +158,47 @@ All user-facing strings come from translation catalogs. CSS uses logical propert
 right-to-left layouts mirror correctly. No RTL UI language ships yet; RTL is verified with a
 pseudo-RTL test locale and with Arabic/Hebrew content.
 
-## 8. Handling the API key
+## 8. Styling and themes
+
+The look is defined once, as design tokens, and every component refers to them
+([specs/003-visual-design](specs/003-visual-design/)).
+
+- **Tokens.** [`packages/ui/src/styles/tokens.css`](packages/ui/src/styles/tokens.css) holds every
+  color, shadow, type size, spacing step, radius, and duration. It is the **only** stylesheet
+  allowed to contain a raw color: Stylelint rejects hex values, named colors, and color functions
+  anywhere else, and an architecture test rejects colors in a component's `style` prop. Text and
+  background pairs are checked for WCAG contrast from the token values (a unit test) and on every
+  screen in both themes (axe, in Playwright).
+- **Light and dark.** Each color is written as `light-dark(<light>, <dark>)`, and the root sets
+  `color-scheme: light dark`, so the device's preference applies with no script and follows a
+  change at once. An explicit choice sets `data-theme="light"` or `"dark"` on `<html>`, which pins
+  `color-scheme` to one value. "Follow system" removes the attribute.
+- **No flash before first paint.** The choice is kept in `localStorage` under `tarjuman.theme` by
+  `ThemePreferenceStore` (`packages/storage-web`), because IndexedDB cannot be read synchronously.
+  [`apps/web/public/theme-init.js`](apps/web/public/theme-init.js) is a tiny classic script loaded
+  from the app's own origin in `<head>`, before the stylesheet and the app module. It reads that one
+  key and sets the attribute, so the CSP is unchanged (no inline script). A build test checks that
+  it stays a classic, unmodified script in that position.
+- **Erasure.** "Delete all my data" also removes every `localStorage` key starting with
+  `tarjuman.` and fails its emptiness check if one remains, so the theme choice is never kept.
+- **Fonts.** Inter (body), Plus Jakarta Sans (headings), and Noto Naskh Arabic are bundled from
+  Fontsource as variable `.woff2` files with hand-written `@font-face` rules in
+  [`fonts.css`](packages/ui/src/styles/fonts.css). Only the Latin, Latin Extended, and Arabic
+  subsets ship; other scripts use system fonts. `font-display: swap` shows text at once in a
+  fallback font, and `unicode-range` makes the Arabic file download only when Arabic text is on
+  screen. A build test enforces the budget: Latin files at most 250 KB, Arabic at most 200 KB.
+  The reading column uses a 1.7 line height and never clips a line, so Arabic diacritics have room.
+- **Icons.** `lucide-react`, imported per icon and drawn by React as SVG: no icon font, no remote
+  request. Icons beside a label are `aria-hidden`; directional ones carry `icon-directional` and
+  mirror in right-to-left layouts.
+- **Layout.** From 64rem up, the chat screen has a persistent sidebar beside a centered reading
+  column; below it, the sidebar becomes a drawer that slides in from the inline-start edge. Every
+  stylesheet uses logical properties only (`pnpm lint:css`), and Playwright checks that nothing
+  scrolls sideways at 320, 768, and 1280 px in English, Spanish, and the pseudo-RTL locale.
+- **Notices.** Every notice and error has an icon and wording, never color alone. Focus is always
+  a visible 2px outline. `prefers-reduced-motion` and `forced-colors` are honored.
+
+## 9. Handling the API key
 
 - Entered by the user, validated with a minimal real request, then stored only if valid.
 - On the web: encrypted with a non-extractable WebCrypto key in IndexedDB, or held in memory only
@@ -176,7 +216,7 @@ An honest limit: a non-extractable key stops key material from being copied, but
 script on the same origin could still *use* it. That is why the app ships a strict CSP and no
 third-party scripts. See [SECURITY.md](SECURITY.md) and the threat analysis in the plan.
 
-## 9. Testing strategy
+## 10. Testing strategy
 
 | Layer | Tool | When | Cost |
 |-------|------|------|------|
@@ -185,6 +225,7 @@ third-party scripts. See [SECURITY.md](SECURITY.md) and the threat analysis in t
 | i18n and RTL checks | lint script, Playwright | every PR | free |
 | Adversarial suite, structural | Vitest, mock provider | every PR, blocks merge | free |
 | End to end | Playwright against the mock provider | every PR | free |
+| Visual design (contrast, focus, overflow, themes, font budget) | Vitest, Stylelint, Playwright with axe | every PR | free |
 | Latency (SC-001, SC-002) and network origins (FR-039, FR-040) | Playwright against the mock provider | every PR | free |
 | Guardrail and adversarial, behavioral | Vitest against a live model | on demand, and nightly against Claude once `TARJUMAN_TEST_KEY` is set | free with Ollama; uses a test key with Anthropic |
 
@@ -193,10 +234,11 @@ hostile output cannot render an image) because those do not depend on model beha
 rates against the real model are tracked separately. Every discovered bypass becomes a permanent
 test case before its fix merges.
 
-## 10. Where to read next
+## 11. Where to read next
 
 - Requirements: [specs/001-core-foundation/spec.md](specs/001-core-foundation/spec.md)
 - Decisions and rationale: [specs/001-core-foundation/research.md](specs/001-core-foundation/research.md)
 - Entities: [specs/001-core-foundation/data-model.md](specs/001-core-foundation/data-model.md)
 - Interfaces: [specs/001-core-foundation/contracts/](specs/001-core-foundation/contracts/)
 - Work breakdown: [specs/001-core-foundation/tasks.md](specs/001-core-foundation/tasks.md)
+- Visual design (tokens, themes, fonts, layout): [specs/003-visual-design/](specs/003-visual-design/)

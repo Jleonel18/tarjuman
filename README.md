@@ -18,6 +18,8 @@ your interests, and it answers your questions about the language at the right di
   HTML).
 - **Global by design.** Interface in English and Spanish today; layout and text handling are
   built for right-to-left scripts from day one.
+- **Light and dark themes.** It follows your device's theme, or you pick light or dark on any
+  screen. Fonts and icons are bundled with the app, so nothing loads from a third party.
 
 ## Status
 
@@ -40,7 +42,8 @@ What works today: onboarding, key entry with a choice of where the key is kept, 
 with saved conversations, the security pipeline (key withholding, untrusted-content isolation,
 safe rendering), scope guardrails with courteous refusals, the token and cost stats panel, model
 and effort settings, tone presets, English and Spanish interfaces with right-to-left support,
-replacing or deleting the key, and "delete all my data". Capabilities are added by declaration
+light and dark themes with a layout that adapts to phone, tablet, and desktop, replacing or
+deleting the key, and "delete all my data". Capabilities are added by declaration
 and checked by a permission broker.
 
 What is still open: a run against Claude itself. The guardrail fixtures were recorded with a local

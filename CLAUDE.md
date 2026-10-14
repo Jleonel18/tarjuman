@@ -11,7 +11,7 @@ substantial:
 1. [.specify/memory/constitution.md](.specify/memory/constitution.md) — non-negotiable principles.
    It supersedes specs, plans, and habits.
 2. [ARCHITECTURE.md](ARCHITECTURE.md) — how the system fits together.
-3. The active feature in `specs/<NNN-name>/` (currently `001-core-foundation`): `spec.md`,
+3. The active feature in `specs/<NNN-name>/` (currently `003-visual-design`): `spec.md`,
    `plan.md`, `research.md`, `data-model.md`, `contracts/`, `tasks.md`.
 
 ## Workflow
@@ -159,6 +159,12 @@ can be recorded and run without a key. Anthropic is still the only product provi
 non-Claude model never count as 001 SC-003 evidence; fixture provenance says which model produced
 them. Setup: [docs/local-model.md](docs/local-model.md).
 
+Feature 003 (`specs/003-visual-design/`) gives the UI one visual identity with light and dark
+themes: design tokens, bundled fonts and icons, a sidebar that becomes a drawer on narrow screens,
+and accessibility checks (axe contrast, focus walk, overflow). All its tasks are done except the
+owner's manual visual review in `specs/003-visual-design/checklists/visual-review.md` (SC-010).
+How it works: [ARCHITECTURE.md](ARCHITECTURE.md), section 8.
+
 Gotchas learned so far:
 
 - `idb` uses the global `indexedDB`; tests use `fake-indexeddb/auto` and assign
@@ -181,3 +187,23 @@ Gotchas learned so far:
 - `VITE_PROVIDER=ollama` is dev-only: it is guarded by `import.meta.env.DEV` and stripped from
   production builds. Ollama silently drops the start of a prompt larger than its context, where
   the security layer sits, so `OLLAMA_CONTEXT_LENGTH=32768` is required.
+- Only `packages/ui/src/styles/tokens.css` may hold raw colors (hex, named colors, `rgb()` and the
+  other color functions). Everything else uses `var(--color-…)`; `lint:css` and an architecture
+  test enforce it. A new text-on-background pair goes in `contracts/design-tokens.md`, whose "Used
+  on" column the contrast test reads. `light-dark()` accepts colors only, so a shadow token wraps
+  just its color.
+- `apps/web/public/theme-init.js` must stay a classic script (no `import`, `type="module"`,
+  `defer`, or `async`) in `public/`, loaded before the stylesheet and the app module, or the saved
+  theme flashes on load. A build test checks it.
+- The theme preference is `localStorage["tarjuman.theme"]`, owned by `ThemePreferenceStore`.
+  "Delete all my data" removes every `tarjuman.*` key and fails its check if one remains, so any
+  new `localStorage` key must use that prefix.
+- Vitest empties CSS imports, including `?raw`; the `unit` project sets `css.include` so a test can
+  read a stylesheet with `?raw`. `packages/ui` tests have no Node types, so they read files that way.
+- The header's theme `<select>` is the first form control on every page: scope positional e2e
+  selectors to `main`. The settings screen also has an "Explanation language" field, so wait for
+  onboarding with the Next button instead.
+- On macOS, Firefox and WebKit tab only to text fields by default; `accessibility.spec.ts` turns on
+  full keyboard access (a Firefox pref; Option+Tab in WebKit).
+- pnpm enforces a minimum release age for new packages. If an install adds a
+  `minimumReleaseAgeExclude` entry to `pnpm-workspace.yaml`, do not keep it: pick an older version.

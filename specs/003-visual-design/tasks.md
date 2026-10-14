@@ -282,14 +282,14 @@ change in this feature. Every stylesheet uses logical properties only, and only
 
 **Purpose**: Release gates, documentation, and the manual review.
 
-- [ ] T043 [P] Run `pnpm --filter @tarjuman/web build && pnpm check:bundle-origins`. If `licenses.txt` or a font package adds a flagged host that is never fetched, add it to the inert-host list in `scripts/bundle-origins.ts` with a comment (research R10). Confirm `tests/e2e/network-assertions.spec.ts` still passes unchanged (SC-004)
-- [ ] T044 [P] Add a build assertion to `apps/web/tests/font-budget.test.ts`: the built `index.html` contains `<script src="/theme-init.js">` as a classic script before the module script, and `dist/theme-init.js` is byte-identical to `apps/web/public/theme-init.js`
-- [ ] T045 Run the full 001 suites (`pnpm test`, `pnpm test:redteam`, `pnpm test:e2e`) and list in the batch summary every existing test file whose selectors changed. Confirm no behavioral expectation changed (SC-008)
-- [ ] T046 [P] Update docs:
+- [X] T043 [P] Run `pnpm --filter @tarjuman/web build && pnpm check:bundle-origins`. If `licenses.txt` or a font package adds a flagged host that is never fetched, add it to the inert-host list in `scripts/bundle-origins.ts` with a comment (research R10). Confirm `tests/e2e/network-assertions.spec.ts` still passes unchanged (SC-004)
+- [X] T044 [P] Add a build assertion to `apps/web/tests/font-budget.test.ts`: the built `index.html` contains `<script src="/theme-init.js">` as a classic script before the module script, and `dist/theme-init.js` is byte-identical to `apps/web/public/theme-init.js`
+- [X] T045 Run the full 001 suites (`pnpm test`, `pnpm test:redteam`, `pnpm test:e2e`) and list in the batch summary every existing test file whose selectors changed. Confirm no behavioral expectation changed (SC-008)
+- [X] T046 [P] Update docs:
   - `ARCHITECTURE.md`: a "Styling and themes" section covering tokens, `light-dark()`, `theme-init.js`, the font budget, and the raw-color rule
   - `README.md`: the themes in the feature list
   - `CLAUDE.md` gotchas: only `tokens.css` may hold colors; `theme-init.js` must stay a classic script in `public/`; the theme key is `tarjuman.theme` and delete-all clears `tarjuman.*`
-- [ ] T047 Create `specs/003-visual-design/checklists/visual-review.md` from `quickstart.md` §3 (12 rows, each with result, browser, and date), run the automated part of `quickstart.md` §2, and record the results. The manual rows are for the owner (SC-010)
+- [X] T047 Create `specs/003-visual-design/checklists/visual-review.md` from `quickstart.md` §3 (12 rows, each with result, browser, and date), run the automated part of `quickstart.md` §2, and record the results. The manual rows are for the owner (SC-010)
 
 ---
 
