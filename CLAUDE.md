@@ -11,7 +11,7 @@ substantial:
 1. [.specify/memory/constitution.md](.specify/memory/constitution.md) — non-negotiable principles.
    It supersedes specs, plans, and habits.
 2. [ARCHITECTURE.md](ARCHITECTURE.md) — how the system fits together.
-3. The active feature in `specs/<NNN-name>/` (currently `003-visual-design`): `spec.md`,
+3. The active feature in `specs/<NNN-name>/` (currently `004-gemini-provider`): `spec.md`,
    `plan.md`, `research.md`, `data-model.md`, `contracts/`, `tasks.md`.
 
 ## Workflow

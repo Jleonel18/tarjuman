@@ -82,8 +82,11 @@ comes from Gemini and the earlier messages are kept.
    says which provider and model produced it.
 4. **Given** I switch provider, **Then** my selected model resets to the new provider's default and
    my effort setting is kept only if the new model supports it.
-5. **Given** I switch provider, **When** I already have a key for the other provider, **Then** what
-   happens to it follows FR-004.
+5. **Given** I have validated keys for both providers, **When** I switch provider, **Then** the app
+   uses the stored key of the new provider without asking for it again, and the other key stays
+   stored and untouched.
+6. **Given** keys for both providers, **When** I delete or replace the key of one provider,
+   **Then** the other provider's key is unchanged.
 
 ---
 
@@ -149,8 +152,10 @@ confirm they complete, carry Gemini provenance and the "not Claude" label, and c
   their existing key, and need no migration step from the learner.
 - **FR-003**: Only one provider MUST be active at a time. Every model call MUST go to the active
   provider only.
-- **FR-004**: Key storage across providers MUST follow [NEEDS CLARIFICATION: Q2 — one key at a time
-  (switching replaces it), or one key per provider kept side by side?].
+- **FR-004**: The system MUST store at most one key per provider, and keys for different providers
+  MUST be kept side by side. Each key has its own storage mode, masked hint, and validation date, and
+  can be replaced or deleted without affecting the other. Switching provider MUST NOT delete, move,
+  or re-validate the other provider's key. (Clarified 2026-10-14: option A.)
 
 **Key handling (same rules as `001-core-foundation`)**
 
@@ -216,7 +221,8 @@ confirm they complete, carry Gemini provenance and the "not Claude" label, and c
 - **Provider choice**: which provider is active for this profile. Attributes: provider identifier
   (Anthropic or Gemini). Defaults to Anthropic for existing profiles.
 - **Stored credential**: an encrypted key with its provider identifier, masked hint, storage mode, and
-  validation date. Already exists; this feature makes the provider identifier meaningful.
+  validation date. Already exists; this feature allows one per provider (FR-004), keyed by the
+  provider identifier.
 - **Gemini model entry**: a model offered for Gemini. Attributes: id, display name, context window,
   output limit, effort support and levels, input and output price, price check date.
 - **Usage record**: already exists; gains (or starts using) the provider identifier next to the model.

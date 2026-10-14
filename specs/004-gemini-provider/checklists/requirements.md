@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,8 +31,7 @@
 
 ## Notes
 
-- One open marker: FR-004 (one key at a time, or one key per provider side by side). Waiting for
-  the owner's answer.
+- FR-004 resolved 2026-10-14: one key per provider, kept side by side (option A).
 - The spec names project terms the owner already uses (pipeline, provider abstraction, input guard,
   verdict line, CSP as "network policy"). They describe existing behavior that must not change, not
   new implementation choices.
