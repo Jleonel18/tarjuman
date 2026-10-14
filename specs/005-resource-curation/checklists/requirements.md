@@ -33,8 +33,11 @@
 
 - Clarified 2026-10-14 (owner): FR-010 search via the selected provider's own web search (A);
   FR-024 chat only (A); User Story 4 saved list in scope (A).
-- Product names (YouTube, Anthropic web search, Gemini grounding) appear only inside the FR-010
-  clarification as examples of options, and in the Context as constitution references; the
-  requirements themselves stay source-neutral behind a search port (FR-009).
+- Changed 2026-10-14 (owner, after research R2–R5): FR-010 is option B, dedicated search services,
+  YouTube only in this feature. FR-006, FR-017, FR-018, FR-021, User Story 2 and 4 scenarios, edge
+  cases, threat analysis, and assumptions were updated to match YouTube's terms.
+- YouTube is named in FR-010 and in the source-specific clauses because its terms set testable
+  limits (order, retention, consent); the other requirements stay source-neutral behind the search
+  port (FR-009).
 - The capability-contract / core question (Principle II) is deliberately left to the plan, as an
   assumption, because the spec cannot know whether the existing broker suffices.

@@ -91,7 +91,8 @@ services.
 2. **Given** a learner who has never searched, **When** they make their first resource request,
    **Then** they are told once, before the search runs, what is sent to search services (the search
    terms, which may contain their interests and target language; never their key, history, or other
-   profile data) and can cancel.
+   profile data), see the search source's terms and privacy policy, and must agree before the search
+   runs; they can cancel.
 3. **Given** a learner who does not want internet search, **When** they turn it off in settings,
    **Then** resource requests are answered with the "search unavailable" message and no search is
    made.
@@ -152,6 +153,10 @@ then use "delete all my data" and confirm the list is empty.
 2. **Given** saved resources, **When** the learner uses "delete all my data", **Then** none remain.
 3. **Given** a saved resource, **When** it is shown, **Then** it carries the same labels (paid,
    sponsored, affiliate) it had when found.
+4. **Given** a saved resource (or a resource list in an old conversation) whose source limits how
+   long its data may be kept (YouTube: 30 days), **When** that time has passed, **Then** the app
+   refreshes it from the source when the learner opens it, or, if it cannot, shows it as expired
+   with no stale title or details, and offers to search again.
 
 In scope for this feature (clarified 2026-10-14: option A). It may be cut at the end without
 affecting User Stories 1–3.
@@ -183,6 +188,8 @@ affecting User Stories 1–3.
   further searches and is not retried.
 - A search fails half way: resources already found are shown, and the answer says the search was
   incomplete. Nothing is retried automatically.
+- The search key is missing, invalid, or its daily allowance is used up: the "search unavailable"
+  message says which, and how to fix it; nothing is retried.
 - The provider (or search service) refuses or blocks the request on its side: shown as a refusal or
   an error category, as in feature 004.
 
@@ -207,7 +214,9 @@ affecting User Stories 1–3.
   (labelled as an estimate).
 - **FR-006**: Ranking MUST depend only on fit to the learner's request, interests, target language,
   and estimated level. Price, sponsorship, and any commercial relationship MUST NOT raise a
-  resource's rank (Principle IX).
+  resource's rank (Principle IX). Where a source's terms forbid changing its results (YouTube),
+  Tarjuman keeps the source's order and expresses fit only by which results it shows and by its own
+  notes, which are visibly separate from the source's text.
 - **FR-007**: The app MUST NOT download, cache, or store the content of a resource, MUST NOT read
   pages in ways their terms forbid, and MUST NOT reproduce complete works; lyrics are limited to a
   short excerpt of at most two lines (Principle X).
@@ -220,13 +229,14 @@ affecting User Stories 1–3.
 - **FR-009**: Searching MUST sit behind a search port, so the capability does not depend on any
   provider-specific search feature, and MUST have a defined fallback when no search is available:
   the "search unavailable" message (User Story 1, scenario 6) (Principle XI).
-- **FR-010**: In this feature, search results MUST come from the web search offered by the
-  learner's selected AI provider, run on the provider's side during the model call, so no extra key
-  and no gateway are needed. Each provider's search is an adapter behind the search port (FR-009). A
-  provider without search (or with search unavailable for the learner's key) gets the fallback.
-  Dedicated search services (for example a video platform's own search) are out of scope and may be
-  added later as further adapters behind the same port.
-  (Clarified 2026-10-14: option A.)
+- **FR-010**: Search results MUST come from dedicated search services that the app calls itself,
+  each behind the search port (FR-009). In this feature the only source is YouTube's video search,
+  which covers videos and music videos (songs). It needs a separate, free key from the learner,
+  stored and protected like an AI provider key; without one, the fallback applies. The AI provider
+  does not search. Other sources (music catalogs, podcasts, the AI providers' own web search) are out
+  of scope and need their own terms check before they are added.
+  (Clarified 2026-10-14: option A; changed 2026-10-14 to option B after research R2–R5: Gemini's
+  search is unavailable on free keys and its terms forbid the curation this spec requires.)
 - **FR-011**: Every network destination used for search or linked as a clickable resource MUST be on
   a declared allowlist, enforced by the app's network policy and the capability's declared
   permissions (Principle V).
@@ -248,9 +258,12 @@ affecting User Stories 1–3.
 **Transparency and control**
 
 - **FR-017**: Each resource answer MUST show the number of searches made and an estimated cost that
-  includes search charges, with the price date, alongside the existing token and cost display.
+  includes every model call in the turn and any search charges, with the price date, alongside the
+  existing token and cost display. A source with a free daily allowance and no charge (YouTube) is
+  shown as such.
 - **FR-018**: Before the first search on a device, the app MUST tell the learner what is sent to the
-  search service and let them cancel. Learners MUST be able to turn internet search off and on in
+  search service, show the source's terms of service and privacy policy links, and require the
+  learner to agree before searching; they can cancel. Learners MUST be able to turn internet search off and on in
   settings; when off, no search is made.
 - **FR-019**: Searches MUST NOT be retried automatically. The learner MUST be able to cancel a search
   in progress.
@@ -261,7 +274,9 @@ affecting User Stories 1–3.
 
 **Saved resources**
 
-- **FR-021**: Learners MUST be able to save, list, and remove resources on this device, and "delete
+- **FR-021**: Data from a source that limits retention MUST NOT be kept longer than that source
+  allows (YouTube: 30 days); after that it is refreshed on demand or removed (User Story 4,
+  scenario 4). Learners MUST be able to save, list, and remove resources on this device, and "delete
   all my data" MUST remove them. Saving is an explicit learner action (a click on the resource), never
   something the model triggers.
 
@@ -305,14 +320,15 @@ affecting User Stories 1–3.
 - **Privacy leak to search services**: search terms reveal interests and target language, and the
   provider passes them to a search engine (which may be a third party for that provider). FR-004
   limits what is in the terms; FR-018 discloses it and lets the learner turn search off.
-- **Key exposure**: the AI key still goes only to the selected provider; search runs on the
-  provider's side, so no new party receives the key. FR-004 keeps it out of search terms.
-- **Server-side request forgery**: the app fetches no pages itself and no gateway is added (FR-010),
-  so there is no new fetch path to abuse. A future dedicated-search adapter that fetches through a
-  gateway needs its own threat analysis.
-- **Provider-specific behavior**: each provider's search returns results, citations, and charges in
-  its own shape, and may filter or rank by its own rules. FR-009 normalizes them behind the port;
-  FR-006 still governs Tarjuman's ranking of what comes back.
+- **Key exposure**: the AI key still goes only to the selected provider. The new search key goes
+  only to its search service, is stored and masked like an AI key, and never enters model context.
+  FR-004 keeps both out of search terms. A key shaped for one service but pasted for another is
+  caught before it is sent where it can be recognized.
+- **New network destination**: the app now contacts a search service directly. FR-011 adds exactly
+  that destination to the allowlist; pages are never fetched, so there is no gateway and no
+  server-side request forgery surface.
+- **Source terms**: each source sets rules on how results may be shown and kept. FR-006, FR-018, and
+  FR-021 follow YouTube's; a new source needs its own check.
 - **Commercial bias**: sponsored and affiliate results can crowd out better material. FR-006 and
   FR-016.
 - **Copyright**: lyrics and transcripts are complete works. FR-007 limits excerpts and forbids
@@ -353,18 +369,15 @@ affecting User Stories 1–3.
   type); the app does not watch, listen to, or read the full resource.
 - Search is used only in turns where the learner asks for resources; ordinary language questions
   keep working exactly as today, with no search.
-- Search source facts (availability per provider, prices per search, cross-origin access, terms of
-  use) drift; they are confirmed against live documentation during planning and recorded in
-  `research.md` with a date.
+- Search source facts (quotas, cross-origin access, key types, terms of use) drift; they are
+  confirmed against live documentation during planning and recorded in `research.md` with a date.
 - Enabling the tool-call path in the pipeline (permission broker, taint gate, tool-call guard) is
   expected; whether it changes the core or the capability contract is decided in the plan and, if it
   does, stated as an amendment there.
-- The search port (FR-009) is expected to be a new provider-side concern: whether it extends the
-  provider port or sits beside it is decided in the plan, and any change to a core port is stated as
-  an amendment there.
-- The owner uses Gemini; whether Gemini's search is available on the owner's key tier, and what it
-  costs, is confirmed live during planning. If it is not available, the fallback applies and the
-  plan must say so before implementation.
+- The search port (FR-009) sits beside the provider port; any change to a core port or the
+  capability contract is stated as an amendment in the plan.
+- The learner (including the owner) creates a free search key for YouTube once; the app explains
+  how. The owner's Gemini key does not work for YouTube (research R6).
 - Ollama and mock providers need a scripted search in tests; no test reaches the internet unless it
   is an opt-in live test run by the owner.
 - Personalised recommendations from listening or viewing history on other platforms (logging into
