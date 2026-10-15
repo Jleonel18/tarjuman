@@ -128,8 +128,12 @@ other sources are follow-ups, each with its own terms check; they are not built 
   - Validation: `videoCategories.list?part=id&regionCode=US` (1 unit, no search spent).
 - **Titles and descriptions are HTML-escaped text** (`&#39;`, `&amp;`). They are decoded as text by
   a fixed entity table, never parsed as HTML.
-- Not verified live yet (no `AIza` key with YouTube enabled): a real search response. Fixtures are
-  synthetic, shaped after the documented response, and labelled so (as 004 did before its live run).
+- **Live result (2026-10-14, `pnpm test:live:youtube`, owner's key):** validation `ok`; one search
+  for "escalada" (`es`) returned 8 well-formed results. A first key attempt was rejected as
+  `invalid_credential` (it was not an `AIza…` API key), which confirmed the error mapping. Still not
+  checked live: the `videos.list` details fields beyond what the parser accepted (no failure seen),
+  `quotaExceeded`, `not_enabled`, and region or age restrictions. The fixtures remain synthetic,
+  shaped after the documented response, and labelled so.
 
 ## R7. YouTube API Services terms (developers.google.com/youtube/terms/developer-policies, read 2026-10-14)
 
@@ -301,10 +305,12 @@ Recorded so the owner can review them with the code.
   re-recorded. **The owner decides.** Until then the rule file is validated against the contract
   schema and loaded by the core loader (`tests/guardrails/rule-files.test.ts`) and its version is
   compared with `main`, but no model has been asked its cases.
-- **The YouTube adapter and the Gemini/Anthropic tool mappings have not run live (T068).** Gemini's
-  tool shape was captured live once (R8); the new round-trip test is in
-  `packages/provider-gemini/tests/gemini.live.test.ts` and skips without a key. The YouTube fixtures
-  are synthetic ("shaped after the documented response"). `pnpm test:live:youtube` needs the
-  owner's `YOUTUBE_API_KEY`. Anthropic's tool mapping is from the documentation only.
+- **Live status (T068, 2026-10-14).** The YouTube adapter ran live and passed (see R6). The Gemini
+  tool-call round trip ran live and passed with `gemini-3.5-flash-lite`: step 1 returned a
+  `tool_call` with a continuation, and step 2, with the tool result sent back, streamed text and
+  ended with `stop: end`. **Not run live:** Anthropic's tool mapping (documentation only; the owner
+  has no Anthropic key), and no end-to-end search through the app with a real model yet (the manual
+  V2 run in `quickstart.md`). The YouTube fixtures are synthetic ("shaped after the documented
+  response").
 - **The behavioral layer** (a real model resisting a hostile video title, quoting at most two lines
   of lyrics) has not been run.
