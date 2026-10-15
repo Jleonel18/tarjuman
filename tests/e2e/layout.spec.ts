@@ -37,6 +37,52 @@ async function horizontalOverflow(page: Page): Promise<number> {
 const toggle = (page: Page) => page.getByRole("button", { name: "Show conversations" });
 const conversations = (page: Page) => page.getByRole("navigation", { name: "Conversations" });
 
+/** The chat screen fills the viewport exactly; each column scrolls on its own. */
+async function verticalFit(page: Page) {
+  return page.evaluate(() => {
+    const side = document.querySelector(".workspace__side")?.getBoundingClientRect();
+    const composer = document.querySelector("textarea")?.getBoundingClientRect();
+    return {
+      pageOverflow: document.documentElement.scrollHeight - innerHeight,
+      sideGap: side ? innerHeight - side.bottom : undefined,
+      composerInView: composer ? composer.bottom <= innerHeight : false,
+    };
+  });
+}
+
+// Found in the owner's visual review (SC-010 row 11): at 67% zoom the sidebar stopped short of the
+// bottom, and at 100% the page scrolled by the header's height.
+for (const viewport of [
+  { width: 1280, height: 800 },
+  { width: 2192, height: 1116 },
+]) {
+  test.describe(`chat screen height at ${viewport.width}×${viewport.height}`, () => {
+    test.use({ viewport });
+
+    test("the sidebar reaches the bottom and the page does not scroll", async ({ page }) => {
+      await start(page);
+      expect(await verticalFit(page)).toEqual({ pageOverflow: 0, sideGap: 0, composerInView: true });
+    });
+
+    test("a long conversation scrolls inside its column, with the composer still in view", async ({ page }) => {
+      await start(page);
+      for (let i = 0; i < 3; i++) await ask(page, "LAYOUT-STRESS-TEST");
+      expect(await verticalFit(page)).toEqual({ pageOverflow: 0, sideGap: 0, composerInView: true });
+    });
+  });
+}
+
+test.describe("narrow chat screen height", () => {
+  test.use({ viewport: { width: 768, height: 800 } });
+
+  test("the page does not scroll and the composer stays in view", async ({ page }) => {
+    await start(page);
+    for (let i = 0; i < 3; i++) await ask(page, "LAYOUT-STRESS-TEST");
+    const fit = await verticalFit(page);
+    expect({ pageOverflow: fit.pageOverflow, composerInView: fit.composerInView }).toEqual({ pageOverflow: 0, composerInView: true });
+  });
+});
+
 test.describe("wide layout", () => {
   test.use({ viewport: { width: 1280, height: 800 } });
 

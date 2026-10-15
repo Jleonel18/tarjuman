@@ -242,10 +242,19 @@ input[type="checkbox"] {
   text-align: start;
 }
 
-/* The chat screen uses the whole width: sidebar plus its own reading column. */
+/*
+ * The chat screen uses the whole width and exactly the viewport's height: the page itself never
+ * scrolls, and the sidebar and the conversation each scroll on their own. The header can wrap to
+ * two lines, so no column may assume its height.
+ */
+.app-shell:has(.workspace) {
+  block-size: 100dvh;
+}
+
 .app-shell__main:has(> .workspace) {
   display: flex;
   flex-direction: column;
+  min-block-size: 0;
   max-inline-size: none;
   padding: 0;
 }
@@ -270,16 +279,15 @@ input[type="checkbox"] {
   display: grid;
   flex: 1;
   grid-template-columns: var(--sidebar-inline-size) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  min-block-size: 0;
 }
 
 .workspace__side {
-  position: sticky;
-  inset-block-start: 0;
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  align-self: start;
-  max-block-size: 100dvh;
   padding-block: var(--space-4);
   padding-inline: var(--space-3);
   overflow-y: auto;
@@ -288,9 +296,13 @@ input[type="checkbox"] {
 }
 
 .workspace__main {
+  /* Positioned so absolutely placed descendants (such as .visually-hidden labels) stay inside the
+     scrolling column instead of stretching the page. */
+  position: relative;
   display: flex;
   flex-direction: column;
   min-inline-size: 0;
+  overflow-y: auto;
 }
 
 /* The drawer's own controls exist only below the breakpoint. */
@@ -310,7 +322,6 @@ input[type="checkbox"] {
     inset-block: 0;
     inset-inline-start: 0;
     inline-size: min(var(--sidebar-inline-size), 85vw);
-    max-block-size: none;
     border-inline-end: 1px solid var(--color-border);
     box-shadow: var(--shadow-2);
     translate: -100% 0;
