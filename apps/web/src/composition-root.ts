@@ -36,6 +36,7 @@ import {
   type CredentialRecordAccess,
 } from "@tarjuman/storage-web";
 import { createI18n, getShippedCatalog, registerCatalog, type I18n } from "@tarjuman/ui";
+import { createOtherTabs, noOtherTabs, type OtherTabs } from "./other-tabs";
 
 /**
  * The composition root: the one place that decides which concrete adapters the app uses. Nothing
@@ -69,6 +70,15 @@ export interface AppServices {
   saved: SavedResourcesStore;
   /** The 30-day rule for everything fetched from a search source (005 FR-021). */
   retention: ResourceRetention;
+  /** The other open Tarjuman tabs, told when "delete all my data" runs (001 FR-017a). */
+  otherTabs: OtherTabs;
+  /**
+   * Another tab is deleting all data: refuse every storage operation from now on and drop the
+   * session-only keys. Cannot be undone; `restart` follows.
+   */
+  stopWriting(): void;
+  /** Starts this tab again from nothing (a reload), as a fresh visit would. */
+  restart(): void;
 }
 
 /** One provider the build offers, as the UI and the controller see it: no `ProviderPort` (004). */
@@ -155,7 +165,8 @@ export interface AssembleOptions {
   providers: readonly ProviderEntry[];
   /** The search sources (005). Without any, no search tool is offered and the curation capability is not registered. */
   searchSources?: readonly SearchPort[];
-  storage: StoragePort & CredentialRecordAccess;
+  /** `detach` is how a tab stops writing while another tab deletes all data (001 FR-017a). */
+  storage: StoragePort & CredentialRecordAccess & { detach(): void };
   storageAvailable: boolean;
   sessionSecrets: SessionSecrets;
   i18n: I18n;
@@ -163,6 +174,10 @@ export interface AssembleOptions {
   includeTestLocales?: boolean;
   /** Defaults to a store over the browser's `localStorage`. */
   themes?: ThemePreferenceStore;
+  /** Defaults to none: only the browser build talks to other tabs. */
+  otherTabs?: OtherTabs;
+  /** Defaults to reloading the page. */
+  restart?: () => void;
 }
 
 /** Pure wiring: connects the pieces without reading the environment, so tests build the same graph. */
@@ -239,6 +254,12 @@ export function assembleServices(options: AssembleOptions): AppServices {
     searchSourceIds,
     saved,
     retention,
+    otherTabs: options.otherTabs ?? noOtherTabs,
+    stopWriting: () => {
+      storage.detach();
+      options.sessionSecrets.clear();
+    },
+    restart: options.restart ?? (() => globalThis.location?.reload()),
   };
 }
 
@@ -274,6 +295,7 @@ export async function createAppServices(): Promise<AppServices> {
     sessionSecrets: defaultSessionSecrets,
     i18n,
     includeTestLocales,
+    otherTabs: createOtherTabs(),
   });
   // The 30-day rule runs at every start, before anything is read for the screen (005 FR-021).
   await services.retention.purgeExpired();

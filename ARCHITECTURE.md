@@ -297,6 +297,13 @@ The look is defined once, as design tokens, and every component refers to them
   and checks each one is gone, then drops the whole IndexedDB database, Cache Storage, and service workers, and verifies
   that nothing is left. A failed check is shown as a failure, never as success. On success the app
   returns to onboarding.
+- Other open tabs (001 FR-017a): the deleting tab sends `delete_started` before it deletes and
+  `delete_finished` after, on the `tarjuman.data` `BroadcastChannel` (`apps/web/src/other-tabs.ts`).
+  A tab that hears `delete_started` detaches its storage (every operation then fails, so an answer
+  in flight cannot write deleted data back and nothing reopens the database), aborts its stream,
+  forgets its session-only keys and its screen, and shows the loading line. It reloads on
+  `delete_finished`, or after 5 s if that never comes. Waiting matters: reloading opens the
+  database, which must not happen while the deleting tab still verifies that it is gone.
 
 An honest limit: a non-extractable key stops key material from being copied, but a compromised
 script on the same origin could still *use* it. That is why the app ships a strict CSP and no

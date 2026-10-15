@@ -333,6 +333,19 @@ pnpm monorepo, per plan.md. `packages/core` is framework-free: no DOM, React, No
 
 ---
 
+## Follow-up: security review finding 1 (added 2026-10-15)
+
+**Goal**: "Delete all my data" in one tab must not be undone by another open tab (FR-017a, US7 scenario 4).
+
+- [X] T154 [P] Write tests for `detach()` on `IndexedDbStorage` and `MemoryStorage` in `packages/storage-web/tests/detach.test.ts`: every operation rejects afterwards, and a detached IndexedDB storage never reopens (so never recreates) the database
+- [X] T155 [P] Write tests for `apps/web/src/other-tabs.ts` in `apps/web/tests/other-tabs.test.ts`: two channels deliver `delete_started` / `delete_finished` to each other, unknown messages are ignored, and no `BroadcastChannel` means a silent no-op
+- [X] T156 Write controller tests in `apps/web/tests/other-tabs-controller.test.ts`: the deleting tab announces before and after `deleteAll`; a tab that hears `delete_started` stops writing, aborts its stream, and resets its screen; `delete_finished` (or the timeout) restarts it
+- [X] T157 Write `tests/e2e/delete-all-other-tab.spec.ts`: two tabs, the second one streaming; deleting in the first sends the second to onboarding, and no conversation comes back after a reload
+- [X] T158 Implement `detach()` in `packages/storage-web`, `apps/web/src/other-tabs.ts`, the wiring in `apps/web/src/composition-root.ts`, and the controller handling in `apps/web/src/controller.ts`, until T154–T157 pass
+- [X] T159 Update `plan.md` Threat Analysis, `checklists/security-review.md` (finding 1), and `ARCHITECTURE.md`
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

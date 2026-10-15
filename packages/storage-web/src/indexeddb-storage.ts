@@ -74,6 +74,17 @@ export class StorageNotEmptyError extends Error {
 }
 
 /**
+ * Thrown by a storage that was detached because another tab is deleting all data (001 FR-017a).
+ * The tab restarts soon after; until then it must not write the deleted data back.
+ */
+export class StorageDetachedError extends Error {
+  constructor() {
+    super("Storage is detached: another tab is deleting all Tarjuman data.");
+    this.name = "StorageDetachedError";
+  }
+}
+
+/**
  * IndexedDB implementation of `StoragePort` (contracts/storage-port.md). One database,
  * `tarjuman`, with a store per collection. It uses the global `indexedDB`, as `idb` does.
  */
@@ -83,6 +94,7 @@ export class IndexedDbStorage implements StoragePort, CredentialRecordAccess {
   readonly #cacheStorage: CacheStorageLike | undefined;
   readonly #serviceWorker: ServiceWorkerContainerLike | undefined;
   readonly #localStorage: LocalStorageLike | undefined;
+  #detached = false;
 
   constructor(options: IndexedDbStorageOptions = {}) {
     this.#sessionSecrets = options.sessionSecrets ?? defaultSessionSecrets;
@@ -95,7 +107,19 @@ export class IndexedDbStorage implements StoragePort, CredentialRecordAccess {
     this.#localStorage = "localStorage" in options ? options.localStorage : defaultLocalStorage();
   }
 
+  /**
+   * Another tab is deleting all data (001 FR-017a): close the connection so the deletion is not
+   * blocked, and refuse every later operation, because opening the database again would recreate
+   * it and anything still in flight here would write deleted data back. There is no way back; the
+   * tab restarts instead.
+   */
+  detach(): void {
+    this.#detached = true;
+    void this.#close();
+  }
+
   #open(): Promise<IDBPDatabase> {
+    if (this.#detached) return Promise.reject(new StorageDetachedError());
     this.#dbPromise ??= openDB(DB_NAME, DB_VERSION, {
       async upgrade(db, oldVersion, _newVersion, transaction) {
         if (oldVersion < 1) {
@@ -198,6 +222,7 @@ export class IndexedDbStorage implements StoragePort, CredentialRecordAccess {
    * rather than reporting success it cannot confirm.
    */
   async clearAll(): Promise<void> {
+    if (this.#detached) throw new StorageDetachedError();
     this.#sessionSecrets.clear();
     await this.#close();
     await deleteDB(DB_NAME, {

@@ -27,6 +27,7 @@ import {
 } from "@tarjuman/core";
 import { applyTheme, type ChatMessage, type LanguageValues, type OnboardingDraft, type ThemePreference, type ThemeRoot } from "@tarjuman/ui";
 import type { AppServices, ProviderOffer } from "./composition-root";
+import type { TabSignal } from "./other-tabs";
 import { resetAppStore, useAppStore } from "./store";
 
 const CAPABILITY_ID = "language-qa";
@@ -34,6 +35,12 @@ const PENDING_USER_ID = "pending-user";
 const PENDING_REPLY_ID = "pending-reply";
 /** The search source of this build, and the credential id of its key (005). */
 const SEARCH_SOURCE_ID = "youtube";
+
+/**
+ * How long a tab that heard `delete_started` waits for `delete_finished` before it restarts anyway
+ * (001 FR-017a). Restarting earlier could reopen the database while the other tab still verifies it.
+ */
+export const RESTART_FALLBACK_MS = 5000;
 
 const SEARCH_NOTICES: ReadonlySet<string> = new Set(["search_incomplete", "search_key_error", "search_quota"]);
 
@@ -94,6 +101,10 @@ export class AppController {
   readonly #services: AppServices;
   readonly #themeRoot: ThemeRoot | undefined;
   #abort: AbortController | undefined;
+  /** Another tab is deleting all data: this tab writes nothing more and waits to restart. */
+  #stopped = false;
+  #restartTimer: ReturnType<typeof setTimeout> | undefined;
+  #restarted = false;
 
   constructor(services: AppServices, options: AppControllerOptions = {}) {
     this.#services = services;
@@ -102,6 +113,7 @@ export class AppController {
 
   async boot(): Promise<void> {
     const { storage, credentials, conversations, i18n } = this.#services;
+    this.#services.otherTabs.listen(this.#onOtherTab);
     // A profile saved before 004 has no provider: it is read as Anthropic's (FR-002).
     const profile = readStoredProfile(await storage.get<StoredProfile>("profile", "profile"));
     // A test locale chosen at start (`?locale=`) is kept; otherwise the saved interface language wins.
@@ -252,7 +264,15 @@ export class AppController {
    */
   deleteAllData = async (): Promise<DeleteAllOutcome> => {
     if (useAppStore.getState().streaming) return { ok: false, code: "not_verified" };
-    const outcome = await this.#services.data.deleteAll();
+    // The other tabs stop writing before anything is deleted, and restart once it is over (FR-017a).
+    const { otherTabs } = this.#services;
+    otherTabs.announce("delete_started");
+    let outcome: DeleteAllOutcome;
+    try {
+      outcome = await this.#services.data.deleteAll();
+    } finally {
+      otherTabs.announce("delete_finished");
+    }
     if (outcome.ok) {
       // The stored choice is gone with everything else (003 FR-003a), so the device decides again.
       if (this.#themeRoot) applyTheme("system", this.#themeRoot);
@@ -261,6 +281,30 @@ export class AppController {
     }
     return outcome;
   };
+
+  /**
+   * Another tab announced "delete all my data" (001 FR-017a). This tab stops writing at once (an
+   * answer in flight is aborted and cannot store anything), forgets its session-only keys and its
+   * screen, and shows the loading line until it restarts: when the deletion has finished, or after
+   * `RESTART_FALLBACK_MS` if it never hears that it did.
+   */
+  #onOtherTab = (signal: TabSignal): void => {
+    if (!this.#stopped) {
+      this.#stopped = true;
+      this.#services.stopWriting();
+      this.#abort?.abort();
+      resetAppStore();
+    }
+    if (signal === "delete_finished") this.#restart();
+    else this.#restartTimer ??= setTimeout(() => this.#restart(), RESTART_FALLBACK_MS);
+  };
+
+  #restart(): void {
+    if (this.#restarted) return;
+    this.#restarted = true;
+    clearTimeout(this.#restartTimer);
+    this.#services.restart();
+  }
 
   /** Where a key error sends the learner: the settings screen, to replace the key. */
   openKeySettings = (): void => {
@@ -451,8 +495,11 @@ export class AppController {
           languageSnapshot: { mediation: profile.mediationLanguage, target: profile.targetLanguage },
         });
         conversationId = created.id;
+        if (this.#stopped) return;
         useAppStore.setState({ activeConversationId: conversationId, usage: [] });
       }
+      // Another tab started deleting all data while the conversation was being created.
+      if (this.#stopped) return;
       const shown = useAppStore.getState().messages;
       useAppStore.setState({
         messages: [
@@ -467,6 +514,8 @@ export class AppController {
         { conversationId, capabilityId: CAPABILITY_ID, userText: text },
         abort.signal,
       )) {
+        // Another tab is deleting all data: the screen was reset, and nothing more is shown.
+        if (this.#stopped) break;
         if (event.type === "render") {
           useAppStore.setState((s) => ({
             messages: s.messages.map((m) =>
@@ -501,11 +550,14 @@ export class AppController {
         }
       }
     } catch {
-      useAppStore.setState({ error: { code: "unknown" } });
+      if (!this.#stopped) useAppStore.setState({ error: { code: "unknown" } });
     } finally {
       this.#abort = undefined;
-      await this.#refresh(conversationId);
-      useAppStore.setState({ streaming: false });
+      // A stopped tab reads nothing back: its storage refuses, and its screen stays reset.
+      if (!this.#stopped) {
+        await this.#refresh(conversationId);
+        useAppStore.setState({ streaming: false });
+      }
     }
   };
 

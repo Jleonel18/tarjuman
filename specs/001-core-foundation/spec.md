@@ -211,6 +211,10 @@ nothing remains on the device.
    available and the user is asked for it next time.
 3. **Given** stored data, **When** the user confirms "delete all my data", **Then** key, profile,
    preferences, and history are removed and Tarjuman returns to first-run onboarding.
+4. **Given** a second Tarjuman tab open on the same device, even one that is streaming an answer,
+   **When** the user confirms "delete all my data" in the first tab, **Then** the second tab stops
+   writing, forgets its session-only keys and its screen, and restarts at first-run onboarding, and
+   none of the deleted data comes back. *(Added 2026-10-15, security review finding 1.)*
 
 ---
 
@@ -257,6 +261,9 @@ are subject to the full pipeline and that no core change was needed to add them.
   them to the model.
 - Browser storage unavailable or cleared (e.g. private browsing): Tarjuman detects it, offers the
   session-only mode, and explains that data won't persist.
+- "Delete all my data" while another Tarjuman tab is open: the other tab is told before the
+  deletion starts, stops writing, and restarts once the deletion has finished (FR-017a). Restarting
+  is like a fresh visit: it may create an empty database again, but no deleted data.
 
 ## Requirements *(mandatory)*
 
@@ -307,6 +314,11 @@ are subject to the full pipeline and that no core change was needed to add them.
   the trade-off; there is no silent default.
 - **FR-017**: Users MUST be able to delete all Tarjuman data on the device in one confirmed
   action, returning the app to first-run state.
+- **FR-017a**: When data is deleted in one tab, every other open Tarjuman tab on the device MUST
+  stop writing before the deletion runs, drop its screen state and session-only keys, and restart
+  at first-run state once the deletion has finished (or after a short timeout if it never hears
+  that it finished). No other tab may write deleted data back. *(Added 2026-10-15, security review
+  finding 1.)*
 
 **Stats panel**
 

@@ -24,7 +24,8 @@ behave.
   permission broker. A tool gets only its own declared permissions, and network access is limited
   to an allowlist of `https` hosts.
 - **Delete everything in one action**, verified. That includes the search key, the saved
-  resources, and the search choices.
+  resources, and the search choices. Other open Tarjuman tabs are told first: they stop writing,
+  forget their session-only keys, and restart at onboarding.
 - **Search results are data from an untrusted source** (feature 005). A video title or description
   can say anything. Results are validated and capped twice (by the YouTube adapter and again by the
   search broker), key-shaped text in them is withheld, and they reach the model fenced as

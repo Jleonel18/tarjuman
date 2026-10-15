@@ -43,7 +43,7 @@ No high or medium severity issue was found. Findings below are low severity or l
 
 | # | Status |
 |---|--------|
-| 1 | **Decided: tell other tabs to reset** with a `BroadcastChannel`. Implementation pending. |
+| 1 | **Done.** New requirement FR-017a and US7 scenario 4 in `spec.md`, tasks T154–T159. The deleting tab announces `delete_started` / `delete_finished` on a `BroadcastChannel`; other tabs detach their storage, abort, forget session-only keys and their screen, and restart. Tests: `packages/storage-web/tests/detach.test.ts`, `apps/web/tests/other-tabs.test.ts`, `apps/web/tests/other-tabs-controller.test.ts`, and `tests/e2e/delete-all-other-tab.spec.ts` (second tab streaming during the deletion). |
 | 2 | **Done.** Still latent after 005 (search goes through `SearchPort`, not `net.fetch`), hardened anyway: the broker passes a frozen `{ redirect: "error" }` to the host's `fetch` (`BrokerFetchInit`), and the three adapters that send a key (Anthropic, Gemini, YouTube) refuse redirects on every request. Tests: `permission-broker.test.ts`, and the request tests of each adapter. |
 | 3 | **Done.** [docs/deployment.md](../../../docs/deployment.md) lists the headers the host must send (`frame-ancestors 'none'`, `X-Frame-Options: DENY`) and how to check them. |
 | 4 | **Done.** `checkout`, `pnpm/action-setup`, and `setup-node` are pinned to commit SHAs in all three workflows, at the versions `v4` pointed to on 2026-10-15 (v4.4.0, v4.3.0, v4.4.0). |

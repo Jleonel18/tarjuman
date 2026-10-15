@@ -83,6 +83,7 @@ compromise vs. WebCrypto), not a constitutional deviation.
 | Exfiltration via rendered output | Markdown image/link with data in URL | OutputGuard: no `img`, inert links showing destination, HTML as text, CSP `img-src`/`connect-src` restrictions | Users clicking a visible link deliberately |
 | Same-origin script compromise (XSS/supply chain) | Malicious dependency or injected script | Strict CSP, no third-party scripts, lockfile + `pnpm audit` in CI, no `dangerouslySetInnerHTML` | A compromised same-origin script can *use* the in-browser key even if non-extractable; session-only mode offered. Framing protection (`frame-ancestors`) works only as an HTTP header, so it depends on the host sending it ([docs/deployment.md](../../docs/deployment.md)) |
 | Local data theft | Disk/profile access | Encryption at rest with non-extractable key; delete-all | Attacker with full profile access can run the app; passphrase mode deferred |
+| Deleted data written back by another tab | A second open tab keeps its state and session keys, and its next write recreates the database | Delete-all tells other tabs on a `BroadcastChannel` before and after; they detach storage, abort, forget session keys, and restart (FR-017a) | A browser without `BroadcastChannel`; a tab that misses `delete_started` and writes before `delete_finished` (the deleting tab's own verification then fails and says so) |
 | Silent cost multiplication | Auto-retries, loops | `maxRetries = 0`, user-initiated retry, no tool loops | None |
 | Rule regression | Prompt edits weaken scope | Versioned rules with mandatory cases, tone matrix, CI gates | Live-model drift caught by nightly job, not per PR. Today the nightly job skips without `TARJUMAN_TEST_KEY`, so drift is not caught at all until a key exists |
 | Capability overreach | Capability calls undeclared tool | `PermissionBroker` denies; no provider handle exposed; `net.fetch` asks the host for `redirect: "error"`, because the allowlist checks only the requested URL | Bugs in broker; covered by dummy-capability tests. A host `fetch` that ignores `redirect` (none is wired today) |
@@ -90,7 +91,7 @@ compromise vs. WebCrypto), not a constitutional deviation.
 
 Rows updated on 2026-10-15 from the proposals in
 [checklists/security-review.md](checklists/security-review.md) (findings 2 and 3, the nightly job, and
-the missing dev-provider row), approved by the owner.
+the missing dev-provider row), approved by the owner. Finding 1 added its own row the same day.
 
 ## Project Structure
 
