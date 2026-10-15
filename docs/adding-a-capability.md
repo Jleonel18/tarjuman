@@ -113,7 +113,8 @@ Every tool call goes through `OutputGuard.checkToolCall` in this order:
    on its own.
 3. **Run.** The handler receives a frozen `ToolContext` built from that tool's own
    `requiredPermissions`, not from everything the capability declared:
-   - `ctx.net.fetch(url)`: `https` only, to a host in the allowlist.
+   - `ctx.net.fetch(url)`: `https` only, to a host in the allowlist. Redirects are refused (the
+     request fails), because the allowlist checks only the URL you asked for.
    - `ctx.storage.get` / `put`: only the declared collections, only with the declared access.
    - `ctx.ui.notice(key)`: only with the `ui` notice permission.
 

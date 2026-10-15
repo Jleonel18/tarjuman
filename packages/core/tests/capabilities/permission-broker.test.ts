@@ -42,11 +42,13 @@ function capability(): Readonly<Capability> {
 function world() {
   const denials: PermissionDenial[] = [];
   const fetched: string[] = [];
+  const fetchInits: unknown[] = [];
   const stored: unknown[] = [];
   const notices: string[] = [];
   const services: BrokerServices = {
-    fetch: async (url) => {
+    fetch: async (url, init) => {
       fetched.push(url);
+      fetchInits.push(init);
       return { status: 200, text: "ok" };
     },
     storage: {
@@ -63,7 +65,7 @@ function world() {
     if (!decision.ok) throw new Error(`unexpected denial of ${name}`);
     return broker.contextFor(decision.tool);
   };
-  return { broker, ctx, denials, fetched, stored, notices };
+  return { broker, ctx, denials, fetched, fetchInits, stored, notices };
 }
 
 async function denied(action: Promise<unknown>): Promise<PermissionDenial> {
@@ -131,6 +133,13 @@ describe("ToolContext.net.fetch", () => {
     expect(await ctx("everything").net.fetch("https://dictionary.example/define?w=ser")).toEqual({ status: 200, text: "ok" });
     expect(await ctx("everything").net.fetch("https://api.words.example:8443/v1")).toEqual({ status: 200, text: "ok" });
     expect(fetched).toEqual(["https://dictionary.example/define?w=ser", "https://api.words.example:8443/v1"]);
+  });
+
+  it("asks the host never to follow a redirect, because the allowlist checks only the requested URL", async () => {
+    const { ctx, fetchInits } = world();
+    await ctx("everything").net.fetch("https://dictionary.example/define?w=ser");
+    expect(fetchInits).toEqual([{ redirect: "error" }]);
+    expect(Object.isFrozen(fetchInits[0])).toBe(true);
   });
 
   it.each([

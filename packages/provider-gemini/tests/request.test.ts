@@ -55,6 +55,10 @@ describe("GeminiProvider: the streaming request", () => {
     expect(Object.keys(call.headers).sort()).toEqual(["content-type", "x-goog-api-key"]);
   });
 
+  it("refuses to follow a redirect, so the key header can never be replayed to another origin", async () => {
+    expect((await send(request())).redirect).toBe("error");
+  });
+
   it("sends one system part per layer, in precedence order", async () => {
     const call = await send(request());
     expect(call.body?.["systemInstruction"]).toEqual({
@@ -115,6 +119,7 @@ describe("GeminiProvider: key validation (research R7)", () => {
     expect(call.headers["x-goog-api-key"]).toBe(RAW_SECRET);
     expect(call.url).not.toContain("key=");
     expect(call.body).toBeUndefined();
+    expect(call.redirect).toBe("error");
   });
 
   it("sends nothing when already aborted", async () => {

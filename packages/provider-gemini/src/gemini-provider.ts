@@ -70,6 +70,8 @@ export class GeminiProvider implements ProviderPort {
       const response = await this.#fetch(`${API_BASE}/${encodeURIComponent(DEFAULT_GEMINI_MODEL_ID)}`, {
         method: "GET",
         headers: { "x-goog-api-key": unsealSecret(secret) },
+        // A redirect would replay the key header to wherever it points: fail instead.
+        redirect: "error",
         signal: controller.signal,
       });
       if (response.ok) return { ok: true };
@@ -105,6 +107,7 @@ export class GeminiProvider implements ProviderPort {
         method: "POST",
         headers: { "content-type": "application/json", "x-goog-api-key": key },
         body: JSON.stringify(toBody(req)),
+        redirect: "error",
         signal: controller.signal,
       });
       // Checked before reading events: an error can arrive with an event-stream content type (seen live).

@@ -20,6 +20,8 @@ export interface RecordedCall {
   url: string;
   headers: Record<string, string>;
   body: Record<string, unknown>;
+  /** `init.redirect`, or `undefined` when the call left it to the default (`"follow"`). */
+  redirect: RequestRedirect | undefined;
 }
 
 export class FakeAnthropic {
@@ -36,7 +38,7 @@ export class FakeAnthropic {
     const headers: Record<string, string> = {};
     new Headers(init?.headers).forEach((value, key) => (headers[key] = value));
     const body = typeof init?.body === "string" ? (JSON.parse(init.body) as Record<string, unknown>) : {};
-    this.calls.push({ url: String(input), headers, body });
+    this.calls.push({ url: String(input), headers, body, redirect: init?.redirect });
 
     const reply = this.#queue.shift();
     if (!reply) throw new Error("FakeAnthropic: no reply queued for this call");

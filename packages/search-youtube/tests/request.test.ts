@@ -64,6 +64,11 @@ describe("YouTubeSearch: the search request", () => {
     }
   });
 
+  it("refuses to follow a redirect on every call, so the key header can never be replayed to another origin", async () => {
+    const { fake } = await search();
+    expect(fake.calls.map((c) => c.redirect)).toEqual(["error", "error"]);
+  });
+
   it("encodes the query as a parameter, whatever it holds", async () => {
     const { fake } = await search({ query: "a&b=c#d key=1" });
     expect(fake.calls[0]?.params.get("q")).toBe("a&b=c#d key=1");
@@ -113,6 +118,7 @@ describe("YouTubeSearch: key validation", () => {
     expect(fake.calls[0]?.query).toEqual({ part: "id", regionCode: "US" });
     expect(fake.calls[0]?.headers["x-goog-api-key"]).toBe(RAW_SECRET);
     expect(fake.calls[0]?.url).not.toContain("key=");
+    expect(fake.calls[0]?.redirect).toBe("error");
   });
 
   it("makes no request when already cancelled", async () => {

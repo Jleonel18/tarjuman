@@ -214,7 +214,7 @@ Tools run only through the **permission broker** and the OutputGuard:
 2. The taint gate holds a side-effecting tool in a turn that contains untrusted content until the
    learner confirms.
 3. An allowed tool gets a frozen, least-privilege `ToolContext` built from that tool's own
-   permissions: `net.fetch` to allowlisted `https` hosts, storage scoped to declared collections
+   permissions: `net.fetch` to allowlisted `https` hosts with redirects refused, storage scoped to declared collections
    and access, and the notice surface. It holds no provider, secret, stage, or raw storage.
 
 Every denial is a typed `PermissionDeniedError` plus a `permission_denied` metrics event.

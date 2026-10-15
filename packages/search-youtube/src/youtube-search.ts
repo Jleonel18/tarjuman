@@ -106,6 +106,8 @@ export class YouTubeSearch implements SearchPort {
       const response = await this.#fetch(`${API}/${path}?${new URLSearchParams(params).toString()}`, {
         method: "GET",
         headers: { "x-goog-api-key": key },
+        // A redirect would replay the key header to wherever it points: fail instead.
+        redirect: "error",
         signal: controller.signal,
       });
       const body = await readJson(response);

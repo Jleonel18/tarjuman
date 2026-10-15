@@ -21,6 +21,8 @@ export interface RecordedCall {
   /** The same parameters as a plain object, for `toEqual`. */
   query: Record<string, string>;
   path: string;
+  /** `init.redirect`, or `undefined` when the call left it to the default (`"follow"`). */
+  redirect: RequestRedirect | undefined;
 }
 
 export type ErrorCase = keyof typeof errors;
@@ -40,7 +42,7 @@ export class FakeYouTube {
     const url = new URL(String(input));
     const query: Record<string, string> = {};
     url.searchParams.forEach((value, name) => (query[name] = value));
-    this.calls.push({ url: String(input), method: init?.method ?? "GET", headers, params: url.searchParams, query, path: url.pathname });
+    this.calls.push({ url: String(input), method: init?.method ?? "GET", headers, params: url.searchParams, query, path: url.pathname, redirect: init?.redirect });
     const reply = this.#queue.shift();
     if (!reply) throw new Error("FakeYouTube: no reply queued for this call");
     if (reply.kind === "reject") throw reply.error;

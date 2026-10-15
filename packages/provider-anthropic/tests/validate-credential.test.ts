@@ -91,6 +91,10 @@ describe("validateCredential: what it sends (research R5)", () => {
     expect(JSON.stringify(call.body)).not.toMatch(/thinking|output_config/);
   });
 
+  it("refuses to follow a redirect, so the key header can never be replayed to another origin", async () => {
+    expect((await sent()).redirect).toBe("error");
+  });
+
   it("does not leak the key when the transport error mentions it", async () => {
     const leaky = { kind: "reject", error: new Error(`boom ${RAW_SECRET}`) } as const;
     const { result } = await validate(leaky);

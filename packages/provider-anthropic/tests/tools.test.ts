@@ -126,6 +126,11 @@ describe("AnthropicProvider: tools in the request", () => {
     });
   });
 
+  it("refuses to follow a redirect on a streaming request too", async () => {
+    const { call } = await run(answer());
+    expect(call.redirect).toBe("error");
+  });
+
   it("never puts the key in the body", async () => {
     const { call } = await run(answer());
     expect(JSON.stringify(call.body)).not.toContain(RAW_SECRET);

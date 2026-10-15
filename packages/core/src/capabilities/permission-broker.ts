@@ -29,13 +29,24 @@ export class PermissionDeniedError extends Error {
   }
 }
 
+/** What the broker asks of the host's `fetch` on every call. */
+export interface BrokerFetchInit {
+  readonly redirect: "error";
+}
+
+const NO_REDIRECT: BrokerFetchInit = Object.freeze({ redirect: "error" });
+
 /**
  * What the host can do on a tool's behalf. The broker never hands these to a tool directly: each
  * is wrapped in a check against the tool's declared permissions. A missing service means the host
  * does not offer it.
  */
 export interface BrokerServices {
-  fetch?: (url: string) => Promise<{ status: number; text: string }>;
+  /**
+   * The allowlist checks only the requested URL, so the host must not follow redirects: it passes
+   * `init.redirect` to its `fetch`, which then fails on any redirect instead of leaving the allowlist.
+   */
+  fetch?: (url: string, init: BrokerFetchInit) => Promise<{ status: number; text: string }>;
   /** A `StoragePort` fits; the host may also pass a narrower view. */
   storage?: ToolContext["storage"];
   notice?: (capabilityId: string, messageKey: string) => void;
@@ -120,7 +131,7 @@ export class PermissionBroker {
           const allowed = network.some((p) => p.allowedHosts.some((h) => h.toLowerCase() === host));
           if (host === undefined || !allowed) throw deny("network", "host_not_allowed");
           if (!services.fetch) throw unavailable("network");
-          return services.fetch(url);
+          return services.fetch(url, NO_REDIRECT);
         },
       }),
       storage: Object.freeze({

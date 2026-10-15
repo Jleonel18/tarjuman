@@ -22,6 +22,8 @@ export interface RecordedCall {
   body: Record<string, unknown> | undefined;
   /** The body exactly as sent, to prove what it does not contain. */
   rawBody: string;
+  /** `init.redirect`, or `undefined` when the call left it to the default (`"follow"`). */
+  redirect: RequestRedirect | undefined;
 }
 
 export type ErrorCase = keyof typeof errors;
@@ -41,7 +43,7 @@ export class FakeGemini {
     new Headers(init?.headers).forEach((value, key) => (headers[key] = value));
     const rawBody = typeof init?.body === "string" ? init.body : "";
     const body = rawBody === "" ? undefined : (JSON.parse(rawBody) as Record<string, unknown>);
-    this.calls.push({ url: String(input), method: init?.method ?? "GET", headers, body, rawBody });
+    this.calls.push({ url: String(input), method: init?.method ?? "GET", headers, body, rawBody, redirect: init?.redirect });
 
     const reply = this.#queue.shift();
     if (!reply) throw new Error("FakeGemini: no reply queued for this call");

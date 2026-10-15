@@ -8,16 +8,22 @@ export interface AnthropicProviderOptions {
   fetch?: Anthropic["fetch"] | ((input: never, init?: never) => Promise<Response>);
 }
 
+type Transport = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+
 /**
  * A short-lived SDK client. The key is unsealed here, inside this package, and never leaves it.
  * `maxRetries: 0` is a cost-safety rule: the SDK default of 2 would silently repeat paid calls.
+ * Every request refuses redirects: one would replay the `x-api-key` header to wherever it points.
  */
 export function createClient(secret: SecretHandle, options: AnthropicProviderOptions): Anthropic {
+  // Not bound to a receiver: calling the global `fetch` as a method of another object throws.
+  const transport = (options.fetch as Transport | undefined) ?? ((input, init) => fetch(input, init));
+  const noRedirect: Transport = (input, init) => transport(input, { ...init, redirect: "error" });
   return new Anthropic({
     apiKey: unsealSecret(secret),
     baseURL: ANTHROPIC_API_ORIGIN,
     dangerouslyAllowBrowser: true,
     maxRetries: 0,
-    ...(options.fetch && { fetch: options.fetch as Anthropic["fetch"] }),
+    fetch: noRedirect as Anthropic["fetch"],
   });
 }
