@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import languageQa from "@tarjuman/capability-language-qa";
+import resourceCuration from "@tarjuman/capability-resource-curation";
 import { CapabilityRegistry, loadRules, type DomainRule, type RefusalTemplates } from "@tarjuman/core";
 
 /**
@@ -12,7 +13,11 @@ export const ROOT = resolve(import.meta.dirname, "../..");
 export const GUARDRAIL_FIXTURES = join(ROOT, "packages/testing/fixtures/guardrails");
 export const CAPABILITY_ID = languageQa.id;
 
-const RULE_DIRS = ["packages/core/rules", "packages/capabilities/language-qa/rules"];
+const RULE_DIRS = [
+  "packages/core/rules",
+  "packages/capabilities/language-qa/rules",
+  "packages/capabilities/resource-curation/rules",
+];
 const CATALOGS = { en: "packages/ui/src/i18n/locales/en.json", es: "packages/ui/src/i18n/locales/es.json" } as const;
 
 export function readJson(path: string): unknown {
@@ -43,5 +48,8 @@ export const refusalTemplate: RefusalTemplates = (key, locale) => catalog(locale
 export function capabilityRegistry(): CapabilityRegistry {
   const registry = new CapabilityRegistry();
   registry.register(languageQa);
+  // Available in every conversation (contract 1.1.0), so its fragment is part of the recorded prompt.
+  // No search port is wired here, so a case sees the "search unavailable" variant and never a tool.
+  registry.register(resourceCuration);
   return registry;
 }
