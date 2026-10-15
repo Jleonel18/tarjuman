@@ -1,0 +1,27 @@
+{
+  "steps": [
+    {
+      "type": "text",
+      "delta": "ACCEPT\nI cannot search the internet right now because web searching is disabled in this application. We"
+    },
+    {
+      "type": "text",
+      "delta": " can practice Japanese vocabulary and sentence structures related to climbing instead, or you can search video platforms yourself using general terms like 「ボルダリング"
+    },
+    {
+      "type": "text",
+      "delta": "」 (bouldering) or 「クライミング」 (climbing)."
+    },
+    {
+      "type": "usage",
+      "inputTokens": 1326,
+      "outputTokens": 1059,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0
+    },
+    {
+      "type": "stop",
+      "reason": "end"
+    }
+  ]
+}

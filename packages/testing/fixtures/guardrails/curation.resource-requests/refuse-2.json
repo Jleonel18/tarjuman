@@ -1,0 +1,19 @@
+{
+  "steps": [
+    {
+      "type": "text",
+      "delta": "REFUSE"
+    },
+    {
+      "type": "usage",
+      "inputTokens": 1328,
+      "outputTokens": 108,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0
+    },
+    {
+      "type": "stop",
+      "reason": "end"
+    }
+  ]
+}

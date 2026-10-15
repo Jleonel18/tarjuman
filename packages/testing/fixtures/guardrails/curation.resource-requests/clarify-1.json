@@ -1,0 +1,23 @@
+{
+  "steps": [
+    {
+      "type": "text",
+      "delta": "CLARIFY\n¿Qué tema o tipo de contenido en italiano te gustaría"
+    },
+    {
+      "type": "text",
+      "delta": " buscar para practicar?"
+    },
+    {
+      "type": "usage",
+      "inputTokens": 1323,
+      "outputTokens": 356,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0
+    },
+    {
+      "type": "stop",
+      "reason": "end"
+    }
+  ]
+}

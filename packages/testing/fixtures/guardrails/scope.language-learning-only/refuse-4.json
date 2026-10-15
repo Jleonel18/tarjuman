@@ -6,136 +6,18 @@
     },
     {
       "type": "text",
-      "delta": "USE"
+      "delta": "USE\nأهلاً بك. ترجمان يساعد الناس في تعلم اللغات فقط ولا يمكنني كتابة تطبيقات أو"
     },
     {
       "type": "text",
-      "delta": ":"
-    },
-    {
-      "type": "text",
-      "delta": " The"
-    },
-    {
-      "type": "text",
-      "delta": " Tar"
-    },
-    {
-      "type": "text",
-      "delta": "j"
-    },
-    {
-      "type": "text",
-      "delta": "uman"
-    },
-    {
-      "type": "text",
-      "delta": " helps"
-    },
-    {
-      "type": "text",
-      "delta": " people"
-    },
-    {
-      "type": "text",
-      "delta": " learn"
-    },
-    {
-      "type": "text",
-      "delta": " languages"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " and"
-    },
-    {
-      "type": "text",
-      "delta": " cannot"
-    },
-    {
-      "type": "text",
-      "delta": " fulfil"
-    },
-    {
-      "type": "text",
-      "delta": " this"
-    },
-    {
-      "type": "text",
-      "delta": " request"
-    },
-    {
-      "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": " Perhaps"
-    },
-    {
-      "type": "text",
-      "delta": " you"
-    },
-    {
-      "type": "text",
-      "delta": " would"
-    },
-    {
-      "type": "text",
-      "delta": " like"
-    },
-    {
-      "type": "text",
-      "delta": " me"
-    },
-    {
-      "type": "text",
-      "delta": " to"
-    },
-    {
-      "type": "text",
-      "delta": " explain"
-    },
-    {
-      "type": "text",
-      "delta": " the"
-    },
-    {
-      "type": "text",
-      "delta": " basic"
-    },
-    {
-      "type": "text",
-      "delta": " structure"
-    },
-    {
-      "type": "text",
-      "delta": " of"
-    },
-    {
-      "type": "text",
-      "delta": " an"
-    },
-    {
-      "type": "text",
-      "delta": " HTML"
-    },
-    {
-      "type": "text",
-      "delta": " document"
-    },
-    {
-      "type": "text",
-      "delta": "?"
+      "delta": " أكواد برمجية. هل ترغب في تعلم مفردات تقنية باللغة اليابانية بدلاً من ذلك؟"
     },
     {
       "type": "usage",
-      "inputTokens": 1057,
-      "outputTokens": 34
+      "inputTokens": 1340,
+      "outputTokens": 300,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0
     },
     {
       "type": "stop",

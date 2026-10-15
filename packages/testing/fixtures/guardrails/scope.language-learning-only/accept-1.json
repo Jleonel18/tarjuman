@@ -2,20 +2,46 @@
   "steps": [
     {
       "type": "text",
-      "delta": "REF"
+      "delta": "ACCEPT\nBoth"
     },
     {
       "type": "text",
-      "delta": "USE"
+      "delta": " *ser* and *estar* translate to \"to be\" in English, but they are used for different types of qualities"
     },
     {
       "type": "text",
-      "delta": "\n"
+      "delta": " and situations.\n\nGrammar:\n*Ser* is used for permanent or inherent qualities, identity, origin, material"
+    },
+    {
+      "type": "text",
+      "delta": ", and time. *Estar* is used for temporary states, conditions, emotions, and physical locations.\n\nExample:\n"
+    },
+    {
+      "type": "text",
+      "delta": "- *Soy estudiante.* (I am a student — identity/role)\n- *Estoy cansado.* (I"
+    },
+    {
+      "type": "text",
+      "delta": " am tired — temporary state)\n\nUsage:\nUse *ser* to describe permanent characteristics or defining traits (e.g., *"
+    },
+    {
+      "type": "text",
+      "delta": "El coche es rojo* — The car is red). Use *estar* to describe conditions that can change or locations (e.g., *"
+    },
+    {
+      "type": "text",
+      "delta": "El coche está en el garaje* — The car is in the garage). A common mistake is using *ser* for locations"
+    },
+    {
+      "type": "text",
+      "delta": "; always use *estar* when telling where a person or thing is located."
     },
     {
       "type": "usage",
-      "inputTokens": 1044,
-      "outputTokens": 4
+      "inputTokens": 1327,
+      "outputTokens": 1225,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0
     },
     {
       "type": "stop",

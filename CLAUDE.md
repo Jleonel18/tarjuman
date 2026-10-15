@@ -186,8 +186,9 @@ consent per source (`consent_required` ends the turn and the app sends the messa
 Agree), saved resources live in IndexedDB version 3, and YouTube data is reduced to id + fetch time
 after 30 days. The YouTube adapter ran live once on 2026-10-14 (`pnpm test:live:youtube`, 8 results; see
 `research.md` R6) and the Gemini tool-call round trip too; its fixtures are still synthetic and
-Anthropic's tool mapping has not run live. Guardrail fixtures for the
-`curation.resource-requests` rule are **not recorded** (see `research.md` and `tasks.md` T067).
+Anthropic's tool mapping has not run live. All guardrail fixtures, including
+`curation.resource-requests`, were re-recorded on 2026-10-15 with Gemini (not Claude; verdict only,
+no search port wired; see `research.md` R14).
 How it works: [ARCHITECTURE.md](ARCHITECTURE.md), section 3 and the step loop in section 4.
 
 Gotchas learned so far:

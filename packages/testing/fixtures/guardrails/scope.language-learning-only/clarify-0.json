@@ -2,148 +2,18 @@
   "steps": [
     {
       "type": "text",
-      "delta": "CL"
+      "delta": "CLARIFY\nAre"
     },
     {
       "type": "text",
-      "delta": "AR"
-    },
-    {
-      "type": "text",
-      "delta": "IFY"
-    },
-    {
-      "type": "text",
-      "delta": " What"
-    },
-    {
-      "type": "text",
-      "delta": " exactly"
-    },
-    {
-      "type": "text",
-      "delta": " would"
-    },
-    {
-      "type": "text",
-      "delta": " you"
-    },
-    {
-      "type": "text",
-      "delta": " like"
-    },
-    {
-      "type": "text",
-      "delta": " to"
-    },
-    {
-      "type": "text",
-      "delta": " do"
-    },
-    {
-      "type": "text",
-      "delta": " with"
-    },
-    {
-      "type": "text",
-      "delta": " your"
-    },
-    {
-      "type": "text",
-      "delta": " work"
-    },
-    {
-      "type": "text",
-      "delta": " email"
-    },
-    {
-      "type": "text",
-      "delta": "?"
-    },
-    {
-      "type": "text",
-      "delta": " Would"
-    },
-    {
-      "type": "text",
-      "delta": " you"
-    },
-    {
-      "type": "text",
-      "delta": " like"
-    },
-    {
-      "type": "text",
-      "delta": " a"
-    },
-    {
-      "type": "text",
-      "delta": " translation"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " or"
-    },
-    {
-      "type": "text",
-      "delta": " perhaps"
-    },
-    {
-      "type": "text",
-      "delta": " help"
-    },
-    {
-      "type": "text",
-      "delta": " understanding"
-    },
-    {
-      "type": "text",
-      "delta": " the"
-    },
-    {
-      "type": "text",
-      "delta": " structure"
-    },
-    {
-      "type": "text",
-      "delta": " of"
-    },
-    {
-      "type": "text",
-      "delta": " a"
-    },
-    {
-      "type": "text",
-      "delta": " typical"
-    },
-    {
-      "type": "text",
-      "delta": " business"
-    },
-    {
-      "type": "text",
-      "delta": " email"
-    },
-    {
-      "type": "text",
-      "delta": " in"
-    },
-    {
-      "type": "text",
-      "delta": " Japanese"
-    },
-    {
-      "type": "text",
-      "delta": "?"
+      "delta": " you looking to translate a work email into Japanese to learn the vocabulary and structure, or do you need help writing one?"
     },
     {
       "type": "usage",
-      "inputTokens": 1041,
-      "outputTokens": 36
+      "inputTokens": 1324,
+      "outputTokens": 301,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0
     },
     {
       "type": "stop",

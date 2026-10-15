@@ -2,20 +2,14 @@
   "steps": [
     {
       "type": "text",
-      "delta": "REF"
-    },
-    {
-      "type": "text",
-      "delta": "USE"
-    },
-    {
-      "type": "text",
-      "delta": "\n"
+      "delta": "REFUSE"
     },
     {
       "type": "usage",
-      "inputTokens": 1045,
-      "outputTokens": 4
+      "inputTokens": 1328,
+      "outputTokens": 276,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0
     },
     {
       "type": "stop",

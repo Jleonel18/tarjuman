@@ -297,14 +297,14 @@ Recorded so the owner can review them with the code.
 
 ## R14. Not done, and why
 
-- **Guardrail fixtures for `curation.resource-requests` are not recorded (T067).** Recording needs a
-  model that can use tools. Ollama offers none, so the options are to record with Gemini (the owner
-  runs `TARJUMAN_PROVIDER=gemini node --env-file=.env --import tsx scripts/record-guardrails.ts`;
-  fixtures would say "not Claude"), or to mark the curation cases verdict-only. Adding the capability
-  to the guardrail setup changes the recorded prompt hash, so `lint:rules` fails until it is
-  re-recorded. **The owner decides.** Until then the rule file is validated against the contract
-  schema and loaded by the core loader (`tests/guardrails/rule-files.test.ts`) and its version is
-  compared with `main`, but no model has been asked its cases.
+- **Guardrail fixtures for `curation.resource-requests` (T067), recorded 2026-10-15 with Gemini
+  (`gemini-3.5-flash-lite`), chosen by the owner.** All fixtures were replaced, so `scope.*` and
+  `translation.*` are now Gemini recordings too; `provenance.json` says "not Claude", so none of
+  this is 001 SC-003 evidence. The recorder wires no search port, so the curation cases saw the
+  "search unavailable" variant of the fragment and answered with a verdict only: they check that
+  the rule and fragment classify requests, **not** that a model calls `search_videos`. That part is
+  covered by the mock-provider tests and the manual V2 run. `lint:rules` and `tests/guardrails`
+  pass against the new recording.
 - **Live status (T068, 2026-10-14).** The YouTube adapter ran live and passed (see R6). The Gemini
   tool-call round trip ran live and passed with `gemini-3.5-flash-lite`: step 1 returned a
   `tool_call` with a continuation, and step 2, with the tool result sent back, streamed text and

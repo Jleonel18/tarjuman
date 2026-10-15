@@ -1,0 +1,27 @@
+{
+  "steps": [
+    {
+      "type": "text",
+      "delta": "ACCEPT\nNo puedo buscar en internet en este momento porque la función de búsqueda está desactivada, pero puedes buscar términos"
+    },
+    {
+      "type": "text",
+      "delta": " generales como «Kochen lernen» o «Rezepte auf Deutsch» por tu cuenta, o puedo ayudarte a practicar vocabulario de cocina y explicar"
+    },
+    {
+      "type": "text",
+      "delta": "te estructuras en alemán si lo prefieres."
+    },
+    {
+      "type": "usage",
+      "inputTokens": 1329,
+      "outputTokens": 766,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0
+    },
+    {
+      "type": "stop",
+      "reason": "end"
+    }
+  ]
+}

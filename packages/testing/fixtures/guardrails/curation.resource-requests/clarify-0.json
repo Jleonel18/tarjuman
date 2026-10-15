@@ -1,0 +1,23 @@
+{
+  "steps": [
+    {
+      "type": "text",
+      "delta": "CLARIFY\nWhat kind of topics or genres would you like to watch"
+    },
+    {
+      "type": "text",
+      "delta": " in Korean?"
+    },
+    {
+      "type": "usage",
+      "inputTokens": 1323,
+      "outputTokens": 850,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0
+    },
+    {
+      "type": "stop",
+      "reason": "end"
+    }
+  ]
+}

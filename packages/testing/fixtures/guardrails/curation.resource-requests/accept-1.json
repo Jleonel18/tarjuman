@@ -1,0 +1,31 @@
+{
+  "steps": [
+    {
+      "type": "text",
+      "delta": "ACCEPT\nNo puedo buscar en internet en este momento porque"
+    },
+    {
+      "type": "text",
+      "delta": " la herramienta de búsqueda está desactivada, pero puedes buscar por tu cuenta términos como «chansons françaises niveau intermédiaire»"
+    },
+    {
+      "type": "text",
+      "delta": " o «chansons avec paroles» para encontrar material adecuado. Si lo prefieres, podemos practicar la comprensión con textos"
+    },
+    {
+      "type": "text",
+      "delta": " y ejercicios aquí mismo."
+    },
+    {
+      "type": "usage",
+      "inputTokens": 1329,
+      "outputTokens": 797,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0
+    },
+    {
+      "type": "stop",
+      "reason": "end"
+    }
+  ]
+}

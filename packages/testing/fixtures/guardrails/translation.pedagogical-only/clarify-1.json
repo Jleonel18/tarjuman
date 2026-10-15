@@ -2,180 +2,18 @@
   "steps": [
     {
       "type": "text",
-      "delta": "CONS"
+      "delta": "CLARIFY\n¿"
     },
     {
       "type": "text",
-      "delta": "ID"
-    },
-    {
-      "type": "text",
-      "delta": "ERA"
-    },
-    {
-      "type": "text",
-      "delta": ":"
-    },
-    {
-      "type": "text",
-      "delta": " the"
-    },
-    {
-      "type": "text",
-      "delta": " request"
-    },
-    {
-      "type": "text",
-      "delta": " is"
-    },
-    {
-      "type": "text",
-      "delta": " within"
-    },
-    {
-      "type": "text",
-      "delta": " scope"
-    },
-    {
-      "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": "\n\n"
-    },
-    {
-      "type": "text",
-      "delta": "Por"
-    },
-    {
-      "type": "text",
-      "delta": " favor"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " proporción"
-    },
-    {
-      "type": "text",
-      "delta": "ame"
-    },
-    {
-      "type": "text",
-      "delta": " el"
-    },
-    {
-      "type": "text",
-      "delta": " correo"
-    },
-    {
-      "type": "text",
-      "delta": " electrónico"
-    },
-    {
-      "type": "text",
-      "delta": " que"
-    },
-    {
-      "type": "text",
-      "delta": " deseas"
-    },
-    {
-      "type": "text",
-      "delta": " traducir"
-    },
-    {
-      "type": "text",
-      "delta": " al"
-    },
-    {
-      "type": "text",
-      "delta": " japonés"
-    },
-    {
-      "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": " Una"
-    },
-    {
-      "type": "text",
-      "delta": " vez"
-    },
-    {
-      "type": "text",
-      "delta": " que"
-    },
-    {
-      "type": "text",
-      "delta": " lo"
-    },
-    {
-      "type": "text",
-      "delta": " vea"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " puedo"
-    },
-    {
-      "type": "text",
-      "delta": " explicar"
-    },
-    {
-      "type": "text",
-      "delta": "te"
-    },
-    {
-      "type": "text",
-      "delta": " la"
-    },
-    {
-      "type": "text",
-      "delta": " traducción"
-    },
-    {
-      "type": "text",
-      "delta": " y"
-    },
-    {
-      "type": "text",
-      "delta": " cómo"
-    },
-    {
-      "type": "text",
-      "delta": " está"
-    },
-    {
-      "type": "text",
-      "delta": " constru"
-    },
-    {
-      "type": "text",
-      "delta": "ida"
-    },
-    {
-      "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": "\n"
+      "delta": "Qué texto de correo necesitas traducir y a qué idioma?"
     },
     {
       "type": "usage",
-      "inputTokens": 1039,
-      "outputTokens": 44
+      "inputTokens": 1322,
+      "outputTokens": 289,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0
     },
     {
       "type": "stop",

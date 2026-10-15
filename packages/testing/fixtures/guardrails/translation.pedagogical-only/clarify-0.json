@@ -2,156 +2,18 @@
   "steps": [
     {
       "type": "text",
-      "delta": "ACCEPT"
+      "delta": "CLARIFY\nWhat text would you like me to translate, and what"
     },
     {
       "type": "text",
-      "delta": "\n\n"
-    },
-    {
-      "type": "text",
-      "delta": "Please"
-    },
-    {
-      "type": "text",
-      "delta": " provide"
-    },
-    {
-      "type": "text",
-      "delta": " the"
-    },
-    {
-      "type": "text",
-      "delta": " text"
-    },
-    {
-      "type": "text",
-      "delta": " you"
-    },
-    {
-      "type": "text",
-      "delta": " would"
-    },
-    {
-      "type": "text",
-      "delta": " like"
-    },
-    {
-      "type": "text",
-      "delta": " me"
-    },
-    {
-      "type": "text",
-      "delta": " to"
-    },
-    {
-      "type": "text",
-      "delta": " translate"
-    },
-    {
-      "type": "text",
-      "delta": " into"
-    },
-    {
-      "type": "text",
-      "delta": " Spanish"
-    },
-    {
-      "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": " I"
-    },
-    {
-      "type": "text",
-      "delta": " will"
-    },
-    {
-      "type": "text",
-      "delta": " explain"
-    },
-    {
-      "type": "text",
-      "delta": " the"
-    },
-    {
-      "type": "text",
-      "delta": " translation"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " its"
-    },
-    {
-      "type": "text",
-      "delta": " part"
-    },
-    {
-      "type": "text",
-      "delta": " of"
-    },
-    {
-      "type": "text",
-      "delta": " speech"
-    },
-    {
-      "type": "text",
-      "delta": ","
-    },
-    {
-      "type": "text",
-      "delta": " and"
-    },
-    {
-      "type": "text",
-      "delta": " give"
-    },
-    {
-      "type": "text",
-      "delta": " some"
-    },
-    {
-      "type": "text",
-      "delta": " example"
-    },
-    {
-      "type": "text",
-      "delta": " sentences"
-    },
-    {
-      "type": "text",
-      "delta": " to"
-    },
-    {
-      "type": "text",
-      "delta": " illustrate"
-    },
-    {
-      "type": "text",
-      "delta": " its"
-    },
-    {
-      "type": "text",
-      "delta": " usage"
-    },
-    {
-      "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": "\n"
+      "delta": " would you like to learn from it?"
     },
     {
       "type": "usage",
-      "inputTokens": 1039,
-      "outputTokens": 38
+      "inputTokens": 1322,
+      "outputTokens": 258,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0
     },
     {
       "type": "stop",

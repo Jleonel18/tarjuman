@@ -1,0 +1,31 @@
+{
+  "steps": [
+    {
+      "type": "text",
+      "delta": "ACCEPT\nI cannot search right now because live"
+    },
+    {
+      "type": "text",
+      "delta": " internet access is turned off in this application. You can find relevant content by searching for terms like \"fútbol español\", \""
+    },
+    {
+      "type": "text",
+      "delta": "análisis táctico\", or \"tertulia deportiva\" on your preferred video and podcast platforms. Alternatively, we can learn"
+    },
+    {
+      "type": "text",
+      "delta": " useful football vocabulary and practice discussing matches in Spanish together."
+    },
+    {
+      "type": "usage",
+      "inputTokens": 1328,
+      "outputTokens": 1403,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0
+    },
+    {
+      "type": "stop",
+      "reason": "end"
+    }
+  ]
+}

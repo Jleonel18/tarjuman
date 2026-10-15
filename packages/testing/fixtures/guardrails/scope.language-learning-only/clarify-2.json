@@ -2,156 +2,18 @@
   "steps": [
     {
       "type": "text",
-      "delta": "ASS"
+      "delta": "CLARIFY\nQu'aimerais-tu faire avec ton texte en japonais ?"
     },
     {
       "type": "text",
-      "delta": "IST"
-    },
-    {
-      "type": "text",
-      "delta": "E"
-    },
-    {
-      "type": "text",
-      "delta": " :"
-    },
-    {
-      "type": "text",
-      "delta": " Je"
-    },
-    {
-      "type": "text",
-      "delta": " peux"
-    },
-    {
-      "type": "text",
-      "delta": " vous"
-    },
-    {
-      "type": "text",
-      "delta": " aider"
-    },
-    {
-      "type": "text",
-      "delta": " à"
-    },
-    {
-      "type": "text",
-      "delta": " travailler"
-    },
-    {
-      "type": "text",
-      "delta": " sur"
-    },
-    {
-      "type": "text",
-      "delta": " votre"
-    },
-    {
-      "type": "text",
-      "delta": " texte"
-    },
-    {
-      "type": "text",
-      "delta": "."
-    },
-    {
-      "type": "text",
-      "delta": " Pour"
-    },
-    {
-      "type": "text",
-      "delta": "riez"
-    },
-    {
-      "type": "text",
-      "delta": "-"
-    },
-    {
-      "type": "text",
-      "delta": "vous"
-    },
-    {
-      "type": "text",
-      "delta": " me"
-    },
-    {
-      "type": "text",
-      "delta": " dire"
-    },
-    {
-      "type": "text",
-      "delta": " quel"
-    },
-    {
-      "type": "text",
-      "delta": " est"
-    },
-    {
-      "type": "text",
-      "delta": " le"
-    },
-    {
-      "type": "text",
-      "delta": " texte"
-    },
-    {
-      "type": "text",
-      "delta": " en"
-    },
-    {
-      "type": "text",
-      "delta": " question"
-    },
-    {
-      "type": "text",
-      "delta": " et"
-    },
-    {
-      "type": "text",
-      "delta": " ce"
-    },
-    {
-      "type": "text",
-      "delta": " que"
-    },
-    {
-      "type": "text",
-      "delta": " vous"
-    },
-    {
-      "type": "text",
-      "delta": " souhaitez"
-    },
-    {
-      "type": "text",
-      "delta": " faire"
-    },
-    {
-      "type": "text",
-      "delta": " avec"
-    },
-    {
-      "type": "text",
-      "delta": " lui"
-    },
-    {
-      "type": "text",
-      "delta": " "
-    },
-    {
-      "type": "text",
-      "delta": "?"
-    },
-    {
-      "type": "text",
-      "delta": "\n"
+      "delta": " Souhaites-tu de l'aide pour corriger la grammaire, le vocabulaire ou pour le traduire ?"
     },
     {
       "type": "usage",
-      "inputTokens": 1059,
-      "outputTokens": 39
+      "inputTokens": 1342,
+      "outputTokens": 302,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0
     },
     {
       "type": "stop",
