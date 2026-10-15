@@ -158,6 +158,7 @@ fill it in. End users never use this: they enter their own key in the app.
 - [SECURITY.md](SECURITY.md) — security model and how to report a problem
 - [docs/local-model.md](docs/local-model.md) — running and testing with a free local model
 - [docs/adding-a-capability.md](docs/adding-a-capability.md) — how to add a capability without touching the core
+- [docs/deployment.md](docs/deployment.md) — building for production and the headers the host must send
 - [CLAUDE.md](CLAUDE.md) — instructions for AI coding agents working in this repo
 - [.specify/memory/constitution.md](.specify/memory/constitution.md) — the non-negotiable principles
 - [specs/001-core-foundation/](specs/001-core-foundation/) — spec, plan, data model, contracts, tasks

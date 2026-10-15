@@ -3,6 +3,7 @@
 **Task**: T070 / T071. Runs [quickstart.md](../quickstart.md) and records the results.
 **Date**: 2026-10-14
 **Base**: `4b07fbb` plus the uncommitted work of T006–T071 (nothing committed by the agent)
+**Updated**: 2026-10-15, after T067 and T068 (commits `317f5e8`, `7769d47`, `4946488`)
 **Environment**: macOS (Darwin 25.6), Node 22, Playwright Chromium, Firefox, and WebKit
 
 ## Summary
@@ -10,9 +11,9 @@
 | Section | Result |
 |---------|--------|
 | V1 Automated checks | **Pass**, all of them (below) |
-| V2 Learner flow with real keys | **Not run.** The owner has no YouTube key yet; SC-001 to SC-003 are open |
+| V2 Learner flow with real keys | **Not run.** The keys now exist (Gemini, YouTube `AIza…`); the manual run is the owner's. SC-001 to SC-003 are open |
 | V3 Fallbacks | **Pass by automated tests** (search off, no key, model without tools) |
-| V4 Live smoke test | **Not run.** `pnpm test:live:youtube` needs `YOUTUBE_API_KEY`; it skips without it |
+| V4 Live smoke test | **Pass** (2026-10-14). `pnpm test:live:youtube`: key validation `ok`, one search returned 8 results; the Gemini tool-call round trip also passed live. See `research.md` R6 and R14 |
 
 ## V1 Automated checks
 
@@ -23,7 +24,7 @@
 | `pnpm lint:css` | pass |
 | `pnpm lint:arch` | pass (also checks `SearchPort` imports) |
 | `pnpm lint:i18n` | pass |
-| `pnpm lint:rules` | pass. The curation rule is version-checked; **its guardrail fixtures are not recorded** (T067) |
+| `pnpm lint:rules` | pass. The curation rule is version-checked. Its guardrail fixtures were recorded on 2026-10-15 with Gemini (T067), verdict only; see `research.md` R14 |
 | `pnpm test` | pass, 101 files, 1,564 tests |
 | `pnpm test:redteam` | pass: 73 cases, 438 runs, 0 key disclosures, 0 remote-resource elements, 60 curation runs, 0 foreign links |
 | `pnpm test:e2e` | pass, 303 tests (Chromium, Firefox, WebKit); 13 per browser are in `resource-curation.spec.ts`, plus one in `rtl.spec.ts` and one in `key-and-data-control.spec.ts` |
@@ -45,6 +46,10 @@
 
 ## Not done
 
-- **T067** guardrail fixtures for the curation rule: needs the owner's decision (research R14).
-- **Live runs**: YouTube adapter, Gemini tool round trip, Anthropic tool mapping (docs only).
+- ~~T067~~ Done on 2026-10-15: all guardrail fixtures re-recorded with `gemini-3.5-flash-lite`
+  (not Claude, verdict only, no search port wired; research R14).
+- **Live runs**: the YouTube adapter and the Gemini tool round trip passed on 2026-10-14. Still not
+  run live: Anthropic's tool mapping (documentation only, no key) and an end-to-end search through
+  the app with a real model (V2).
+- **Behavioral red-team layer** (SC-004, `adv-resource-curation-011`): not run.
 - **Human click-through** of V2 and V3.

@@ -39,6 +39,16 @@ No high or medium severity issue was found. Findings below are low severity or l
 | 4 | Low | **Third-party actions pinned by tag.** `nightly-live.yml` runs `actions/checkout`, `pnpm/action-setup`, and `actions/setup-node` by major tag in a job that holds `TARJUMAN_TEST_KEY`. The secret is only set on the two test steps, which limits exposure. | Pin those actions to commit SHAs before the secret is configured. |
 | 5 | Info | **Behavior against Claude is unmeasured.** The Anthropic adapter has never run against the live API, and the guardrail and behavioral suites have only run against a local non-Claude model. The nightly job skips while no key exists. | Run the nightly suites once a test key exists; treat SC-003 as open until then. |
 
+### Follow-up (2026-10-15)
+
+| # | Status |
+|---|--------|
+| 1 | **Decided: tell other tabs to reset** with a `BroadcastChannel`. Implementation pending. |
+| 2 | **Decided: harden now**, although still latent after 005 (search goes through `SearchPort`, not `net.fetch`). Implementation pending. |
+| 3 | **Done.** [docs/deployment.md](../../../docs/deployment.md) lists the headers the host must send (`frame-ancestors 'none'`, `X-Frame-Options: DENY`) and how to check them. |
+| 4 | **Done.** `checkout`, `pnpm/action-setup`, and `setup-node` are pinned to commit SHAs in all three workflows, at the versions `v4` pointed to on 2026-10-15 (v4.4.0, v4.3.0, v4.4.0). |
+| 5 | Open until an Anthropic test key exists. |
+
 Checked with no finding: the key never enters a `ModelRequest` (type-level assertion and
 structural tests); `maxRetries: 0`; adapter errors are mapped to codes and scrubbed; the key regex
 also catches keys wrapped in invisible characters; untrusted text is entity-escaped so it cannot
@@ -70,3 +80,5 @@ the e2e build by mistake (it accepts a fixed mock key).
 
 These are proposed changes to `plan.md`. They are reported here and not applied, because the plan
 is a reviewed Spec Kit artifact.
+
+**Applied on 2026-10-15** with the owner's approval: see [plan.md](../plan.md) → Threat Analysis.

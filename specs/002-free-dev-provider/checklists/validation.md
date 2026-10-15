@@ -21,6 +21,6 @@ Run on 2026-10-08, branch `002-local-model-guide`, Ollama client 0.32.1 installe
 
 | Step | Result |
 |---|---|
-| V2: `pnpm test:live:ollama` | **pending** |
-| V3: chat in the app with `VITE_PROVIDER=ollama`, including stopping Ollama and seeing the `unreachable` diagnostic, and the production build excluding the provider | **pending** |
-| V5: follow `docs/local-model.md` from scratch, record Ollama version and total time (target: under 30 minutes, SC-001) | **pending** |
+| V2: `pnpm test:live:ollama` | **pass** (2026-10-15, Ollama 0.32.1, `gemma3:4b`): one short answer streamed with text, usage, and a stop in 634 ms. The Gemini and YouTube live tests in the same project skipped, as expected without their keys in the environment |
+| V3: chat in the app with `VITE_PROVIDER=ollama`, including stopping Ollama and seeing the `unreachable` diagnostic, and the production build excluding the provider | **partly done.** The production build excluding the provider is covered by `apps/web/tests/prod-excludes-dev-provider.test.ts` (part of `pnpm test`). The chat and the `unreachable` diagnostic in the browser are **pending**: they need the owner at the screen |
+| V5: follow `docs/local-model.md` from scratch, record Ollama version and total time (target: under 30 minutes, SC-001) | **pending** (owner: a timed run by a person) |
