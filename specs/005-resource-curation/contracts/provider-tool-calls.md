@@ -66,8 +66,12 @@ Rules for every adapter:
 - History: later turns get, per earlier assistant message with non-expired cards, one
   `untrusted_data` block with `ref`, title, channel, type (data-model.md → Resource context). Tool
   messages of earlier turns are never replayed.
-- Only the final step's text is parsed for the verdict and rendered. While tools run the pipeline
-  emits `{ type: "status"; code: "searching" }`.
+- Only the final step's text is rendered, and its own verdict line decides. If it opens without
+  one, the well-formed verdict line of the most recent tool step is used instead (a carried
+  `REFUSE` still shows nothing); with neither, the turn fails closed as before (research R15,
+  amended 2026-10-15). While tools run the pipeline emits `{ type: "status"; code: "searching" }`.
+- When tools are on offer, the domain-scope layer adds one line: the verdict opens the text written
+  after the last tool result.
 - `TurnEvent` gains `{ type: "resources"; cards: ResourceCard[] }`, emitted once, after the final
   step, only if the verdict is `accept`. Cards are built from search data (data-model.md).
 - In a turn with search results, links in the prose are rendered clickable only if their URL equals

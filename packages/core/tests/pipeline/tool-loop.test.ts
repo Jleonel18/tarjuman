@@ -302,7 +302,7 @@ describe("one search, then the answer", () => {
     expect(types.indexOf("status")).toBeLessThan(types.indexOf("render"));
   });
 
-  it("reads the verdict from the final step only and never renders earlier step text", async () => {
+  it("prefers the final step's verdict over an earlier step's, and never renders earlier step text", async () => {
     const w = await world([
       [{ type: "text", delta: "REFUSE\nEARLIER-STEP-TEXT" }, ...toolStep(searchCall())],
       answer("ACCEPT\nFinal words."),
@@ -314,6 +314,67 @@ describe("one search, then the answer", () => {
     const stored = await assistant();
     expect(stored?.segments.map((s) => s.text).join("")).not.toContain("EARLIER-STEP-TEXT");
     expect(stored?.status).toBe("complete");
+  });
+});
+
+// Seen live with Gemini (005 research R15): the model writes its verdict next to a tool call, and
+// the final answer starts without it. The verdict of the most recent tool step is used then.
+describe("the reply format when tools are on offer", () => {
+  const TOOLS_RULE = /after the last tool result/i;
+
+  it("tells the model the verdict line opens the text after the last tool result", async () => {
+    const w = await world([answer("ACCEPT\nHola.")]);
+    await run(w);
+    expect(layerText(w.provider.calls[0], "domain_scope")).toMatch(TOOLS_RULE);
+  });
+
+  it("says nothing about tools to a model that is offered none", async () => {
+    const w = await world([answer("ACCEPT\nHola.")], { profile: { modelId: "plain-model" } });
+    await run(w);
+    expect(layerText(w.provider.calls[0], "domain_scope")).not.toMatch(TOOLS_RULE);
+  });
+});
+
+describe("a verdict written only in a tool step", () => {
+  const textStep = (text: string, ...calls: Step[]): Step[] => [{ type: "text", delta: text }, ...toolStep(...calls)];
+
+  it("is used when the final step has none: the answer and the cards are shown", async () => {
+    const w = await world([toolStep(searchCall()), textStep("ACCEPT\n", showCall("c2", "r1")), answer("He seleccionado estos videos.")]);
+    w.search.enqueue({ ok: true, results: results(2) });
+    const events = await run(w);
+    expect(of(events, "verdict")).toEqual([expect.objectContaining({ verdict: "accept" })]);
+    expect(shownText(events)).toContain("He seleccionado estos videos.");
+    expect(of(events, "resources")[0]?.cards.map((c) => c.ref)).toEqual(["r1"]);
+    expect(done(events)).toEqual({ type: "done", status: "complete" });
+  });
+
+  it("never shows the tool step's own text, only its verdict counts", async () => {
+    const w = await world([textStep("ACCEPT\nTOOL-STEP-PROSE", searchCall()), answer("Final words.")]);
+    const events = await run(w);
+    expect(shownText(events)).toContain("Final words.");
+    expect(shownText(events)).not.toContain("TOOL-STEP-PROSE");
+  });
+
+  it("takes the most recent tool step's verdict", async () => {
+    const w = await world([textStep("CLARIFY\n", searchCall()), textStep("ACCEPT\n", showCall("c2", "r1")), answer("Here.")]);
+    w.search.enqueue({ ok: true, results: results(1) });
+    expect(of(await run(w), "verdict")).toEqual([expect.objectContaining({ verdict: "accept" })]);
+  });
+
+  it("carries a refusal: the final text is not shown and the turn is refused", async () => {
+    const w = await world([textStep("REFUSE\n", searchCall()), answer("Here is what you asked for.")]);
+    const events = await run(w);
+    expect(shownText(events)).not.toContain("Here is what you asked for.");
+    expect(done(events)).toEqual({ type: "done", status: "refused" });
+  });
+
+  it("fails closed when no step has a well-formed verdict", async () => {
+    const w = await world([toolStep(searchCall()), textStep("ACCEPT:\n- ", showCall("c2", "r1")), answer("Estos videos te ayudarán.")]);
+    w.search.enqueue({ ok: true, results: results(1) });
+    const events = await run(w);
+    expect(of(events, "verdict")).toEqual([expect.objectContaining({ verdict: "refuse" })]);
+    expect(of(events, "resources")).toEqual([]);
+    expect(done(events)).toEqual({ type: "done", status: "refused" });
   });
 });
 

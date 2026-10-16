@@ -295,6 +295,25 @@ Recorded so the owner can review them with the code.
   request, only card links rendered, results fenced as data, no side effect after a search, and
   forged ids adding no card. Mutating the link restriction in the pipeline makes them fail.
 
+## R15. Verdict lost after a tool step (found 2026-10-15, owner's manual run)
+
+- **Symptom.** "Podrías ayudarme a buscar videos de mi interés para poder seguir perfeccionando mi
+  inglés?" (mediation `es`, target `en`, `gemini-3.5-flash-lite`, effort medium, YouTube key saved)
+  showed the out-of-scope refusal after one search and three model calls; no cards.
+- **Cause.** Reproduced live, 3 of 10 runs: the model wrote `ACCEPT` next to its `show_resources`
+  call, then opened the final answer without it. Only the final step was read, so the turn failed
+  closed and dropped the cards. (One of the three wrote `ACCEPT:`, which is malformed.)
+- **Decision (owner, 2026-10-15): pipeline + prompt.** The final step's own verdict line still
+  decides. If it has none, the well-formed verdict line of the most recent tool step is used
+  (`VerdictParser` option `fallback`); a carried `REFUSE` releases no text; with neither, the turn
+  fails closed. The domain-scope layer gains one line when tools are on offer: the verdict opens the
+  text written after the last tool result.
+- **Fixtures.** Not re-recorded: the recorder wires no search port (R14), so its requests offer no
+  tools and do not contain the new line; `lint:rules` confirms the hash is unchanged.
+- **Live check after the fix** (10 runs, same input, mock search): 4 accept with cards (one of them
+  the exact failing pattern, now carried), 1 clarify, 0 wrongly refused; the other 5 hit the free
+  tier's per-minute limit (`rate_limited`) after about 60 calls in a row and are not evidence.
+
 ## R14. Not done, and why
 
 - **Guardrail fixtures for `curation.resource-requests` (T067), recorded 2026-10-15 with Gemini

@@ -6,7 +6,7 @@ import type { Segment, Verdict } from "../conversation/types";
 import { CORE_RULES } from "../guardrails/core-rules";
 import { resolveRefusal, shippedLocaleOf, type RefusalTemplates } from "../guardrails/refusal";
 import { renderScopeLayer, ruleKey } from "../guardrails/scope-layer";
-import { VerdictParser, type VerdictParse } from "../guardrails/verdict-parser";
+import { VerdictParser, verdictLineOf, type VerdictParse } from "../guardrails/verdict-parser";
 import type {
   Effort,
   JsonValue,
@@ -123,7 +123,7 @@ export class Pipeline implements PipelineContract {
       capability,
       sharedCapabilities,
       searchState,
-      domainScope: renderScopeLayer(rules, { mediationLanguage: profile.mediationLanguage, mediationHasCatalog }),
+      domainScope: renderScopeLayer(rules, { mediationLanguage: profile.mediationLanguage, mediationHasCatalog, toolsOffered: offered.length > 0 }),
       history: opened.messages,
       turn: { userText: guarded.userText, untrustedMaterial: guarded.untrustedMaterial },
     });
@@ -194,7 +194,10 @@ export class Pipeline implements PipelineContract {
         );
         return guard;
       };
-      const parser = new VerdictParser();
+      // Rebuilt for each step: only the final step's text reaches it (tool steps are buffered and
+      // dropped), with the verdict of the most recent tool step as its fallback (research R15).
+      let parser = new VerdictParser();
+      let carriedVerdict: Verdict | undefined;
       let verdict: Verdict | undefined;
       let refusalBody = "";
       let received = false;
@@ -260,6 +263,7 @@ export class Pipeline implements PipelineContract {
           const buffered: string[] = [];
           const calls: ToolCallRecord[] = [];
           steps += 1;
+          parser = new VerdictParser({ fallback: carriedVerdict });
 
           for await (const event of provider.stream(request, secret, signal)) {
             if (signal.aborted) {
@@ -309,8 +313,10 @@ export class Pipeline implements PipelineContract {
             break;
           }
 
-          // A step with tool calls: its text is dropped, its calls are judged and run in order.
+          // A step with tool calls: its text is dropped, its calls are judged and run in order. Its
+          // verdict line, if well formed, stands in for a final step that opens without one.
           const stepText = buffered.join("");
+          carriedVerdict = verdictLineOf(stepText) ?? carriedVerdict;
           const results: ProviderMessage[] = [];
           for (const toolCall of calls) {
             const owner = turnCapabilities.find((c) => c.tools.some((t) => t.name === toolCall.name)) ?? capability;

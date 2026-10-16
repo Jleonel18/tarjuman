@@ -172,8 +172,10 @@ tools, the pipeline runs them, and the results go back to it. For each call, in 
 5. Anything else runs under the broker. Its result reaches the model as an `untrusted_data` block,
    and later segments of the turn count as untrusted.
 
-Only the **last** step's text is shown and gives the verdict; earlier text is dropped (a step is
-buffered while tools are on offer). The last step is offered no tools. A `TurnSearchSession` numbers
+Only the **last** step's text is shown, and its verdict line decides; earlier text is dropped (a
+step is buffered while tools are on offer). If the last step opens without a verdict, the
+well-formed verdict line of the most recent tool step stands in, because models often write it next
+to the tool call and not again (005 research R15); with neither, the turn fails closed. The last step is offered no tools. A `TurnSearchSession` numbers
 results `r1…r16` across the turn's searches. In a turn that searched, a link in the prose is
 clickable only if it equals a card's own link; others become text that shows the destination.
 Tokens are summed over the steps, and the steps and searches are recorded.

@@ -215,6 +215,12 @@ retention rule, which also applies to cards in conversations, so it is required 
 - US1 needs all of Phase 2. US3 needs US1 (cards and loop exist). US2 needs US1. US4 needs US1.
 - Release to learners: US1 + US2 + US3 + US4 (consent and retention are terms requirements).
 
+## Follow-up: verdict lost after a tool step (added 2026-10-15, research R15)
+
+- [X] T072 Tests: `VerdictParser` fallback (`packages/core/tests/guardrails/verdict-parser.test.ts`); in `tool-loop.test.ts`, a tool step's verdict stands in for a final step without one, the most recent one wins, a carried REFUSE shows nothing, a malformed one fails closed, the final step's own verdict still wins, and the scope layer gains the tools line only when tools are offered
+- [X] T073 Implement the fallback in `packages/core/src/guardrails/verdict-parser.ts`, carry it in `packages/core/src/pipeline/pipeline.ts`, and add the tools line in `packages/core/src/guardrails/scope-layer.ts`
+- [X] T074 Update `contracts/provider-tool-calls.md`, `research.md` R15, and `ARCHITECTURE.md`; re-run the live probe
+
 ## Parallel Opportunities
 
 - Phase 2a: T009 (Gemini), T011 (Anthropic), T013 (Ollama) after T007.

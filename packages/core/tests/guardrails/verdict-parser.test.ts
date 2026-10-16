@@ -136,3 +136,44 @@ describe("VerdictParser: finish", () => {
     expect(parser.finish()).toEqual({ verdict: "clarify", text: "" });
   });
 });
+
+// A turn that used tools may have written its verdict in a tool step and not again in the final
+// step (seen live with Gemini, 005 research R15). The pipeline then passes that verdict as the
+// fallback; the final step's own verdict line still wins when it has one.
+describe("VerdictParser: a fallback verdict from a tool step", () => {
+  function withFallback(chunks: string[], fallback: "accept" | "refuse" | "clarify") {
+    const parser = new VerdictParser({ fallback });
+    const pushes = chunks.map((chunk) => parser.push(chunk));
+    const end = parser.finish();
+    return { end, text: pushes.map((p) => p.text).join("") + end.text };
+  }
+
+  it("uses the fallback when the first line is not a verdict, and releases the whole text", () => {
+    const { end, text } = withFallback(["He seleccionado ", "estos videos.\nSegunda línea."], "accept");
+    expect(end.verdict).toBe("accept");
+    expect(text).toBe("He seleccionado estos videos.\nSegunda línea.");
+  });
+
+  it("prefers the final step's own verdict line", () => {
+    expect(withFallback(["REFUSE\n"], "accept").end.verdict).toBe("refuse");
+    const { end, text } = withFallback(["ACCEPT\nAquí tienes."], "refuse");
+    expect(end.verdict).toBe("accept");
+    expect(text).toBe("Aquí tienes.");
+  });
+
+  it("still waits while the first line could become a verdict", () => {
+    const parser = new VerdictParser({ fallback: "accept" });
+    expect(parser.push("ACC")).toEqual({ verdict: null, text: "" });
+    expect(parser.push("EPT\nok")).toEqual({ verdict: "accept", text: "ok" });
+  });
+
+  it("uses the fallback for an empty final step", () => {
+    expect(withFallback([], "accept")).toEqual({ end: { verdict: "accept", text: "" }, text: "" });
+  });
+
+  it("carries a refusal too: no text is released", () => {
+    const { end, text } = withFallback(["Here is the HTML app you asked for."], "refuse");
+    expect(end.verdict).toBe("refuse");
+    expect(text).toBe("");
+  });
+});
